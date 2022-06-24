@@ -9,10 +9,9 @@
 }:
 
 let
-  pname = "perpetual-pools-client";
   version = "0.1.0";
 
-  src = fetchgit {
+  srcTracer = fetchgit {
     url = "https://github.com/tracer-protocol/pools-client.git";
     rev = "9c7420b293a3450fd88ff5d29dbedb50ff429523";
     sha256 = "sha256-ykmavWJqPANPJZ0vKp/OiGmlJ/jyZfHyOFOP959MUEY=";
@@ -22,23 +21,23 @@ let
     '';
   };
 
-  srcPongified = fetchgit {
+  srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
     rev = "1ec15aba90e620add1da3790ea215d982655e200";
     sha256 = "sha256-upBPmXS9KkX3/HgfWjbyEYDBqDDHh32goRaOTfgUeT0=";
   };
 
   yarnDeps = mkYarnModules {
-    pname = "${pname}-yarn-deps";
+    pname = "perpetual-pools-client-yarn-deps";
     inherit version;
-    packageJSON = "${src}/package.json";
-    yarnLock = "${src}/yarn.lock";
+    packageJSON = "${srcTracer}/package.json";
+    yarnLock = "${srcTracer}/yarn.lock";
     yarnNix = ./yarn.nix;
   };
 in
 stdenv.mkDerivation rec {
-  pname = if pongified then "pong-client" else pname;
-  src = if pongified then srcPongified else src;
+  pname = if pongified then "pong-client" else "perpetual-pools-client";
+  src = if pongified then srcPong else srcTracer;
   inherit version;
 
   buildInputs = [ nodejs ];
