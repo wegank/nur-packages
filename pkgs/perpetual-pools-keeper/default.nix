@@ -18,12 +18,19 @@ let
     sha256 = "sha256-zWclDnwSnrasrPiZolxjUCv8+HK6S6kLbLyWf91rUxU=";
   };
 
+  packageJSON = "${src}/package.json";
+  yarnLock = "${src}/yarn.lock";
+  yarnNix = ./yarn.nix;
+
+  yarnDepsDev = mkYarnModules {
+    pname = "${pname}-yarn-deps-dev";
+    inherit version packageJSON yarnLock yarnNix;
+  };
+
   yarnDeps = mkYarnModules {
     pname = "${pname}-yarn-deps";
-    inherit version;
-    packageJSON = "${src}/package.json";
-    yarnLock = "${src}/yarn.lock";
-    yarnNix = ./yarn.nix;
+    inherit version packageJSON yarnLock yarnNix;
+    yarnFlags = [ "--offline" "--production" ];
   };
 in
 stdenv.mkDerivation rec {
@@ -35,7 +42,7 @@ stdenv.mkDerivation rec {
   ];
 
   buildPhase = ''
-    ln -sf ${yarnDeps}/node_modules .
+    ln -sf ${yarnDepsDev}/node_modules .
     yarn tsc
   '';
 
@@ -44,6 +51,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/share/${pname}
     cp -R build/. $out/share/${pname}
+    cp -LR ${yarnDeps}/node_modules $out/share/${pname}
   '';
 
   meta = with lib; {
