@@ -36,10 +36,9 @@ in
 stdenv.mkDerivation rec {
   inherit pname version src;
 
-  nativeBuildInputs = [
-    nodejs
-    yarn
-  ];
+  buildInputs = [ nodejs ];
+
+  nativeBuildInputs = [ yarn ];
 
   buildPhase = ''
     ln -sf ${yarnDepsDev}/node_modules .
@@ -49,9 +48,12 @@ stdenv.mkDerivation rec {
   doCheck = false;
 
   installPhase = ''
-    mkdir -p $out/share/${pname}
-    cp -R build/. $out/share/${pname}
+    mkdir -p $out/bin $out/share/${pname}
     cp -LR ${yarnDeps}/node_modules $out/share/${pname}
+    cp -R build/. $out/share/${pname}
+    sed -i '1i#!/usr/bin/env node' $out/share/${pname}/index.js
+    chmod +x $out/share/${pname}/index.js
+    ln -s $out/share/${pname}/index.js $out/bin/${pname}
   '';
 
   meta = with lib; {

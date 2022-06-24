@@ -32,10 +32,9 @@ in
 stdenv.mkDerivation rec {
   inherit pname version src;
 
-  nativeBuildInputs = [
-    nodejs
-    yarn
-  ];
+  buildInputs = [ nodejs ];
+
+  nativeBuildInputs = [ yarn ];
 
   patchPhase = ''
     sed -i '$i experimental: { outputStandalone: true, },' next.config.js
@@ -49,10 +48,13 @@ stdenv.mkDerivation rec {
   doCheck = false;
 
   installPhase = ''
-    mkdir -p $out/share/${pname}
+    mkdir -p $out/bin $out/share/${pname}
     cp -LR .next/standalone/. $out/share/${pname}
     cp -R public $out/share/${pname}
     cp -R .next/static $out/share/${pname}/.next/
+    sed -i '1i#!/usr/bin/env node' $out/share/${pname}/server.js
+    chmod +x $out/share/${pname}/server.js
+    ln -s $out/share/${pname}/server.js $out/bin/${pname}
   '';
 
   meta = with lib; {
