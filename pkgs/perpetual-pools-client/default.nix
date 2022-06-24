@@ -14,16 +14,19 @@ let
   src = fetchFromGitHub {
     owner = "tracer-protocol";
     repo = "pools-client";
-    rev = "6ff88da0d86afafa50bb0a135f69b74eb39392ef";
-    sha256 = "sha256-8fkY4MOIpyyZlwDPmkT1f6YWS62ylIk2WUY0kMTLIME=";
+    rev = "9c7420b293a3450fd88ff5d29dbedb50ff429523";
+    sha256 = "sha256-ykmavWJqPANPJZ0vKp/OiGmlJ/jyZfHyOFOP959MUEY=";
+    extraPostFetch = ''
+      cd $out
+      patch -p1 < ${./fix-yarn-lock.patch}
+    '';
   };
 
   yarnDeps = mkYarnModules {
     pname = "${pname}-yarn-deps";
     inherit version;
-    packageJSON = ./package.json;
-    yarnLock = ./yarn.lock;
-    yarnNix = ./yarn.nix;
+    packageJSON = "${src}/package.json";
+    yarnLock = "${src}/yarn.lock";
   };
 in
 stdenv.mkDerivation rec {
