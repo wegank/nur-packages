@@ -1,5 +1,5 @@
-{ lib
-, fetchFromGitHub
+{ fetchFromGitHub
+, lib
 , mkYarnModules
 , nodejs
 , pkgs ? import <nixpkgs> { }
