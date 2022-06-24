@@ -1,4 +1,4 @@
-{ fetchFromGitHub
+{ fetchgit
 , lib
 , mkYarnModules
 , nodejs
@@ -11,9 +11,8 @@ let
   pname = "perpetual-pools-client";
   version = "0.1.0";
 
-  src = fetchFromGitHub {
-    owner = "tracer-protocol";
-    repo = "pools-client";
+  src = fetchgit {
+    url = "https://github.com/tracer-protocol/pools-client.git";
     rev = "9c7420b293a3450fd88ff5d29dbedb50ff429523";
     sha256 = "sha256-ykmavWJqPANPJZ0vKp/OiGmlJ/jyZfHyOFOP959MUEY=";
     postFetch = ''
