@@ -16,7 +16,7 @@ let
     repo = "pools-client";
     rev = "9c7420b293a3450fd88ff5d29dbedb50ff429523";
     sha256 = "sha256-ykmavWJqPANPJZ0vKp/OiGmlJ/jyZfHyOFOP959MUEY=";
-    extraPostFetch = ''
+    postFetch = ''
       cd $out
       patch -p1 < ${./fix-yarn-lock.patch}
     '';
