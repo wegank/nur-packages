@@ -46,9 +46,10 @@ stdenv.mkDerivation rec {
   doCheck = false;
 
   installPhase = ''
-    cp -LR .next/standalone/. $out
-    cp -R public $out
-    cp -R .next/static $out/.next/
+    mkdir -p $out/share/${pname}
+    cp -LR .next/standalone/. $out/share/${pname}
+    cp -R public $out/share/${pname}
+    cp -R .next/static $out/share/${pname}/.next/
   '';
 
   meta = with lib; {
