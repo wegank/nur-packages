@@ -17,6 +17,7 @@
   example-package = pkgs.callPackage ./pkgs/example-package { };
   perpetual-pools-keeper = pkgs.callPackage ./pkgs/perpetual-pools-keeper { };
   perpetual-pools-client = pkgs.callPackage ./pkgs/perpetual-pools-client { };
+  pong-client = pkgs.callPackage ./pkgs/perpetual-pools-client { pongified = true; };
 
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...

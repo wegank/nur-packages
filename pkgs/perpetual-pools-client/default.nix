@@ -3,6 +3,7 @@
 , mkYarnModules
 , nodejs
 , pkgs ? import <nixpkgs> { }
+, pongified ? false
 , stdenv
 , yarn
 }:
@@ -21,6 +22,12 @@ let
     '';
   };
 
+  srcPongified = fetchgit {
+    url = "https://github.com/wegank/pools-client.git";
+    rev = "1ec15aba90e620add1da3790ea215d982655e200";
+    sha256 = "sha256-upBPmXS9KkX3/HgfWjbyEYDBqDDHh32goRaOTfgUeT0=";
+  };
+
   yarnDeps = mkYarnModules {
     pname = "${pname}-yarn-deps";
     inherit version;
@@ -30,7 +37,9 @@ let
   };
 in
 stdenv.mkDerivation rec {
-  inherit pname version src;
+  pname = if pongified then "pong-client" else pname;
+  src = if pongified then srcPongified else src;
+  inherit version;
 
   buildInputs = [ nodejs ];
 
