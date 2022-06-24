@@ -55,6 +55,6 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/tracer-protocol/pools-client";
     description = "Client interface for Perpetual Pools";
     maintainers = with maintainers; [ wegank ];
-    platforms = [ "aarch64-darwin" ];
+    platforms = platforms.unix;
   };
 }
