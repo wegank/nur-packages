@@ -8,7 +8,7 @@
 }:
 
 let
-  pname = "pools-client";
+  pname = "perpetual-pools-client";
   version = "0.1.0";
 
   src = fetchFromGitHub {
