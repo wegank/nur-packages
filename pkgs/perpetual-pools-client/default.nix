@@ -27,6 +27,7 @@ let
     inherit version;
     packageJSON = "${src}/package.json";
     yarnLock = "${src}/yarn.lock";
+    yarnNix = ./yarn.nix;
   };
 in
 stdenv.mkDerivation rec {
