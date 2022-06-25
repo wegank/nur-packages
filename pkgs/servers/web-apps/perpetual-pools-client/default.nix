@@ -4,6 +4,7 @@
 , nodejs
 , pkgs ? import <nixpkgs> { }
 , pongified ? false
+, api ? "https://dev.api.tracer.finance"
 , pools ? [ ]
 , stdenv
 , yarn
@@ -51,7 +52,9 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     cp -R ${yarnDeps}/node_modules .
-    NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}" yarn build
+    export NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}"
+    export NEXT_PUBLIC_TRACER_API=${api}
+    yarn build
   '';
 
   doCheck = false;
