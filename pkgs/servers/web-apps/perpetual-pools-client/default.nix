@@ -4,6 +4,7 @@
 , nodejs
 , pkgs ? import <nixpkgs> { }
 , pongified ? false
+, pools ? [ ]
 , stdenv
 , yarn
 }:
@@ -50,7 +51,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     cp -R ${yarnDeps}/node_modules .
-    yarn build
+    NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}" yarn build
   '';
 
   doCheck = false;
