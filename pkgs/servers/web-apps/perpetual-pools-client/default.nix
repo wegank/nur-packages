@@ -2,6 +2,7 @@
 , lib
 , mkYarnModules
 , nodejs
+, nodePackages
 , pkgs ? import <nixpkgs> { }
 , stdenv
 , yarn
@@ -28,8 +29,8 @@ let
 
   srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
-    rev = "1ec15aba90e620add1da3790ea215d982655e200";
-    sha256 = "sha256-upBPmXS9KkX3/HgfWjbyEYDBqDDHh32goRaOTfgUeT0=";
+    rev = "bb76c7e90c572c312ffae050e595ab9b40e0a9a7";
+    sha256 = "sha256-p/hkTAIBaCpKW7so0jhX0GPfYYsBe0Ew6JrWmEzztSo=";
   };
 
   yarnDeps = mkYarnModules {
@@ -45,33 +46,27 @@ stdenv.mkDerivation rec {
   src = if pongified then srcPong else srcTracer;
   inherit version;
 
-  buildInputs = [ nodejs ];
+  buildInputs = [ nodePackages.serve ];
 
-  nativeBuildInputs = [ yarn ];
-
-  patchPhase = ''
-    sed -i '$i experimental: { outputStandalone: true, },' next.config.js
-  '';
+  nativeBuildInputs = [ nodejs yarn ];
 
   buildPhase = ''
-    cp -R ${yarnDeps}/node_modules .
+    ln -s ${yarnDeps}/node_modules node_modules
     export NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}"
     export NEXT_PUBLIC_TESTNET_RPC=${testnetRpc}
     export NEXT_PUBLIC_TESTNET_WSS_RPC=${testnetWssRpc}
     export NEXT_PUBLIC_TRACER_API=${api}
     yarn build
+    yarn export
   '';
 
   doCheck = false;
 
   installPhase = ''
     mkdir -p $out/bin $out/share/${pname}
-    cp -LR .next/standalone/. $out/share/${pname}
-    cp -R public $out/share/${pname}
-    cp -R .next/static $out/share/${pname}/.next/
-    sed -i '1i#!/usr/bin/env node' $out/share/${pname}/server.js
-    chmod +x $out/share/${pname}/server.js
-    ln -s $out/share/${pname}/server.js $out/bin/${pname}
+    cp -LR out/. $out/share/${pname}
+    printf "#!/usr/bin/env bash\n${nodePackages.serve}/bin/serve $out/share/${pname}" >> $out/bin/${pname}
+    chmod +x $out/bin/${pname}
   '';
 
   meta = with lib; {
