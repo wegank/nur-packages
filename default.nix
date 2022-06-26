@@ -14,6 +14,9 @@
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
+  # Electronics
+  nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
+
   # Perpetual Pools
   perpetual-pools-keeper = pkgs.callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
   perpetual-pools-client = pkgs.callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
