@@ -3,11 +3,14 @@
 , mkYarnModules
 , nodejs
 , pkgs ? import <nixpkgs> { }
-, pongified ? false
-, api ? "https://dev.api.tracer.finance"
-, pools ? [ ]
 , stdenv
 , yarn
+
+, api ? "https://api.tracer.finance"
+, pongified ? false
+, pools ? [ ]
+, testnetRpc ? "https://rinkeby.arbitrum.io/rpc"
+, testnetWssRpc ? "wss://arb-rinkeby.g.alchemy.com/v2/dFgGxwP6yyYQJuqCbQjHGSyIuhLp1Xmz"
 }:
 
 let
@@ -53,6 +56,8 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     cp -R ${yarnDeps}/node_modules .
     export NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}"
+    export NEXT_PUBLIC_TESTNET_RPC=${testnetRpc}
+    export NEXT_PUBLIC_TESTNET_WSS_RPC=${testnetWssRpc}
     export NEXT_PUBLIC_TRACER_API=${api}
     yarn build
   '';
