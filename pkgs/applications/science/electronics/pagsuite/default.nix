@@ -1,5 +1,5 @@
 { cmake
-, fetchzip
+, fetchurl
 , gmp
 , lib
 , pkgs ? import <nixpkgs> { }
@@ -11,18 +11,14 @@ stdenv.mkDerivation rec {
   pname = "pagsuite";
   version = "1.80";
 
-  src = fetchzip {
+  src = fetchurl {
     url = "https://gitlab.com/kumm/pagsuite/-/raw/master/releases/pagsuite_1_80.zip";
-    sha256 = "sha256-j6eljvRLKc9YGt/uXP0P08HA5MmEowRm2q0I776Dtls=";
-    postFetch = ''
-      mkdir $out
-      ${unzip}/bin/unzip -qq $downloadedFile
-      mv pagsuite_1_80/* $out
-    '';
+    sha256 = "sha256-TYd+dleVPWEWU9Cb3XExd7ixJZyiUAp9QLtorYJSIbQ=";
   };
 
   nativeBuildInputs = [
     cmake
+    unzip
   ];
 
   buildInputs = [
@@ -31,6 +27,11 @@ stdenv.mkDerivation rec {
   ];
 
   enableParallelBuilding = false;
+
+  unpackPhase = ''
+    unzip -qq $src
+    mv pagsuite_1_80/* .
+  '';
 
   meta = with lib; {
     description = "Optimization tools for the (P)MCM problem";
