@@ -1,7 +1,8 @@
 { bison
 , boost
 , cmake
-, fetchFromGitLab
+, fetchpatch
+, fetchurl
 , flex
 , gmp
 , installShellFiles
@@ -15,14 +16,28 @@
 
 stdenv.mkDerivation rec {
   pname = "flopoco";
-  version = "5.0.git";
+  version = "4.1.2";
 
-  src = fetchFromGitLab {
-    owner = pname;
-    repo = pname;
-    rev = "575e634cf8e85d6714e3f8b49638531530107539";
-    sha256 = "sha256-wOFEKVRGFOyBGh5IL8X2gbLu/Orabvyv5nqgQhSrmKU=";
+  src = fetchurl {
+    url = "https://perso.citi-lab.fr/fdedinec/recherche/OldWarez/FloPoCo/flopoco-4.1.2.tgz";
+    sha256 = "sha256-MUm5WtyzouUe2TWTIjCU1mNJU8ifPwUfqMZoe4yNNmA=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "fix-clang-error-sin-cos.patch";
+      url = "https://gitlab.com/flopoco/flopoco/-/commit/de3aa60ad19333952c176c2a2e51f12653ca736b.patch";
+      postFetch = ''
+        substituteInPlace $out --replace 'FixSinCosCORDIC.hpp' 'CordicSinCos.hpp'
+      '';
+      sha256 = "sha256-BlamA/MZuuqqvGYto+jPeQPop6gwva0y394Odw8pdwg=";
+    })
+    (fetchpatch {
+      name = "fix-clang-error-atan2.patch";
+      url = "https://gitlab.com/flopoco/flopoco/-/commit/a3ffe2436c1b59ee0809b3772b74f2d43c6edb99.patch";
+      sha256 = "sha256-dSYcufLHDL0p1V1ghmy6X6xse5f6mjUqckaVqLZnTaA=";
+    })
+  ];
 
   nativeBuildInputs = [
     cmake
@@ -46,14 +61,15 @@ stdenv.mkDerivation rec {
   installPhase = ''
     ./${pname} BuildAutocomplete
     install -Dm755 ${pname} $out/bin/${pname}
-    cp bin2* fp* ieee* longacc* $out/bin/
-    install -Dm644 libFloPoCo.a $out/lib/libFloPoCo.a
+    cp bin* fp* ieee* longacc* $out/bin/
+    install -Dm644 libFloPoCoLib.a $out/lib/libFloPoCoLib.a
     installShellCompletion --bash ${pname}_autocomplete
   '';
 
   meta = with lib; {
     description = "The FloPoCo arithmetic core generator";
     homepage = "http://flopoco.org";
+    license = licenses.agpl3Plus;
     platforms = platforms.unix;
     # maintainers = with maintainers; [ wegank ];
   };
