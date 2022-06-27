@@ -16,6 +16,7 @@
 
   # Electronics
   nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
+  scalp = pkgs.callPackage ./pkgs/development/libraries/scalp { };
   wcpg = pkgs.callPackage ./pkgs/development/libraries/wcpg { };
 
   # Perpetual Pools
