@@ -25,6 +25,8 @@ stdenv.mkDerivation rec {
     fplll
   ];
 
+  doCheck = true;
+
   meta = with lib; {
     description = "A tool environment for safe floating-point code development";
     homepage = "https://www.sollya.org/";
