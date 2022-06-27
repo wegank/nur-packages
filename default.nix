@@ -15,6 +15,7 @@
   overlays = import ./overlays; # nixpkgs overlays
 
   # Electronics
+  flopoco = pkgs.callPackage ./pkgs/applications/science/electronics/flopoco { };
   nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
   pagsuite = pkgs.callPackage ./pkgs/applications/science/electronics/pagsuite { };
   scalp = pkgs.callPackage ./pkgs/development/libraries/scalp { };
