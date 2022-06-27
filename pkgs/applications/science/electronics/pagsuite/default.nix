@@ -1,20 +1,24 @@
 { cmake
-, fetchFromGitLab
+, fetchzip
 , gmp
 , lib
 , pkgs ? import <nixpkgs> { }
 , stdenv
+, unzip
 }:
 
 stdenv.mkDerivation rec {
   pname = "pagsuite";
-  version = "1.80-git";
+  version = "1.80";
 
-  src = fetchFromGitLab {
-    owner = "kumm";
-    repo = pname;
-    rev = "fe65b8e4ba9eb29fdf18c28b0889980b5bcb866f";
-    sha256 = "sha256-gH266J3+sn5Nph8ofh6RSgg+yNyDWa7xU07ReWKwiSM=";
+  src = fetchzip {
+    url = "https://gitlab.com/kumm/pagsuite/-/raw/master/releases/pagsuite_1_80.zip";
+    sha256 = "sha256-j6eljvRLKc9YGt/uXP0P08HA5MmEowRm2q0I776Dtls=";
+    postFetch = ''
+      mkdir $out
+      ${unzip}/bin/unzip -qq $downloadedFile
+      mv pagsuite_1_80/* $out
+    '';
   };
 
   nativeBuildInputs = [
