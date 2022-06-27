@@ -1,6 +1,7 @@
 { autoreconfHook
 , clangStdenv
 , check
+, elfutils
 , fetchFromGitHub
 , flex
 , lib
@@ -31,10 +32,18 @@ clangStdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    libelf
     llvm
     zlib
-  ];
+  ] ++ (if clangStdenv.isLinux then [
+    elfutils
+  ] else [
+    libelf
+  ]);
+
+  prePatch = lib.optionalString
+    (clangStdenv.isLinux && !clangStdenv.isx86_64) ''
+    sed -i "730,734d;748d" src/util.c
+  '';
 
   preConfigure = ''
     mkdir build && cd build
