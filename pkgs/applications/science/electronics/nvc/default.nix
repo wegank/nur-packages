@@ -1,5 +1,6 @@
 { autoreconfHook
 , clangStdenv
+, check
 , fetchFromGitHub
 , flex
 , lib
@@ -23,14 +24,15 @@ clangStdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
+    check
+    flex
     pkg-config
+    which
   ];
 
   buildInputs = [
-    flex
     libelf
     llvm
-    which
     zlib
   ];
 
@@ -39,6 +41,8 @@ clangStdenv.mkDerivation rec {
   '';
 
   configureScript = "../configure";
+
+  doCheck = true;
 
   meta = with lib; {
     description = "VHDL compiler and simulator";
