@@ -51,7 +51,7 @@ clangStdenv.mkDerivation rec {
 
   configureScript = "../configure";
 
-  doCheck = true;
+  # doCheck = true;
 
   meta = with lib; {
     description = "VHDL compiler and simulator";
