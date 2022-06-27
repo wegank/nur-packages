@@ -45,7 +45,9 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     ./${pname} BuildAutocomplete
-    install -D ./${pname} $out/bin/${pname}
+    install -Dm755 ${pname} $out/bin/${pname}
+    cp bin2* fp* ieee* longacc* $out/bin/
+    install -Dm644 libFloPoCo.a $out/lib/libFloPoCo.a
     installShellCompletion --bash ${pname}_autocomplete
   '';
 
