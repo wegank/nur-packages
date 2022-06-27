@@ -2,6 +2,7 @@
 , fetchFromGitLab
 , gmp
 , lib
+, pkgs ? import <nixpkgs> { }
 , stdenv
 }:
 
@@ -22,6 +23,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     gmp
+    (pkgs.callPackage ../../../../development/libraries/scalp { })
   ];
 
   enableParallelBuilding = false;
