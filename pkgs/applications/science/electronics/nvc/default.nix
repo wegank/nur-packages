@@ -1,5 +1,4 @@
 { autoreconfHook
-, clangStdenv
 , check
 , elfutils
 , fetchFromGitHub
@@ -8,19 +7,20 @@
 , libelf
 , llvm
 , pkg-config
+, stdenv
 , which
 , zlib
 }:
 
-clangStdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "nvc";
-  version = "1.7-devel";
+  version = "1.6.2";
 
   src = fetchFromGitHub {
     owner = "nickg";
     repo = "${pname}";
-    rev = "bf49b3b0452bd2e89d180cfcf4e677a41848fecc";
-    sha256 = "sha256-1adtcuOPkSAlmCDxW+dssZukQY2K8eYhnecHgvZIZHE=";
+    rev = "r${version}";
+    sha256 = "sha256-BtUMpT1MKRFGRlIbCEGo4OBZ/r9es1VRmJdgmk1oZFQ=";
   };
 
   nativeBuildInputs = [
@@ -34,22 +34,17 @@ clangStdenv.mkDerivation rec {
   buildInputs = [
     llvm
     zlib
-  ] ++ (if clangStdenv.isLinux then [
+  ] ++ (if stdenv.isLinux then [
     elfutils
   ] else [
     libelf
   ]);
 
-  prePatch = lib.optionalString
-    (clangStdenv.isLinux && !clangStdenv.isx86_64) ''
-    sed -i "730,734d;748d" src/util.c
-  '';
-
   preConfigure = ''
     mkdir build && cd build
   '';
 
-  configureScript = "../configure";
+  configureScript = "../configure --disable-lto";
 
   # doCheck = true;
 
