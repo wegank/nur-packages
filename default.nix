@@ -17,10 +17,10 @@
   # Electronics
   flopoco = pkgs.callPackage ./pkgs/applications/science/electronics/flopoco { };
   nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
-  pagsuite = pkgs.callPackage ./pkgs/applications/science/electronics/pagsuite { };
-  scalp = pkgs.callPackage ./pkgs/development/libraries/scalp { };
+  pagsuite = pkgs.callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
+  scalp = pkgs.callPackage ./pkgs/development/libraries/science/electronics/scalp { };
   sollya = pkgs.callPackage ./pkgs/development/interpreters/sollya { };
-  wcpg = pkgs.callPackage ./pkgs/development/libraries/wcpg { };
+  wcpg = pkgs.callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
 
   # Perpetual Pools
   perpetual-pools-keeper = pkgs.callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };

@@ -52,10 +52,10 @@ stdenv.mkDerivation rec {
     libxml2
     mpfi
     mpfr
-    (pkgs.callPackage ../pagsuite { })
-    (pkgs.callPackage ../../../../development/libraries/scalp { })
+    (pkgs.callPackage ../../../../development/libraries/science/electronics/pagsuite { })
+    (pkgs.callPackage ../../../../development/libraries/science/electronics/scalp { })
     (pkgs.callPackage ../../../../development/interpreters/sollya { })
-    (pkgs.callPackage ../../../../development/libraries/wcpg { })
+    (pkgs.callPackage ../../../../development/libraries/science/electronics/wcpg { })
   ];
 
   installPhase = ''

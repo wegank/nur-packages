@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     gmp
-    (pkgs.callPackage ../../../../development/libraries/scalp { })
+    (pkgs.callPackage ../scalp { })
   ];
 
   enableParallelBuilding = false;
