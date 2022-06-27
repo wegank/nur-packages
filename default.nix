@@ -16,6 +16,7 @@
 
   # Electronics
   nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
+  wcpg = pkgs.callPackage ./pkgs/development/libraries/wcpg { };
 
   # Perpetual Pools
   perpetual-pools-keeper = pkgs.callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
