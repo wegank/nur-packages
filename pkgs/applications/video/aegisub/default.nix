@@ -1,31 +1,31 @@
 { lib
 , config
 , stdenv
-, fetchurl
-, fetchpatch
 , fetchFromGitHub
+, fetchurl
 , fetchzip
-, intltool
-, pkg-config
-, meson
-, ninja
-, cmake
 , boost
+, cmake
 , ffmpeg
 , ffms
 , fftw
 , fontconfig
 , freetype
 , icu
+, intltool
 , libGL
 , libGLU
 , libX11
 , libass
 , libiconv
 , luajit
+, meson
+, ninja
+, pkg-config
 , python3
 , readline
 , rsync
+, which
 , wxGTK
 , zlib
 
@@ -63,6 +63,7 @@ assert spellcheckSupport -> (hunspell != null);
 assert encodingdetectSupport -> (libuchardet != null);
 
 let
+  luajit52 = luajit.override { enable52Compat = true; };
   inherit (lib) optional;
 in
 stdenv.mkDerivation rec {
@@ -98,6 +99,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     intltool
+    rsync
     pkg-config
     meson
     ninja
@@ -117,12 +119,9 @@ stdenv.mkDerivation rec {
     libX11
     libass
     libiconv
-    (luajit.override {
-      enable52Compat = true;
-    })
+    luajit52
     python3
     readline
-    rsync
     wxGTK
     zlib
   ]
