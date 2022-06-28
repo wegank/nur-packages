@@ -8,6 +8,8 @@
 
 { pkgs ? import <nixpkgs> { } }:
 
+with pkgs;
+
 {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
@@ -15,23 +17,26 @@
   overlays = import ./overlays; # nixpkgs overlays
 
   # Aegisub
-  aegisub = pkgs.callPackage ./pkgs/applications/video/aegisub { };
+  aegisub = callPackage ./pkgs/applications/video/aegisub {
+    wxGTK = wxGTK31;
+    inherit (darwin.apple_sdk.frameworks) CoreText CoreFoundation AppKit Carbon IOKit Cocoa;
+  };
 
   # Electronics
-  flopoco = pkgs.callPackage ./pkgs/applications/science/electronics/flopoco { };
-  nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
-  pagsuite = pkgs.callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
-  scalp = pkgs.callPackage ./pkgs/development/libraries/science/electronics/scalp { };
-  sollya = pkgs.callPackage ./pkgs/development/interpreters/sollya { };
-  wcpg = pkgs.callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
+  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
+  nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
+  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
+  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp { };
+  sollya = callPackage ./pkgs/development/interpreters/sollya { };
+  wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
 
   # Perpetual Pools
-  perpetual-pools-keeper = pkgs.callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
-  perpetual-pools-client = pkgs.callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
-  pong-client = pkgs.callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
+  perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
+  perpetual-pools-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
+  pong-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
     pongified = true;
   };
 
-  # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
+  # some-qt5-package = libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
 }

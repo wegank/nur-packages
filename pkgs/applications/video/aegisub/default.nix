@@ -26,10 +26,15 @@
 , python3
 , readline
 , rsync
-, wxGTK31
+, wxGTK
 , zlib
 
-, darwin
+, CoreText
+, CoreFoundation
+, AppKit
+, Carbon
+, IOKit
+, Cocoa
 
 , alsaSupport ? stdenv.isLinux
 , alsa-lib ? null
@@ -118,19 +123,17 @@ stdenv.mkDerivation rec {
     python3
     readline
     rsync
-    wxGTK31
+    wxGTK
     zlib
   ]
-  ++ lib.optionals stdenv.isDarwin (
-    with darwin.apple_sdk.frameworks; [
-      CoreText
-      CoreFoundation
-      AppKit
-      Carbon
-      IOKit
-      Cocoa
-    ]
-  )
+  ++ lib.optionals stdenv.isDarwin [
+    CoreText
+    CoreFoundation
+    AppKit
+    Carbon
+    IOKit
+    Cocoa
+  ]
   ++ optional alsaSupport alsa-lib
   ++ optional openalSupport openal
   ++ optional portaudioSupport portaudio
