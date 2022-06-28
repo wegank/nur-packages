@@ -14,6 +14,9 @@
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
+  # Aegisub
+  aegisub = pkgs.callPackage ./pkgs/applications/video/aegisub { };
+
   # Electronics
   flopoco = pkgs.callPackage ./pkgs/applications/science/electronics/flopoco { };
   nvc = pkgs.callPackage ./pkgs/applications/science/electronics/nvc { };
