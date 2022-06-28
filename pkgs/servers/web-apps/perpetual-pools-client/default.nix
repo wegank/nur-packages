@@ -30,7 +30,7 @@ let
 
   srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
-    rev = "cff0aa6f8591e8a515099f85f37c5080c9c0e310";
+    rev = "b6ff4777ab92914407b132eb5c1b05eb6e5a8c1b";
     sha256 = "sha256-KaUxGSCSVKZWB8vlbGHsQKQD9PjRREbmlq2X8gnyKRs=";
   };
 
