@@ -30,8 +30,8 @@ let
 
   srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
-    rev = "bb76c7e90c572c312ffae050e595ab9b40e0a9a7";
-    sha256 = "sha256-p/hkTAIBaCpKW7so0jhX0GPfYYsBe0Ew6JrWmEzztSo=";
+    rev = "cff0aa6f8591e8a515099f85f37c5080c9c0e310";
+    sha256 = "sha256-KaUxGSCSVKZWB8vlbGHsQKQD9PjRREbmlq2X8gnyKRs=";
   };
 
   yarnDeps = mkYarnModules {
