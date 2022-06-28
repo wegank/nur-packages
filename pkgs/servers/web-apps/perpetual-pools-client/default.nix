@@ -15,6 +15,7 @@
 }:
 
 let
+  name = if pongified then "pong-client" else "perpetual-pools-client";
   version = "0.1.0";
 
   srcTracer = fetchgit {
@@ -40,31 +41,52 @@ let
     yarnLock = "${srcTracer}/yarn.lock";
     yarnNix = ./yarn.nix;
   };
+
+  defaultPool = "0x2150D5fF4Fc13bf427183a97Dba7901Ce54471A8";
+
+  cachedLayer = stdenv.mkDerivation rec {
+    pname = "${name}-cached";
+    inherit version;
+    src = if pongified then srcPong else srcTracer;
+
+    nativeBuildInputs = [ nodejs yarn ];
+
+    buildPhase = ''
+      ln -s ${yarnDeps}/node_modules node_modules
+      export NEXT_PUBLIC_POOL_ADDRESSES="${defaultPool}"
+      export NEXT_PUBLIC_TESTNET_RPC=${testnetRpc}
+      export NEXT_PUBLIC_TESTNET_WSS_RPC=${testnetWssRpc}
+      export NEXT_PUBLIC_TRACER_API=${api}
+      yarn build
+      yarn export
+    '';
+
+    doCheck = false;
+
+    installPhase = ''
+      mkdir -p $out/share/${pname}
+      cp -LR out/. $out/share/${pname}
+    '';
+  };
 in
 stdenv.mkDerivation rec {
-  pname = if pongified then "pong-client" else "perpetual-pools-client";
-  src = if pongified then srcPong else srcTracer;
+  pname = name;
+  src = cachedLayer;
   inherit version;
 
   buildInputs = [ nodePackages.serve ];
 
-  nativeBuildInputs = [ nodejs yarn ];
-
   buildPhase = ''
-    ln -s ${yarnDeps}/node_modules node_modules
-    export NEXT_PUBLIC_POOL_ADDRESSES="${lib.concatStringsSep "," pools}"
-    export NEXT_PUBLIC_TESTNET_RPC=${testnetRpc}
-    export NEXT_PUBLIC_TESTNET_WSS_RPC=${testnetWssRpc}
-    export NEXT_PUBLIC_TRACER_API=${api}
-    yarn build
-    yarn export
+    mkdir -p $out/share/${pname}
+    cp -LR $src/share/${pname}-cached/. $out/share/${pname}
+    chmod +w $out/share/${pname}/_next/static/chunks/pages/.
+    sed -i 's/${defaultPool}/${lib.concatStringsSep "," pools}/g' $out/share/${pname}/_next/static/chunks/pages/*
   '';
 
   doCheck = false;
 
   installPhase = ''
-    mkdir -p $out/bin $out/share/${pname}
-    cp -LR out/. $out/share/${pname}
+    mkdir -p $out/bin
     printf "#!/usr/bin/env bash\n${nodePackages.serve}/bin/serve $out/share/${pname}" >> $out/bin/${pname}
     chmod +x $out/bin/${pname}
   '';
