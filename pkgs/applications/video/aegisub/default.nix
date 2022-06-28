@@ -146,6 +146,12 @@ stdenv.mkDerivation rec {
     rsync -a ${googletest}/ subprojects/googletest-release-1.8.1
     rsync -a ${googletest_patch}/ subprojects/googletest-release-1.8.1
     mkdir -p build && cp ${git_version} build/git_version.h
+  '' + lib.optionalString stdenv.isLinux ''
+    substituteInPlace meson.build --replace "get_variable(" "get_variable(pkgconfig : "
+    substituteInPlace src/libresrc/meson.build --replace "command: [respack" "command: ['../tools/respack.py'"
+    chmod +x tools/respack.py
+    patchShebangs tools/respack.py
+  '' + lib.optionalString stdenv.isDarwin ''
     sed -i "41i#include <vector>" src/audio_player.cpp
     substituteInPlace src/audio_player.cpp --replace "const factory factories[]" "const std::vector<factory> factories"
   '';
