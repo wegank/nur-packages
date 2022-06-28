@@ -147,7 +147,6 @@ stdenv.mkDerivation rec {
     mkdir -p build && cp ${git_version} build/git_version.h
   '' + lib.optionalString stdenv.isLinux ''
     substituteInPlace meson.build --replace "get_variable(" "get_variable(pkgconfig : "
-    substituteInPlace src/libresrc/meson.build --replace "command: [respack" "command: ['../tools/respack.py'"
     chmod +x tools/respack.py
     patchShebangs tools/respack.py
   '' + lib.optionalString stdenv.isDarwin ''
