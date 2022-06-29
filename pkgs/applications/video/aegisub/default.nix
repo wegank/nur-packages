@@ -51,6 +51,8 @@
 , portaudioSupport ? false
 , portaudio ? null
 
+, useBundledLuaJIT ? false
+
 , doCheck ? false
 }:
 
@@ -132,7 +134,7 @@ stdenv.mkDerivation rec {
     "relro"
   ];
 
-  patchPhase = ''
+  patchPhase = lib.optionalString (!useBundledLuaJIT) ''
     substituteInPlace CMakeLists.txt \
       --replace "luajit)" "luajit-5.1)" \
       --replace "luajit " "luajit-5.1 " \
