@@ -21,6 +21,8 @@
 , libass
 , libiconv
 , libuchardet
+, luajit
+, luajitPackages
 , pcre
 , pkg-config
 , which
@@ -37,9 +39,6 @@
 , spellcheckSupport ? true
 , hunspell ? null
 
-, automationSupport ? true
-, luajit ? null
-
 , openalSupport ? false
 , openal ? null
 
@@ -52,10 +51,10 @@
 , portaudioSupport ? false
 , portaudio ? null
 
+, doCheck ? false
 }:
 
 assert spellcheckSupport -> (hunspell != null);
-assert automationSupport -> (luajit != null);
 assert openalSupport -> (openal != null);
 assert alsaSupport -> (alsa-lib != null);
 assert pulseaudioSupport -> (libpulseaudio != null);
@@ -78,7 +77,6 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     intltool
-    luajit52
     pkg-config
     which
     cmake
@@ -102,10 +100,16 @@ stdenv.mkDerivation rec {
     libass
     libiconv
     libuchardet
+    luajit52
     pcre
     wxGTK
     zlib
   ]
+  ++ lib.optionals doCheck (with luajitPackages; [
+    busted
+    luarocks
+    (callPackage ./uuid.nix { lua = luajit; })
+  ])
   ++ lib.optionals stdenv.isDarwin [
     CoreText
     CoreFoundation
@@ -115,7 +119,6 @@ stdenv.mkDerivation rec {
     Cocoa
   ]
   ++ optional alsaSupport alsa-lib
-  ++ optional automationSupport luajit52
   ++ optional openalSupport openal
   ++ optional portaudioSupport portaudio
   ++ optional pulseaudioSupport libpulseaudio
@@ -134,6 +137,8 @@ stdenv.mkDerivation rec {
       --replace "luajit)" "luajit-5.1)" \
       --replace "luajit " "luajit-5.1 " \
       --replace "luajit-minilua" "luajit"
+    substituteInPlace CMakeLists.test.txt \
+      --replace "luajit " "luajit-5.1 "
     substituteInPlace vendor/luabins/CMakeLists.txt \
       --replace "luajit)" "luajit-5.1)"
     sed -i '16,218d' CMakeLists.txt
@@ -141,12 +146,14 @@ stdenv.mkDerivation rec {
     sed -i '17ilink_directories(${luajit}/lib)' CMakeLists.txt
   '';
 
-  configurePhase = "
+  configurePhase = ''
     export FORCE_GIT_VERSION=${version}
     mkdir build-dir
     cd build-dir
-    cmake -DCMAKE_INSTALL_PREFIX=$out ..
-  ";
+    cmake -DCMAKE_INSTALL_PREFIX=$out -DWITH_TEST=${lib.boolToString doCheck} ..
+  '';
+
+  inherit doCheck;
 
   meta = with lib; {
     homepage = "https://github.com/wangqr/Aegisub";
