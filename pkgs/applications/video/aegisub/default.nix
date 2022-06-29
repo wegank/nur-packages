@@ -1,7 +1,7 @@
 { lib
 , config
 , stdenv
-, fetchgit
+, fetchFromGitHub
 , autoreconfHook
 , boost
 , cmake
@@ -71,21 +71,11 @@ stdenv.mkDerivation rec {
   pname = "aegisub";
   version = "3.3.2";
 
-  src = fetchgit {
-    url = "https://github.com/wangqr/${pname}.git";
+  src = fetchFromGitHub {
+    owner = "wangqr";
+    repo = pname;
     rev = "91f8b5f91eb960bad19899c10af08aca34f9b697";
-    sha256 = "sha256-PlAqRSh1EoayJ6F6VxV+d+f7B/XmYWEHQnhpO70m1MA=";
-    postFetch = ''
-      substituteInPlace $out/CMakeLists.txt \
-        --replace "luajit)" "luajit-5.1)" \
-        --replace "luajit " "luajit-5.1 " \
-        --replace "luajit-minilua" "luajit"
-      substituteInPlace $out/vendor/luabins/CMakeLists.txt \
-        --replace "luajit)" "luajit-5.1)"
-      sed -i '16,218d' $out/CMakeLists.txt
-      sed -i '16iinclude_directories(${luajit}/include)' $out/CMakeLists.txt
-      sed -i '17ilink_directories(${luajit}/lib)' $out/CMakeLists.txt
-    '';
+    sha256 = "sha256-lPkPWSsncsBKJHDnma9cUXsQJynruT9JpPkMTHdQ/e8=";
   };
 
   nativeBuildInputs = [
@@ -134,19 +124,31 @@ stdenv.mkDerivation rec {
   ++ optional spellcheckSupport hunspell
   ;
 
-  configurePhase = "
-    export FORCE_GIT_VERSION=${version}
-    mkdir build-dir
-    cd build-dir
-    cmake -DCMAKE_INSTALL_PREFIX=$out ..
-  ";
-
   enableParallelBuilding = true;
 
   hardeningDisable = [
     "bindnow"
     "relro"
   ];
+
+  patchPhase = ''
+    substituteInPlace CMakeLists.txt \
+      --replace "luajit)" "luajit-5.1)" \
+      --replace "luajit " "luajit-5.1 " \
+      --replace "luajit-minilua" "luajit"
+    substituteInPlace vendor/luabins/CMakeLists.txt \
+      --replace "luajit)" "luajit-5.1)"
+    sed -i '16,218d' CMakeLists.txt
+    sed -i '16iinclude_directories(${luajit}/include)' CMakeLists.txt
+    sed -i '17ilink_directories(${luajit}/lib)' CMakeLists.txt
+  '';
+
+  configurePhase = "
+    export FORCE_GIT_VERSION=${version}
+    mkdir build-dir
+    cd build-dir
+    cmake -DCMAKE_INSTALL_PREFIX=$out ..
+  ";
 
   meta = with lib; {
     homepage = "https://github.com/wangqr/Aegisub";
