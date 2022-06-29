@@ -2,7 +2,6 @@
 , config
 , stdenv
 , fetchFromGitHub
-, autoreconfHook
 , boost
 , cmake
 , expat
@@ -24,7 +23,6 @@
 , libuchardet
 , pcre
 , pkg-config
-, runCommand
 , which
 , wxGTK
 , zlib
