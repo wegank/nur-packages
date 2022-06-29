@@ -1,16 +1,19 @@
 { lib
 , config
 , stdenv
-, fetchFromGitHub
-, fetchurl
-, fetchzip
+, fetchgit
+, autoreconfHook
 , boost
 , cmake
+, expat
+, harfbuzz
 , ffmpeg
 , ffms
 , fftw
 , fontconfig
 , freetype
+, fribidi
+, glib
 , icu
 , intltool
 , libGL
@@ -18,13 +21,10 @@
 , libX11
 , libass
 , libiconv
-, luajit
-, meson
-, ninja
+, libuchardet
+, pcre
 , pkg-config
-, python3
-, readline
-, rsync
+, runCommand
 , which
 , wxGTK
 , zlib
@@ -36,11 +36,17 @@
 , IOKit
 , Cocoa
 
-, alsaSupport ? stdenv.isLinux
-, alsa-lib ? null
+, spellcheckSupport ? true
+, hunspell ? null
+
+, automationSupport ? true
+, luajit ? null
 
 , openalSupport ? false
 , openal ? null
+
+, alsaSupport ? stdenv.isLinux
+, alsa-lib ? null
 
 , pulseaudioSupport ? config.pulseaudio or stdenv.isLinux
 , libpulseaudio ? null
@@ -48,19 +54,14 @@
 , portaudioSupport ? false
 , portaudio ? null
 
-, spellcheckSupport ? true
-, hunspell ? null
-
-, encodingdetectSupport ? true
-, libuchardet ? null
 }:
 
-assert alsaSupport -> (alsa-lib != null);
+assert spellcheckSupport -> (hunspell != null);
+assert automationSupport -> (luajit != null);
 assert openalSupport -> (openal != null);
+assert alsaSupport -> (alsa-lib != null);
 assert pulseaudioSupport -> (libpulseaudio != null);
 assert portaudioSupport -> (portaudio != null);
-assert spellcheckSupport -> (hunspell != null);
-assert encodingdetectSupport -> (libuchardet != null);
 
 let
   luajit52 = luajit.override { enable52Compat = true; };
@@ -68,60 +69,52 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "aegisub";
-  version = "3.2.2";
+  version = "3.3.2";
 
-  src = fetchFromGitHub {
-    owner = "TypesettingTools";
-    repo = "Aegisub";
-    name = pname;
-    rev = "4776ca9dd108f65003e55a03ef60e0dd50cae7f1";
-    sha256 = "sha256-KTKKzP80nON7P6JFeYxugbwX03c3muZQQrjBClQnjYE=";
-  };
-
-  googletest = fetchFromGitHub {
-    owner = "google";
-    repo = "googletest";
-    name = "googletest";
-    rev = "release-1.8.1";
-    sha256 = "sha256-87sEny283oZbuaFfxNishy6uJylXYtwJfK8ea6Su4Ag=";
-  };
-
-  googletest_patch = fetchzip {
-    url = "https://wrapdb.mesonbuild.com/v1/projects/gtest/1.8.1/1/get_zip#.zip";
-    name = "googletest-patch";
-    sha256 = "sha256-dz/lDF5F+bHSmc5mYq3ITERgFVuXbrD1ZZF6jR+H0/o=";
-  };
-
-  git_version = fetchurl {
-    url = "https://sources.debian.org/data/main/a/aegisub/3.2.2%2Bdfsg-6/build/git_version.h";
-    sha256 = "sha256-YstQ8TQqrlCy5EU7tiSmDoNAy7OHAb2LHrtecmbE6yU=";
+  src = fetchgit {
+    url = "https://github.com/wangqr/${pname}.git";
+    rev = "91f8b5f91eb960bad19899c10af08aca34f9b697";
+    sha256 = "sha256-PlAqRSh1EoayJ6F6VxV+d+f7B/XmYWEHQnhpO70m1MA=";
+    postFetch = ''
+      substituteInPlace $out/CMakeLists.txt \
+        --replace "luajit)" "luajit-5.1)" \
+        --replace "luajit " "luajit-5.1 " \
+        --replace "luajit-minilua" "luajit"
+      substituteInPlace $out/vendor/luabins/CMakeLists.txt \
+        --replace "luajit)" "luajit-5.1)"
+      sed -i '16,218d' $out/CMakeLists.txt
+      sed -i '16iinclude_directories(${luajit}/include)' $out/CMakeLists.txt
+      sed -i '17ilink_directories(${luajit}/lib)' $out/CMakeLists.txt
+    '';
   };
 
   nativeBuildInputs = [
     intltool
-    rsync
+    luajit52
     pkg-config
-    meson
-    ninja
+    which
     cmake
   ];
 
   buildInputs = [
     boost
+    expat
     ffmpeg
     ffms
     fftw
     fontconfig
     freetype
+    fribidi
+    glib
+    harfbuzz
     icu
     libGL
     libGLU
     libX11
     libass
     libiconv
-    luajit52
-    python3
-    readline
+    libuchardet
+    pcre
     wxGTK
     zlib
   ]
@@ -134,41 +127,19 @@ stdenv.mkDerivation rec {
     Cocoa
   ]
   ++ optional alsaSupport alsa-lib
+  ++ optional automationSupport luajit52
   ++ optional openalSupport openal
   ++ optional portaudioSupport portaudio
   ++ optional pulseaudioSupport libpulseaudio
   ++ optional spellcheckSupport hunspell
-  ++ optional encodingdetectSupport libuchardet
   ;
 
-  prePatch = ''
-    rsync -a ${googletest}/ subprojects/googletest-release-1.8.1
-    rsync -a ${googletest_patch}/ subprojects/googletest-release-1.8.1
-    mkdir -p build && cp ${git_version} build/git_version.h
-  '' + lib.optionalString stdenv.isLinux ''
-    substituteInPlace meson.build --replace "get_variable(" "get_variable(pkgconfig : "
-    chmod +x tools/respack.py
-    patchShebangs tools/respack.py
-  '' + lib.optionalString stdenv.isDarwin ''
-    sed -i "41i#include <vector>" src/audio_player.cpp
-    substituteInPlace src/audio_player.cpp --replace "const factory factories[]" "const std::vector<factory> factories"
-  '';
-
-  mesonFlags = (lib.mapAttrsToList
-    (option: enable: "-D${option}=${if enable then "enabled" else "disabled"}")
-    {
-      alsa = alsaSupport;
-      openal = openalSupport;
-      libpulse = pulseaudioSupport;
-      portaudio = portaudioSupport;
-      hunspell = spellcheckSupport;
-      uchardet = encodingdetectSupport;
-    });
-
-  # Meson is no longer able to pick up Boost automatically.
-  # https://github.com/NixOS/nixpkgs/issues/86131
-  BOOST_INCLUDEDIR = "${lib.getDev boost}/include";
-  BOOST_LIBRARYDIR = "${lib.getLib boost}/lib";
+  configurePhase = "
+    export FORCE_GIT_VERSION=${version}
+    mkdir build-dir
+    cd build-dir
+    cmake -DCMAKE_INSTALL_PREFIX=$out ..
+  ";
 
   enableParallelBuilding = true;
 
@@ -178,7 +149,7 @@ stdenv.mkDerivation rec {
   ];
 
   meta = with lib; {
-    homepage = "https://github.com/Aegisub/Aegisub";
+    homepage = "https://github.com/wangqr/Aegisub";
     description = "An advanced subtitle editor";
     longDescription = ''
       Aegisub is a free, cross-platform open source tool for creating and
@@ -189,7 +160,7 @@ stdenv.mkDerivation rec {
     # The Aegisub sources are itself BSD/ISC, but they are linked against GPL'd
     # softwares - so the resulting program will be GPL
     license = licenses.bsd3;
-    # maintainers = [ maintainers.AndersonTorres ];
+    maintainers = [ maintainers.AndersonTorres ];
     platforms = platforms.unix;
   };
 }
