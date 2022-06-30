@@ -37,6 +37,9 @@ with pkgs;
     pongified = true;
   };
 
+  # Misc
+  mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
+
   # some-qt5-package = libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
 }
