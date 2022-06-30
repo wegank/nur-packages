@@ -68,7 +68,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "aegisub";
-  version = "3.3.2";
+  version = "3.3.2-20220612";
 
   src = fetchFromGitHub {
     owner = "wangqr";
@@ -79,10 +79,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     intltool
+    luajit52
     pkg-config
     which
     cmake
-  ];
+  ] ++ lib.optionals doCheck (with luajitPackages; [
+    busted
+    luarocks
+    (callPackage ./uuid.nix { lua = luajit; })
+  ]);
 
   buildInputs = [
     boost
@@ -102,16 +107,10 @@ stdenv.mkDerivation rec {
     libass
     libiconv
     libuchardet
-    luajit52
     pcre
     wxGTK
     zlib
   ]
-  ++ lib.optionals doCheck (with luajitPackages; [
-    busted
-    luarocks
-    (callPackage ./uuid.nix { lua = luajit; })
-  ])
   ++ lib.optionals stdenv.isDarwin [
     CoreText
     CoreFoundation
@@ -134,19 +133,12 @@ stdenv.mkDerivation rec {
     "relro"
   ];
 
-  patchPhase = lib.optionalString (!useBundledLuaJIT) ''
-    substituteInPlace CMakeLists.txt \
-      --replace "luajit)" "luajit-5.1)" \
-      --replace "luajit " "luajit-5.1 " \
-      --replace "luajit-minilua" "luajit"
-    substituteInPlace CMakeLists.test.txt \
-      --replace "luajit " "luajit-5.1 "
-    substituteInPlace vendor/luabins/CMakeLists.txt \
-      --replace "luajit)" "luajit-5.1)"
-    sed -i '16,218d' CMakeLists.txt
-    sed -i '16iinclude_directories(${luajit}/include)' CMakeLists.txt
-    sed -i '17ilink_directories(${luajit}/lib)' CMakeLists.txt
-  '';
+  patches = lib.optionals (!useBundledLuaJIT) [
+    ./remove-bundled-luajit.patch
+  ];
+
+  NIX_CFLAGS_COMPILE = "-I${luajit52}/include";
+  NIX_CFLAGS_LINK = "-L${luajit52}/lib";
 
   configurePhase = ''
     export FORCE_GIT_VERSION=${version}
