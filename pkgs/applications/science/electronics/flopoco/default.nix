@@ -11,6 +11,7 @@
 , mpfi
 , mpfr
 , pkgs ? import <nixpkgs> { }
+, sollya
 , stdenv
 }:
 
@@ -54,7 +55,7 @@ stdenv.mkDerivation rec {
     mpfr
     (pkgs.callPackage ../../../../development/libraries/science/electronics/pagsuite { })
     (pkgs.callPackage ../../../../development/libraries/science/electronics/scalp { })
-    (pkgs.callPackage ../../../../development/interpreters/sollya { })
+    sollya
     (pkgs.callPackage ../../../../development/libraries/science/electronics/wcpg { })
   ];
 

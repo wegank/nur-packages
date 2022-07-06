@@ -21,7 +21,6 @@ with pkgs;
   nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
   scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp { };
-  sollya = callPackage ./pkgs/development/interpreters/sollya { };
   wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
 
   # Perpetual Pools
