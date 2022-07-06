@@ -57,9 +57,6 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--enable-vhpi"
-  ]
-  # TODO: remove me on 1.7.0
-  ++ lib.optionals (stdenv.isAarch64 && stdenv.isLinux) [
     "--disable-lto"
   ];
 
