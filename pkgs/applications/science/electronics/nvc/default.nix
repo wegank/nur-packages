@@ -44,6 +44,8 @@ stdenv.mkDerivation rec {
   postPatch = lib.optionalString stdenv.isDarwin ''
     substituteInPlace test/regress/testlist.txt \
       --replace "vests22         normal" ""
+    substituteInPlace test/dist.mk \
+      --replace "test/regress/vests22.vhd" ""
   '';
 
   preConfigure = ''
@@ -55,6 +57,10 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--enable-vhpi"
+  ]
+  # TODO: remove me on 1.7.0
+  ++ lib.optionals (stdenv.isAarch64 && stdenv.isLinux) [
+    "--disable-lto"
   ];
 
   doCheck = true;
