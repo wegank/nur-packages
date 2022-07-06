@@ -1,7 +1,13 @@
-{ cmake
-, fetchgit
-, lib
+{ lib
 , stdenv
+, fetchgit
+, cmake
+, withGurobi ? false
+, gurobi
+, withCplex ? false
+, cplex
+, withLpsolve ? true
+, lp_solve
 }:
 
 stdenv.mkDerivation rec {
@@ -16,6 +22,20 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
+  ];
+
+  buildInputs = lib.optionals withGurobi [
+    gurobi
+  ] ++ lib.optionals withCplex [
+    cplex
+  ] ++ lib.optionals withLpsolve [
+    lp_solve
+  ];
+
+  cmakeFlags = lib.optionals withGurobi [
+    "-DGUROBI_DIR=${gurobi}"
+  ] ++ lib.optionals withCplex [
+    "-DCPLEX_DIR=${cplex}"
   ];
 
   meta = with lib; {
