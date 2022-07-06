@@ -37,6 +37,12 @@ with pkgs;
     pongified = true;
   };
 
+  # UxPlay
+  a52dec = callPackage ./pkgs/development/libraries/a52dec { };
+  uxplay = callPackage ./pkgs/servers/uxplay/default.nix {
+    a52dec = callPackage ./pkgs/development/libraries/a52dec { };
+  };
+
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
