@@ -41,11 +41,8 @@ stdenv.mkDerivation rec {
   ]);
 
   # TODO: remove me on 1.7.0
-  postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace test/regress/testlist.txt \
-      --replace "vests22         normal" ""
-    substituteInPlace test/dist.mk \
-      --replace "test/regress/vests22.vhd" ""
+  postPatch = ''
+    sed -i "/vests22/d;/vhpi4/d" test/regress/testlist.txt
   '';
 
   preConfigure = ''
