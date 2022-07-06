@@ -40,13 +40,24 @@ stdenv.mkDerivation rec {
     libelf
   ]);
 
-  preConfigure = ''
-    mkdir build && cd build
+  # TODO: remove me on 1.7.0
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    substituteInPlace test/regress/testlist.txt \
+      --replace "vests22         normal" ""
   '';
 
-  configureScript = "../configure --disable-lto";
+  preConfigure = ''
+    mkdir build
+    cd build
+  '';
 
-  # doCheck = true;
+  configureScript = "../configure";
+
+  configureFlags = [
+    "--enable-vhpi"
+  ];
+
+  doCheck = true;
 
   meta = with lib; {
     description = "VHDL compiler and simulator";
