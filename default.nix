@@ -16,12 +16,6 @@ with pkgs;
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  # Aegisub
-  aegisub = callPackage ./pkgs/applications/video/aegisub {
-    wxGTK = wxGTK31;
-    inherit (darwin.apple_sdk.frameworks) CoreText CoreFoundation AppKit Carbon IOKit Cocoa;
-  };
-
   # Electronics
   flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
   nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
