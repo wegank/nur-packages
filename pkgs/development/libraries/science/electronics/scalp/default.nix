@@ -32,11 +32,19 @@ stdenv.mkDerivation rec {
     lp_solve
   ];
 
-  cmakeFlags = lib.optionals withGurobi [
+  cmakeFlags = [
+    "-DBUILD_TESTS=ON"
+  ] ++ lib.optionals withGurobi [
     "-DGUROBI_DIR=${gurobi}"
   ] ++ lib.optionals withCplex [
     "-DCPLEX_DIR=${cplex}"
   ];
+
+  doInstallCheck = stdenv.isLinux;
+
+  installCheckPhase = ''
+    ctest
+  '';
 
   meta = with lib; {
     description = "Scalable Linear Programming Library";
