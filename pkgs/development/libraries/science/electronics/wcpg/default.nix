@@ -1,13 +1,13 @@
-{ autoreconfHook
-, blas
+{ lib
+, stdenv
 , fetchFromGitHub
+, autoreconfHook
+, blas
 , gmp
 , lapack
-, lib
 , libf2c
 , mpfi
 , mpfr
-, stdenv
 }:
 
 stdenv.mkDerivation rec {

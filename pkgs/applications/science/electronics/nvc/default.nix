@@ -1,14 +1,14 @@
-{ autoreconfHook
-, check
-, elfutils
+{ lib
+, stdenv
 , fetchFromGitHub
+, autoreconfHook
+, check
 , flex
-, lib
+, pkg-config
+, which
+, elfutils
 , libelf
 , llvm
-, pkg-config
-, stdenv
-, which
 , zlib
 }:
 
