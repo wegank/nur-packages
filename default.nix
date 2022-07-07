@@ -22,14 +22,14 @@ with pkgs;
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
   scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp {
     lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
-      inherit (darwin) cctools;
+      inherit (darwin) cctools autoSignDarwinBinariesHook;
     };
   };
   wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
 
   # Math
   lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
-    inherit (darwin) cctools;
+    inherit (darwin) cctools autoSignDarwinBinariesHook;
   };
 
   # Perpetual Pools

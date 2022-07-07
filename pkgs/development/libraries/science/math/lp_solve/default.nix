@@ -1,7 +1,6 @@
-{ lib, stdenv, fetchurl, cctools, fixDarwinDylibNames }:
+{ lib, stdenv, fetchurl, cctools, fixDarwinDylibNames, autoSignDarwinBinariesHook }:
 
 stdenv.mkDerivation rec {
-
   pname = "lp_solve";
   version = "5.5.2.11";
 
@@ -13,6 +12,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = lib.optionals stdenv.isDarwin [
     cctools
     fixDarwinDylibNames
+  ] ++ lib.optionals (stdenv.isAarch64 && stdenv.isDarwin) [
+    autoSignDarwinBinariesHook
   ];
 
   dontConfigure = true;
@@ -42,11 +43,6 @@ stdenv.mkDerivation rec {
     rm $out/include/lpsolve/lp_solveDLL.h  # A Windows header
 
     runHook postInstall
-  '';
-
-  postFixup = lib.optionalString (stdenv.isAarch64 && stdenv.isDarwin) ''
-    /usr/bin/codesign -s - -f "$out/bin/lp_solve"
-    /usr/bin/codesign -s - -f "$out/lib/liblpsolve55.dylib"
   '';
 
   meta = with lib; {
