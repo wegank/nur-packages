@@ -1,10 +1,10 @@
-{ cmake
-, fetchurl
-, gmp
-, lib
-, pkgs ? import <nixpkgs> { }
+{ lib
 , stdenv
+, fetchurl
+, cmake
 , unzip
+, gmp
+, scalp
 }:
 
 stdenv.mkDerivation rec {
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     gmp
-    (pkgs.callPackage ../scalp { })
+    scalp
   ];
 
   enableParallelBuilding = false;

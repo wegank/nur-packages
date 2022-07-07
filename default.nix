@@ -10,6 +10,18 @@
 
 with pkgs;
 
+let
+  lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
+    inherit (darwin) cctools autoSignDarwinBinariesHook;
+  };
+  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp {
+    inherit lp_solve;
+  };
+  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
+    inherit scalp;
+  };
+  wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
+in
 {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
@@ -17,20 +29,14 @@ with pkgs;
   overlays = import ./overlays; # nixpkgs overlays
 
   # Electronics
-  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
-  nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
-  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
-  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp {
-    lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
-      inherit (darwin) cctools autoSignDarwinBinariesHook;
-    };
+  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco {
+    inherit pagsuite scalp wcpg;
   };
-  wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
+  nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
+  inherit pagsuite scalp wcpg;
 
   # Math
-  lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
-    inherit (darwin) cctools autoSignDarwinBinariesHook;
-  };
+  inherit lp_solve;
 
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };

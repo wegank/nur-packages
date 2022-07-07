@@ -1,18 +1,20 @@
-{ bison
-, boost
-, cmake
-, fetchpatch
+{ lib
+, stdenv
 , fetchurl
+, fetchpatch
+, cmake
+, installShellFiles
+, bison
+, boost
 , flex
 , gmp
-, installShellFiles
-, lib
 , libxml2
 , mpfi
 , mpfr
-, pkgs ? import <nixpkgs> { }
+, pagsuite
+, scalp
 , sollya
-, stdenv
+, wcpg
 }:
 
 stdenv.mkDerivation rec {
@@ -53,10 +55,10 @@ stdenv.mkDerivation rec {
     libxml2
     mpfi
     mpfr
-    (pkgs.callPackage ../../../../development/libraries/science/electronics/pagsuite { })
-    (pkgs.callPackage ../../../../development/libraries/science/electronics/scalp { })
+    pagsuite
+    scalp
     sollya
-    (pkgs.callPackage ../../../../development/libraries/science/electronics/wcpg { })
+    wcpg
   ];
 
   installPhase = ''

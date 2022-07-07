@@ -2,7 +2,6 @@
 , lib
 , mkYarnModules
 , nodejs
-, pkgs ? import <nixpkgs> { }
 , stdenv
 , yarn
 }:
