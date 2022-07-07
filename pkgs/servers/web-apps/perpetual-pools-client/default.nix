@@ -20,8 +20,8 @@ let
 
   srcTracer = fetchgit {
     url = "https://github.com/tracer-protocol/pools-client.git";
-    rev = "9c7420b293a3450fd88ff5d29dbedb50ff429523";
-    sha256 = "sha256-ykmavWJqPANPJZ0vKp/OiGmlJ/jyZfHyOFOP959MUEY=";
+    rev = "4797392d8b7e50eaa932ea6c9afc58d04d110308";
+    sha256 = "sha256-AwcUA6eZIHX4T/fO0ZTAjlNjuzJuAASVMEZAJtaUTa4=";
     postFetch = ''
       cd $out
       patch -p1 < ${./fix-yarn-lock.patch}
@@ -30,8 +30,8 @@ let
 
   srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
-    rev = "933ea9fd34da7b76c1f096e77778923a51e8618f";
-    sha256 = "sha256-N9cJVtnLnP0m27VDq1UoCe5piN83/swn4mz60TBoP9k=";
+    rev = "918d73d451a80723a072a2044a374f0a2df0b000";
+    sha256 = "sha256-V4ePLwyKEniK/NgSwOHyBtvCVBUKHSd7N2MhAprcqtc=";
   };
 
   yarnDeps = mkYarnModules {
