@@ -20,8 +20,17 @@ with pkgs;
   flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
   nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
-  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp { };
+  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp {
+    lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
+      inherit (darwin) cctools;
+    };
+  };
   wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
+
+  # Math
+  lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
+    inherit (darwin) cctools;
+  };
 
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
