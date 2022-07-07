@@ -40,7 +40,7 @@ stdenv.mkDerivation rec {
     "-DCPLEX_DIR=${cplex}"
   ];
 
-  doInstallCheck = stdenv.isLinux;
+  doInstallCheck = true;
 
   installCheckPhase = ''
     ctest
