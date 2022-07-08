@@ -34,11 +34,9 @@ stdenv.mkDerivation rec {
   buildInputs = [
     llvm
     zlib
-  ] ++ (if stdenv.isLinux then [
-    elfutils
-  ] else [
-    libelf
-  ]);
+  ] ++ [
+    (if stdenv.isLinux then elfutils else libelf)
+  ];
 
   # TODO: remove me on 1.7.0
   postPatch = ''
