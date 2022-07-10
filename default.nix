@@ -35,6 +35,9 @@ in
   nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
   inherit pagsuite scalp wcpg;
 
+  # Linux kernel
+  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
+
   # Math
   inherit lp_solve;
 
