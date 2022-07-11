@@ -35,9 +35,6 @@ in
   nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
   inherit pagsuite scalp wcpg;
 
-  # Linux kernel
-  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
-
   # Math
   inherit lp_solve;
 
@@ -47,6 +44,10 @@ in
   pong-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
     pongified = true;
   };
+
+  # Pinephone
+  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
+  pinephone-firmware = pkgs.callPackage ./pkgs/os-specific/linux/firmware/pinephone-firmware { };
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
