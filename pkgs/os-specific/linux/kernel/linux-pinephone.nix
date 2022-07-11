@@ -7,6 +7,13 @@
 , ...
 } @ args:
 
+let
+  rev = "de9a88a70f0ae5fc0839ff94bf29e8a30af399f8";
+  configfile = fetchurl {
+    url = "https://raw.githubusercontent.com/NixOS/mobile-nixos/${rev}/devices/pine64-pinephone/kernel/config.aarch64";
+    sha256 = "sha256-Gs7sqQDzqLIs940yM2QUSlzVhRACkJDgTPw20D+AFxw=";
+  };
+in
 buildLinux (args // {
   version = "5.18.9";
 
@@ -16,14 +23,17 @@ buildLinux (args // {
     repo = "linux";
     # orange-pi-5.18
     rev = "65f9448538517fefa8cb9b6e37beb5e1ffafb531";
-    sha256 = "sha256-khPoRx1fkx7N5mG4B0MbEZ0QIm5ZHhke6Rq/vkIXMRQ=";
+    postFetch = ''
+      cat ${configfile} > $out/arch/arm64/configs/defconfig
+    '';
+    sha256 = "sha256-z85pn0PvK84XNoELvdCiU5j8ZvxQmNzG5L1txjCpBxQ=";
   };
 
   kernelPatches = [
     {
       name = "setup-default-on-and-panic-leds";
       patch = fetchpatch {
-        url = "https://raw.githubusercontent.com/NixOS/mobile-nixos/de9a88a70f0ae5fc0839ff94bf29e8a30af399f8/devices/pine64-pinephone/kernel/0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch";
+        url = "https://raw.githubusercontent.com/NixOS/mobile-nixos/${rev}/devices/pine64-pinephone/kernel/0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch";
         sha256 = "sha256-Gat478Po6DD+fwn79XmxW0thbJdI33lSHQdVkne+6OA=";
       };
     }
@@ -42,8 +52,6 @@ buildLinux (args // {
       };
     }
   ];
-
-  defconfig = "pinephone_defconfig";
 
   structuredExtraConfig = with lib.kernel; {
     #   CC [M]  drivers/video/fbdev/sun5i-eink-neon.o
