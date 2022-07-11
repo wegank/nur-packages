@@ -49,6 +49,7 @@ stdenv.mkDerivation rec {
     homepage = "https://gitlab.com/mobian1/devices/eg25-manager";
     license = licenses.gpl3Plus;
     # maintainers = with maintainers; [ tomfitzhenry ];
-    platforms = [ "aarch64-linux" ];
+    platforms = platforms.linux;
+    broken = stdenv.isx86_64;
   };
 }
