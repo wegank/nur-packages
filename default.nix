@@ -20,7 +20,6 @@ let
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
     inherit scalp;
   };
-  wcpg = callPackage ./pkgs/development/libraries/science/electronics/wcpg { };
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
@@ -30,10 +29,9 @@ in
 
   # Electronics
   flopoco = callPackage ./pkgs/applications/science/electronics/flopoco {
-    inherit pagsuite scalp wcpg;
+    inherit pagsuite scalp;
   };
-  nvc = callPackage ./pkgs/applications/science/electronics/nvc { };
-  inherit pagsuite scalp wcpg;
+  inherit pagsuite scalp;
 
   # Math
   inherit lp_solve;
