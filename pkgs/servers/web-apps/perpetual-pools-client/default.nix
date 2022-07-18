@@ -29,24 +29,31 @@ let
 
   srcPong = fetchgit {
     url = "https://github.com/wegank/pools-client.git";
-    rev = "4c152c8d9330c4dbe6fc8db72a78f786244fe2a1";
-    sha256 = "sha256-V4ePLwyKEniK/NgSwOHyBtvCVBUKHSd7N2MhAprcqtc=";
+    rev = "495e4be39bbaff1accc03ca51648dfcfd7f4ce7a";
+    sha256 = "sha256-eVbSZB+lJOlHRVuG/b531OEA9qv8mgsGbCjaCiWPhvE=";
   };
 
+  src = if pongified then srcPong else srcTracer;
+
   yarnDeps = mkYarnModules {
-    pname = "perpetual-pools-client-yarn-deps";
+    pname = "${name}-yarn-deps";
     inherit version;
-    packageJSON = "${srcTracer}/package.json";
-    yarnLock = "${srcTracer}/yarn.lock";
+    packageJSON = "${src}/package.json";
+    yarnLock = "${src}/yarn.lock";
     yarnNix = ./yarn.nix;
+    postBuild = lib.optionalString pongified ''
+      cd $out
+      for patch in ${src}/patches/*.patch; do
+        patch -p1 < $patch
+      done
+    '';
   };
 
   defaultPool = "0x2150D5fF4Fc13bf427183a97Dba7901Ce54471A8";
 
   cachedLayer = stdenv.mkDerivation rec {
     pname = "${name}-cached";
-    inherit version;
-    src = if pongified then srcPong else srcTracer;
+    inherit src version;
 
     nativeBuildInputs = [ nodejs yarn ];
 
