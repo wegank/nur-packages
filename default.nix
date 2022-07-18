@@ -11,12 +11,7 @@
 with pkgs;
 
 let
-  lp_solve = callPackage ./pkgs/development/libraries/science/math/lp_solve {
-    inherit (darwin) cctools autoSignDarwinBinariesHook;
-  };
-  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp {
-    inherit lp_solve;
-  };
+  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp { };
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
     inherit scalp;
   };
@@ -32,9 +27,6 @@ in
     inherit pagsuite scalp;
   };
   inherit pagsuite scalp;
-
-  # Math
-  inherit lp_solve;
 
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
