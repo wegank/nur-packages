@@ -46,6 +46,9 @@ in
     a52dec = callPackage ./pkgs/development/libraries/a52dec { };
   };
 
+  # Wayland
+  epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
+
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
