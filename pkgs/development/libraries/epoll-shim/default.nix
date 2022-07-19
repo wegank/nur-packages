@@ -18,6 +18,15 @@ stdenv.mkDerivation rec {
   prePatch = lib.optionalString (!stdenv.isx86_64) ''
     substituteInPlace test/epoll-test.c \
       --replace "ATF_REQUIRE(sizeof(event) == 12);" ""
+  '' + lib.optionalString stdenv.isDarwin ''
+    substituteInPlace CMakeLists.txt \
+      --replace "libdata" "lib"
+    substituteInPlace epoll-shim.pc.cmakein \
+      --replace "\''${exec_prefix}/" "" \
+      --replace "\''${prefix}/" ""
+    substituteInPlace epoll-shim-interpose.pc.cmakein \
+      --replace "\''${exec_prefix}/" "" \
+      --replace "\''${prefix}/" ""
   '';
 
   nativeBuildInputs = [
@@ -30,10 +39,6 @@ stdenv.mkDerivation rec {
   ];
 
   doCheck = true;
-
-  postInstall = lib.optionals stdenv.isDarwin ''
-    ln -s $out/libdata/pkgconfig $out/lib/pkgconfig
-  '';
 
   meta = with lib; {
     description = "Small epoll implementation using kqueue";
