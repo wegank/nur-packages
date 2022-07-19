@@ -1,0 +1,154 @@
+diff --git a/meson.build b/meson.build
+index 8bb47c2..cdd06ba 100644
+--- a/meson.build
++++ b/meson.build
+@@ -16,7 +16,7 @@ config_h.set_quoted('PACKAGE', meson.project_name())
+ config_h.set_quoted('PACKAGE_VERSION', meson.project_version())
+ 
+ cc_args = []
+-if host_machine.system() != 'freebsd'
++if host_machine.system() != 'darwin'
+ 	cc_args += ['-D_POSIX_C_SOURCE=200809L']
+ endif
+ add_project_arguments(cc_args, language: 'c')
+@@ -52,7 +52,7 @@ foreach f: have_funcs
+ endforeach
+ config_h.set10('HAVE_XUCRED_CR_PID', cc.has_member('struct xucred', 'cr_pid', prefix : '#include <sys/ucred.h>'))
+ have_broken_msg_cmsg_cloexec = false
+-if host_machine.system() == 'freebsd'
++if host_machine.system() == 'darwin'
+ 	have_broken_msg_cmsg_cloexec = not cc.compiles('''
+ #include <sys/param.h> /* To get __FreeBSD_version. */
+ #if __FreeBSD_version < 1300502 || \
+@@ -69,7 +69,7 @@ endif
+ config_h.set10('HAVE_BROKEN_MSG_CMSG_CLOEXEC', have_broken_msg_cmsg_cloexec)
+ 
+ if get_option('libraries')
+-	if host_machine.system() == 'freebsd'
++	if host_machine.system() == 'darwin'
+ 		# When building for FreeBSD, epoll(7) is provided by a userspace
+ 		# wrapper around kqueue(2).
+ 		epoll_dep = dependency('epoll-shim')
+diff --git a/src/event-loop.c b/src/event-loop.c
+index 37cf95d..70257ac 100644
+--- a/src/event-loop.c
++++ b/src/event-loop.c
+@@ -48,6 +48,11 @@
+ 
+ #define TIMER_REMOVED -2
+ 
++struct itimerspec {
++	struct timespec it_interval;
++	struct timespec it_value;
++};
++
+ struct wl_event_loop;
+ struct wl_event_source_interface;
+ struct wl_event_source_timer;
+diff --git a/src/wayland-os.c b/src/wayland-os.c
+index a9066ca..0cc30ea 100644
+--- a/src/wayland-os.c
++++ b/src/wayland-os.c
+@@ -79,7 +79,7 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
+ 	return set_cloexec_or_close(fd);
+ }
+ 
+-#if defined(__FreeBSD__)
++#if defined(__APPLE__)
+ int
+ wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
+ {
+diff --git a/src/wayland-os.h b/src/wayland-os.h
+index 068fd2f..5dd4cdf 100644
+--- a/src/wayland-os.h
++++ b/src/wayland-os.h
+@@ -57,7 +57,7 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
+  * Do not use them elsewhere.
+  */
+ 
+-#ifdef __linux__
++#ifdef __APPLE__
+ 
+ #ifndef SOCK_CLOEXEC
+ #define SOCK_CLOEXEC 02000000
+@@ -71,6 +71,6 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
+ #define MSG_CMSG_CLOEXEC 0x40000000
+ #endif
+ 
+-#endif /* __linux__ */
++#endif /* __APPLE__ */
+ 
+ #endif
+diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
+index 8d8c3ab..279a87f 100644
+--- a/tests/os-wrappers-test.c
++++ b/tests/os-wrappers-test.c
+@@ -64,13 +64,11 @@ static int fall_back;
+ */
+ 
+ #define DECL(ret_type, func, ...) \
+-	ret_type __interceptor_ ## func(__VA_ARGS__) __attribute__((weak)); \
+ 	static ret_type (*real_ ## func)(__VA_ARGS__);			\
+ 	static int wrapped_calls_ ## func;
+ 
+-#define REAL(func) (__interceptor_ ## func) ?				\
+-	__interceptor_ ## func :					\
+-	(__typeof__(&__interceptor_ ## func))dlsym(RTLD_NEXT, #func)
++#define REAL(func) \
++	(__typeof__(real_ ## func))dlsym(RTLD_NEXT, #func)
+ 
+ DECL(int, socket, int, int, int);
+ DECL(int, fcntl, int, int, ...);
+diff --git a/tests/test-runner.c b/tests/test-runner.c
+index d07dab1..71f220a 100644
+--- a/tests/test-runner.c
++++ b/tests/test-runner.c
+@@ -63,7 +63,8 @@ static int timeouts_enabled = 1;
+ /* set to one if the output goes to the terminal */
+ static int is_atty = 0;
+ 
+-extern const struct test __start_test_section, __stop_test_section;
++extern const struct test __start_test_section __asm("section$start$__RODATA$test_section");
++extern const struct test __stop_test_section __asm("section$end$__RODATA$test_section");
+ 
+ static const struct test *
+ find_test(const char *name)
+@@ -320,7 +321,7 @@ int main(int argc, char *argv[])
+ 	if (isatty(fileno(stderr)))
+ 		is_atty = 1;
+ 
+-	if (is_debugger_attached()) {
++	if (0) {
+ 		fd_leak_check_enabled = 0;
+ 		timeouts_enabled = 0;
+ 	} else {
+diff --git a/tests/test-runner.h b/tests/test-runner.h
+index d073400..cbb5af7 100644
+--- a/tests/test-runner.h
++++ b/tests/test-runner.h
+@@ -41,7 +41,7 @@ struct test {
+ 	static void name(void);						\
+ 									\
+ 	const struct test test##name					\
+-		 __attribute__ ((used, section ("test_section"))) = {	\
++		 __attribute__ ((used, section ("__RODATA,test_section"))) = {	\
+ 		#name, name, 0						\
+ 	};								\
+ 									\
+@@ -51,7 +51,7 @@ struct test {
+ 	static void name(void);						\
+ 									\
+ 	const struct test test##name					\
+-		 __attribute__ ((used, section ("test_section"))) = {	\
++		 __attribute__ ((used, section ("__RODATA,test_section"))) = {	\
+ 		#name, name, 1						\
+ 	};								\
+ 									\
+@@ -92,4 +92,7 @@ test_disable_coredumps(void);
+ 		fd_leak_check_enabled = 0;		\
+ 	} while (0);
+ 
++#define SOCK_CLOEXEC 02000000
++#define MSG_CMSG_CLOEXEC 0x40000000
++
+ #endif
