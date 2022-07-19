@@ -16,9 +16,8 @@ stdenv.mkDerivation rec {
   };
 
   prePatch = lib.optionalString (!stdenv.isx86_64) ''
-    substituteInPlace test/epoll-test.c --replace \
-      "ATF_REQUIRE(sizeof(event) == 12);" \
-      "ATF_REQUIRE(sizeof(event) == 16);"
+    substituteInPlace test/epoll-test.c \
+      --replace "ATF_REQUIRE(sizeof(event) == 12);" ""
   '';
 
   nativeBuildInputs = [
