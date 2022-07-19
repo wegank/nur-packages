@@ -31,8 +31,12 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
 
+  postInstall = lib.optionals stdenv.isDarwin ''
+    ln -s $out/libdata/pkgconfig $out/lib/pkgconfig
+  '';
+
   meta = with lib; {
-    description = "A small library that implements epoll on top of kqueue";
+    description = "Small epoll implementation using kqueue";
     homepage = "https://github.com/jiixyj/epoll-shim";
     license = licenses.mit;
     platforms = platforms.unix;
