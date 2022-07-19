@@ -115,10 +115,19 @@ index d07dab1..71f220a 100644
  		timeouts_enabled = 0;
  	} else {
 diff --git a/tests/test-runner.h b/tests/test-runner.h
-index d073400..cbb5af7 100644
+index d073400..e2d5bc1 100644
 --- a/tests/test-runner.h
 +++ b/tests/test-runner.h
-@@ -41,7 +41,7 @@ struct test {
+@@ -31,6 +31,8 @@
+ 
+ #include <unistd.h>
+ 
++#include "wayland-os.h"
++
+ struct test {
+ 	const char *name;
+ 	void (*run)(void);
+@@ -41,7 +43,7 @@ struct test {
  	static void name(void);						\
  									\
  	const struct test test##name					\
@@ -127,7 +136,7 @@ index d073400..cbb5af7 100644
  		#name, name, 0						\
  	};								\
  									\
-@@ -51,7 +51,7 @@ struct test {
+@@ -51,7 +53,7 @@ struct test {
  	static void name(void);						\
  									\
  	const struct test test##name					\
@@ -136,11 +145,3 @@ index d073400..cbb5af7 100644
  		#name, name, 1						\
  	};								\
  									\
-@@ -92,4 +92,7 @@ test_disable_coredumps(void);
- 		fd_leak_check_enabled = 0;		\
- 	} while (0);
- 
-+#define SOCK_CLOEXEC 02000000
-+#define MSG_CMSG_CLOEXEC 0x40000000
-+
- #endif
