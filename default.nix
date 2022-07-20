@@ -58,6 +58,9 @@ in
     inherit (buildPackages.darwin) bootstrap_cmds;
     inherit (darwin.apple_sdk.frameworks) Cocoa;
   };
+  wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
+    inherit wayland wayland-scanner;
+  };
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
