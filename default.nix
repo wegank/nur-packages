@@ -19,6 +19,9 @@ let
   wayland = callPackage ./pkgs/development/libraries/wayland {
     inherit epoll-shim;
   };
+  wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
+    inherit wayland wayland-scanner;
+  };
   wayland-scanner = wayland.bin;
 in
 {
@@ -52,14 +55,14 @@ in
   };
 
   # Wayland
-  inherit epoll-shim wayland wayland-scanner;
+  inherit epoll-shim wayland wayland-scanner wayland-protocols;
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
     inherit wayland;
     inherit (buildPackages.darwin) bootstrap_cmds;
     inherit (darwin.apple_sdk.frameworks) Cocoa;
   };
-  wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
-    inherit wayland wayland-scanner;
+  wl-clipboard = callPackage ./pkgs/tools/wayland/wl-clipboard {
+    inherit wayland wayland-scanner wayland-protocols;
   };
 
   # Misc
