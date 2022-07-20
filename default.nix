@@ -51,6 +51,13 @@ in
   wayland = callPackage ./pkgs/development/libraries/wayland {
     epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   };
+  owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
+    wayland = callPackage ./pkgs/development/libraries/wayland {
+      epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
+    };
+    inherit (buildPackages.darwin) bootstrap_cmds;
+    inherit (darwin.apple_sdk.frameworks) Cocoa;
+  };
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
