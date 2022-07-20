@@ -59,10 +59,10 @@ index a9066ca..0cc30ea 100644
  wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
  {
 diff --git a/src/wayland-os.h b/src/wayland-os.h
-index 068fd2f..84cbc0a 100644
+index 068fd2f..24d4554 100644
 --- a/src/wayland-os.h
 +++ b/src/wayland-os.h
-@@ -57,7 +57,7 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
+@@ -57,10 +57,10 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
   * Do not use them elsewhere.
   */
  
@@ -70,7 +70,20 @@ index 068fd2f..84cbc0a 100644
 +#ifdef __APPLE__
  
  #ifndef SOCK_CLOEXEC
- #define SOCK_CLOEXEC 02000000
+-#define SOCK_CLOEXEC 02000000
++#define SOCK_CLOEXEC 0
+ #endif
+ 
+ #ifndef F_DUPFD_CLOEXEC
+@@ -68,7 +68,7 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
+ #endif
+ 
+ #ifndef MSG_CMSG_CLOEXEC
+-#define MSG_CMSG_CLOEXEC 0x40000000
++#define MSG_CMSG_CLOEXEC 0
+ #endif
+ 
+ #endif /* __linux__ */
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
 index 8d8c3ab..279a87f 100644
 --- a/tests/os-wrappers-test.c
