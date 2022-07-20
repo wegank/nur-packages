@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-a+TznasOVEzSNrs66/y91AeMRDEfyd+WO5mO811hLj0=";
   };
 
-  prePatch = ''
+  prePatch = lib.optionalString stdenv.isDarwin ''
     sed -i "181s/ibtool/\/usr\/bin\/ibtool/" configure
     sed -i "201,202d;204,209d" configure
   '';
