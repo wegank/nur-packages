@@ -37,6 +37,6 @@ stdenv.mkDerivation rec {
     description = "Optimization tools for the (P)MCM problem";
     homepage = "https://gitlab.com/kumm/pagsuite";
     platforms = platforms.unix;
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
   };
 }

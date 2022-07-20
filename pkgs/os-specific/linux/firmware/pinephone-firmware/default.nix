@@ -25,6 +25,6 @@ stdenvNoCC.mkDerivation {
     description = "Firmware files for Pinephone";
     homepage = "https://megous.com/git/linux-firmware";
     license = licenses.unfreeRedistributableFirmware;
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
   };
 }

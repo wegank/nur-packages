@@ -46,6 +46,6 @@ stdenv.mkDerivation rec {
     license = licenses.mit;
     platforms = platforms.unix;
     broken = stdenv.isLinux;
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
   };
 }

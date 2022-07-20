@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     description = "Manager daemon for the Quectel EG25 mobile broadband modem";
     homepage = "https://gitlab.com/mobian1/devices/eg25-manager";
     license = licenses.gpl3Plus;
-    # maintainers = with maintainers; [ tomfitzhenry ];
+    maintainers = with maintainers; [ tomfitzhenry ];
     platforms = platforms.linux;
     broken = stdenv.isx86_64;
   };

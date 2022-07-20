@@ -43,6 +43,6 @@ stdenv.mkDerivation rec {
     description = "A video wallpaper program for wlroots based wayland compositors";
     license = licenses.gpl3;
     platforms = platforms.linux;
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
   };
 }

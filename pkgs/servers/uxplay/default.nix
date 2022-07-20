@@ -53,7 +53,7 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/FDH2/UxPlay";
     description = "AirPlay Unix mirroring server";
     license = licenses.gpl3Plus;
-    # maintainers = with maintainers; [ azuwis ];
+    maintainers = with maintainers; [ azuwis ];
     platforms = platforms.unix;
   };
 }

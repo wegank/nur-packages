@@ -58,7 +58,7 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     homepage = "https://github.com/tracer-protocol/perpetual-pools-v2-keeper-ts";
     description = "Typescript keeper bot for perpetual pools v2";
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
     platforms = platforms.unix;
   };
 }

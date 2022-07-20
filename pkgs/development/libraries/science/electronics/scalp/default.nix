@@ -48,6 +48,6 @@ stdenv.mkDerivation rec {
     homepage = "https://digidev.digi.e-technik.uni-kassel.de/scalp/";
     license = licenses.lgpl3;
     platforms = platforms.unix;
-    # maintainers = with maintainers; [ wegank ];
+    maintainers = with maintainers; [ wegank ];
   };
 }
