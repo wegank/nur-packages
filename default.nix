@@ -15,6 +15,11 @@ let
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
     inherit scalp;
   };
+  epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
+  wayland = callPackage ./pkgs/development/libraries/wayland {
+    inherit epoll-shim;
+  };
+  wayland-scanner = wayland.bin;
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
@@ -47,14 +52,9 @@ in
   };
 
   # Wayland
-  epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
-  wayland = callPackage ./pkgs/development/libraries/wayland {
-    epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
-  };
+  inherit epoll-shim wayland wayland-scanner;
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
-    wayland = callPackage ./pkgs/development/libraries/wayland {
-      epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
-    };
+    inherit wayland;
     inherit (buildPackages.darwin) bootstrap_cmds;
     inherit (darwin.apple_sdk.frameworks) Cocoa;
   };
