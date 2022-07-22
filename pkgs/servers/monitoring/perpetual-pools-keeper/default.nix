@@ -13,8 +13,8 @@ let
   src = fetchFromGitHub {
     owner = "tracer-protocol";
     repo = "perpetual-pools-v2-keeper-ts";
-    rev = "bda8ebc97e7110581fc08843ff27ad316efae4bc";
-    sha256 = "sha256-zWclDnwSnrasrPiZolxjUCv8+HK6S6kLbLyWf91rUxU=";
+    rev = "8f4c5762c11e6bf5757733d411849603dccd23f0";
+    sha256 = "sha256-EGe9o8u5QeosM+C2WPUHmETNoZ8dvhnt6SoaOrb12rw=";
   };
 
   packageJSON = "${src}/package.json";
