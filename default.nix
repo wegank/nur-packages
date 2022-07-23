@@ -56,6 +56,9 @@ in
 
   # Wayland
   inherit epoll-shim wayland wayland-scanner wayland-protocols;
+  havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
+    inherit wayland wayland-protocols epoll-shim;
+  };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
     inherit wayland;
     inherit (buildPackages.darwin) bootstrap_cmds;
