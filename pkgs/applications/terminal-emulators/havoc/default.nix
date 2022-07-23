@@ -27,19 +27,13 @@ stdenv.mkDerivation rec {
     libxkbcommon
     wayland
     wayland-protocols
-  ] ++ lib.optionals (!stdenv.isLinux) [
+  ] ++ lib.optionals stdenv.isDarwin [
     epoll-shim
   ];
 
-  postPatch = ''
-    substituteInPlace Makefile \
-      --replace "CFLAGS ?= " "CFLAGS ?= -I${epoll-shim}/include/libepoll-shim " \
-      --replace "LIBS=-lrt " "LIBS=-lepoll-shim "
-    substituteInPlace main.c \
-      --replace "pty.h" "util.h" \
-      --replace "&wl_seat_interface, 5" "&wl_seat_interface, 2"
-    sed -i "32istruct itimerspec { struct timespec it_interval; struct timespec it_value; };" main.c
-  '';
+  patches = lib.optionals stdenv.isDarwin [
+    ./fix-build-on-darwin.patch
+  ];
 
   dontConfigure = true;
 
