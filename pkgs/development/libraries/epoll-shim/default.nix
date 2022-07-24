@@ -15,19 +15,9 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-jE3bRz8FhIEp/8sKPkHmvvGD7M1n82zbs9xie2QmE+8=";
   };
 
-  prePatch = lib.optionalString (!stdenv.isx86_64) ''
-    substituteInPlace test/epoll-test.c \
-      --replace "ATF_REQUIRE(sizeof(event) == 12);" ""
-  '' + lib.optionalString stdenv.isDarwin ''
-    substituteInPlace CMakeLists.txt \
-      --replace "libdata" "lib"
-    substituteInPlace epoll-shim.pc.cmakein \
-      --replace "\''${exec_prefix}/" "" \
-      --replace "\''${prefix}/" ""
-    substituteInPlace epoll-shim-interpose.pc.cmakein \
-      --replace "\''${exec_prefix}/" "" \
-      --replace "\''${prefix}/" ""
-  '';
+  patches = [
+    ./add-darwin-support.patch
+  ];
 
   nativeBuildInputs = [
     cmake
@@ -35,7 +25,8 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DBUILD_TESTING=true"
-    "-DCMAKE_SKIP_BUILD_RPATH=OFF"
+    "-DCMAKE_INSTALL_INCLUDEDIR=include"
+    "-DCMAKE_INSTALL_LIBDIR=lib"
   ];
 
   doCheck = true;
