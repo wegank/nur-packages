@@ -30,10 +30,22 @@ index 8bb47c2..cdd06ba 100644
  		# wrapper around kqueue(2).
  		epoll_dep = dependency('epoll-shim')
 diff --git a/src/wayland-os.c b/src/wayland-os.c
-index a9066ca..0cc30ea 100644
+index a9066ca..f98032f 100644
 --- a/src/wayland-os.c
 +++ b/src/wayland-os.c
-@@ -79,7 +79,7 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
+@@ -69,17 +69,19 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
+ {
+ 	int fd;
+ 
++#ifndef __APPLE__
+ 	fd = socket(domain, type | SOCK_CLOEXEC, protocol);
+ 	if (fd >= 0)
+ 		return fd;
+ 	if (errno != EINVAL)
+ 		return -1;
++#endif
+ 
+ 	fd = socket(domain, type, protocol);
  	return set_cloexec_or_close(fd);
  }
  
