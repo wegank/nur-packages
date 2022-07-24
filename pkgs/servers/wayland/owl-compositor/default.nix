@@ -1,6 +1,7 @@
 { lib
 , stdenv
 , fetchFromGitHub
+, makeWrapper
 , libxkbcommon
 , wayland
 , bootstrap_cmds
@@ -34,6 +35,10 @@ stdenv.mkDerivation rec {
     (allow file-write* (subpath "/private/var/folders"))
   '';
 
+  nativeBuildInputs = [
+    makeWrapper
+  ];
+
   buildInputs = [
     libxkbcommon
     wayland
@@ -50,8 +55,11 @@ stdenv.mkDerivation rec {
   configureScript = "../configure";
 
   installPhase = ''
-    mkdir -p $out/Applications
+    runHook preInstall
+    mkdir -p $out/Applications $out/bin
     mv Owl.app $out/Applications
+    makeWrapper $out/Applications/Owl.app/Contents/MacOS/Owl $out/bin/Owl
+    runHook postInstall
   '';
 
   meta = with lib; {
