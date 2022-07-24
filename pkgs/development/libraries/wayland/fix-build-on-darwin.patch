@@ -1,3 +1,25 @@
+diff --git a/egl/wayland-egl-symbols-check b/egl/wayland-egl-symbols-check
+index d04fd04..824b496 100755
+--- a/egl/wayland-egl-symbols-check
++++ b/egl/wayland-egl-symbols-check
+@@ -14,7 +14,7 @@ if ! test -n "$NM"; then
+ 	exit 99
+ fi
+ 
+-AVAIL_FUNCS="$($NM -D --format=bsd --defined-only $LIB | awk '{print $3}')"
++AVAIL_FUNCS="$($NM $LIB | awk '{print $3}')"
+ 
+ # Official ABI, taken from the header.
+ REQ_FUNCS="wl_egl_window_resize
+@@ -37,7 +37,7 @@ if test -n "$NEW_ABI"; then
+ fi
+ 
+ REMOVED_ABI=$(echo "$REQ_FUNCS" | while read func; do
+-    echo "$AVAIL_FUNCS" | grep -q "^$func$" && continue
++    echo "$AVAIL_FUNCS" | grep -q "^_$func$" && continue
+ 
+     echo $func
+ done)
 diff --git a/meson.build b/meson.build
 index 8bb47c2..cdd06ba 100644
 --- a/meson.build
