@@ -12,7 +12,7 @@ index 8157695..10352f3 100644
  
  VPATH=$(WAYLAND_PROTOCOLS_DIR)/stable/xdg-shell
 -LIBS=-lrt -lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm
-+LIBS=-lepoll-shim -lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm
++LIBS=-lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm `pkg-config --libs epoll-shim`
  OBJ=xdg-shell.o gtk-primary-selection.o glyph.o main.o
  GEN=xdg-shell.c xdg-shell.h gtk-primary-selection.c gtk-primary-selection.h
  
@@ -29,18 +29,6 @@ index b35a743..09b223e 100644
  
  #include <xkbcommon/xkbcommon-compose.h>
  #include <wayland-client-core.h>
-@@ -30,6 +30,11 @@ int font_init(int, char *, int *, int *);
- void font_deinit(void);
- unsigned char *get_glyph(uint32_t, uint32_t, int);
- 
-+struct itimerspec {
-+	struct timespec it_interval;
-+	struct timespec it_value;
-+};
-+
- static struct {
- 	bool die;
- 	bool configured;
 @@ -1482,7 +1487,7 @@ static void registry_get(void *data, struct wl_registry *r, uint32_t id,
  						1);
  		xdg_wm_base_add_listener(term.wm_base, &wm_base_listener, NULL);
