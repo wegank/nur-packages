@@ -1,5 +1,5 @@
 diff --git a/egl/wayland-egl-symbols-check b/egl/wayland-egl-symbols-check
-index d04fd04..59e1e1a 100755
+index d04fd04..f8248cb 100755
 --- a/egl/wayland-egl-symbols-check
 +++ b/egl/wayland-egl-symbols-check
 @@ -14,7 +14,11 @@ if ! test -n "$NM"; then
@@ -7,7 +7,7 @@ index d04fd04..59e1e1a 100755
  fi
  
 -AVAIL_FUNCS="$($NM -D --format=bsd --defined-only $LIB | awk '{print $3}')"
-+if [[ "$OSTYPE" == "darwin"* ]]; then
++if [ "$(uname)" == "Darwin" ]; then
 +    AVAIL_FUNCS="$($NM $LIB | awk '{print $3}')"
 +else
 +    AVAIL_FUNCS="$($NM -D --format=bsd --defined-only $LIB | awk '{print $3}')"
@@ -19,7 +19,7 @@ index d04fd04..59e1e1a 100755
  fi
  
  REMOVED_ABI=$(echo "$REQ_FUNCS" | while read func; do
-+if [[ "$OSTYPE" == "darwin"* ]]; then
++if [ "$(uname)" == "Darwin" ]; then
 +    echo "$AVAIL_FUNCS" | grep -q "^_$func$" && continue
 +else
      echo "$AVAIL_FUNCS" | grep -q "^$func$" && continue
@@ -29,7 +29,7 @@ index d04fd04..59e1e1a 100755
  done)
  
 diff --git a/meson.build b/meson.build
-index 8bb47c2..5262331 100644
+index f469756..03b845d 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -16,7 +16,7 @@ config_h.set_quoted('PACKAGE', meson.project_name())
@@ -121,10 +121,18 @@ index 068fd2f..42e2800 100644
  wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid);
  
 diff --git a/tests/client-test.c b/tests/client-test.c
-index 960cfa9..a4ced33 100644
+index 960cfa9..117a303 100644
 --- a/tests/client-test.c
 +++ b/tests/client-test.c
-@@ -59,7 +59,7 @@ TEST(client_destroy_listener)
+@@ -34,6 +34,7 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
++#include "wayland-os.h"
+ #include "wayland-private.h"
+ #include "wayland-server.h"
+ #include "test-runner.h"
+@@ -59,7 +60,7 @@ TEST(client_destroy_listener)
  	struct client_destroy_listener a, b;
  	int s[2];
  
@@ -134,10 +142,18 @@ index 960cfa9..a4ced33 100644
  	assert(display);
  	client = wl_client_create(display, s[0]);
 diff --git a/tests/connection-test.c b/tests/connection-test.c
-index eea9287..cb70d19 100644
+index 9762e0d..80f4f44 100644
 --- a/tests/connection-test.c
 +++ b/tests/connection-test.c
-@@ -48,7 +48,7 @@ setup(int *s)
+@@ -37,6 +37,7 @@
+ #include <sys/stat.h>
+ #include <poll.h>
+ 
++#include "wayland-os.h"
+ #include "wayland-private.h"
+ #include "test-runner.h"
+ #include "test-compositor.h"
+@@ -48,7 +49,7 @@ setup(int *s)
  {
  	struct wl_connection *connection;
  
@@ -146,7 +162,7 @@ index eea9287..cb70d19 100644
  
  	connection = wl_connection_create(s[0]);
  	assert(connection);
-@@ -181,8 +181,8 @@ struct marshal_data {
+@@ -181,8 +182,8 @@ struct marshal_data {
  static void
  setup_marshal_data(struct marshal_data *data)
  {
@@ -157,7 +173,7 @@ index eea9287..cb70d19 100644
  	data->read_connection = wl_connection_create(data->s[0]);
  	assert(data->read_connection);
  	data->write_connection = wl_connection_create(data->s[1]);
-@@ -837,7 +837,7 @@ TEST(request_bogus_size)
+@@ -824,7 +825,7 @@ TEST(request_bogus_size)
  	for (bogus_size = 11; bogus_size >= 0; bogus_size--) {
  		fprintf(stderr, "* bogus size %d\n", bogus_size);
  
@@ -167,7 +183,7 @@ index eea9287..cb70d19 100644
  		assert(display);
  		client = wl_client_create(display, s[0]);
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
-index 8d8c3ab..1680f62 100644
+index 8d8c3ab..887e1d0 100644
 --- a/tests/os-wrappers-test.c
 +++ b/tests/os-wrappers-test.c
 @@ -63,6 +63,14 @@ static int fall_back;
@@ -210,7 +226,7 @@ index 8d8c3ab..1680f62 100644
  {
  	wrapped_calls_recvmsg++;
  
-+#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
++#if !(HAVE_BROKEN_MSG_CMSG_CLOEXEC)
  	if (fall_back && (flags & MSG_CMSG_CLOEXEC)) {
  		errno = EINVAL;
  		return -1;
@@ -235,7 +251,7 @@ index 8d8c3ab..1680f62 100644
  	 * Must have 4 calls if falling back, but must also allow
  	 * falling back without a forced fallback.
  	 */
-+#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
++#if !(HAVE_BROKEN_MSG_CMSG_CLOEXEC)
  	assert(wrapped_calls_fcntl > n);
 +#else
 +	assert(wrapped_calls_fcntl == 0);
@@ -255,10 +271,18 @@ index 8d8c3ab..1680f62 100644
  	data->read_connection = wl_connection_create(data->s[0]);
  	assert(data->read_connection);
 diff --git a/tests/resources-test.c b/tests/resources-test.c
-index fa6ba2b..02f913c 100644
+index fa6ba2b..ca4595c 100644
 --- a/tests/resources-test.c
 +++ b/tests/resources-test.c
-@@ -40,7 +40,7 @@ TEST(create_resource_tst)
+@@ -28,6 +28,7 @@
+ #include <unistd.h>
+ #include <stdint.h>
+ 
++#include "wayland-os.h"
+ #include "wayland-server.h"
+ #include "test-runner.h"
+ 
+@@ -40,7 +41,7 @@ TEST(create_resource_tst)
  	int s[2];
  	uint32_t id;
  
@@ -267,7 +291,7 @@ index fa6ba2b..02f913c 100644
  	display = wl_display_create();
  	assert(display);
  	client = wl_client_create(display, s[0]);
-@@ -111,7 +111,7 @@ TEST(destroy_res_tst)
+@@ -111,7 +112,7 @@ TEST(destroy_res_tst)
  		.notify = &destroy_notify
  	};
  
@@ -276,7 +300,7 @@ index fa6ba2b..02f913c 100644
  	display = wl_display_create();
  	assert(display);
  	client = wl_client_create(display, s[0]);
-@@ -159,7 +159,7 @@ TEST(create_resource_with_same_id)
+@@ -159,7 +160,7 @@ TEST(create_resource_with_same_id)
  	int s[2];
  	uint32_t id;
  
