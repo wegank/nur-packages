@@ -52,14 +52,14 @@ index 8bb47c2..cdd06ba 100644
  		# wrapper around kqueue(2).
  		epoll_dep = dependency('epoll-shim')
 diff --git a/src/wayland-os.c b/src/wayland-os.c
-index a9066ca..f98032f 100644
+index a9066ca..e136792 100644
 --- a/src/wayland-os.c
 +++ b/src/wayland-os.c
-@@ -69,17 +69,19 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
+@@ -69,17 +69,39 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
  {
  	int fd;
  
-+#ifndef __APPLE__
++#ifdef SOCK_CLOEXEC
  	fd = socket(domain, type | SOCK_CLOEXEC, protocol);
  	if (fd >= 0)
  		return fd;
@@ -72,29 +72,92 @@ index a9066ca..f98032f 100644
  }
  
 -#if defined(__FreeBSD__)
++int
++wl_os_socketpair_cloexec(int domain, int type, int protocol, int sv[2])
++{
++    int retval;
++
++#ifdef SOCK_CLOEXEC
++    retval = socketpair(domain, type | SOCK_CLOEXEC, protocol, sv);
++    if (retval >= 0)
++       return retval;
++    if (errno != EINVAL)
++       return -1;
++#endif
++
++    retval = socketpair(domain, type, protocol, sv);
++    if (set_cloexec_or_close(sv[0]) == -1 || set_cloexec_or_close(sv[1]) == -1)
++        retval = -1;
++
++    return retval;
++}
++
 +#if defined(__APPLE__)
  int
  wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
  {
 diff --git a/src/wayland-os.h b/src/wayland-os.h
-index 068fd2f..e7d219c 100644
+index 068fd2f..42e2800 100644
 --- a/src/wayland-os.h
 +++ b/src/wayland-os.h
-@@ -57,10 +57,10 @@ wl_os_mremap_maymove(int fd, void *old_data, ssize_t *old_size,
-  * Do not use them elsewhere.
-  */
+@@ -32,6 +32,9 @@
+ int
+ wl_os_socket_cloexec(int domain, int type, int protocol);
  
--#ifdef __linux__
-+#ifdef __APPLE__
++int
++wl_os_socketpair_cloexec(int domain, int type, int protocol, int sv[2]);
++
+ int
+ wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid);
  
- #ifndef SOCK_CLOEXEC
--#define SOCK_CLOEXEC 02000000
-+#define SOCK_CLOEXEC 0
- #endif
+diff --git a/tests/client-test.c b/tests/client-test.c
+index 960cfa9..a4ced33 100644
+--- a/tests/client-test.c
++++ b/tests/client-test.c
+@@ -59,7 +59,7 @@ TEST(client_destroy_listener)
+ 	struct client_destroy_listener a, b;
+ 	int s[2];
  
- #ifndef F_DUPFD_CLOEXEC
+-	assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 	display = wl_display_create();
+ 	assert(display);
+ 	client = wl_client_create(display, s[0]);
+diff --git a/tests/connection-test.c b/tests/connection-test.c
+index eea9287..cb70d19 100644
+--- a/tests/connection-test.c
++++ b/tests/connection-test.c
+@@ -48,7 +48,7 @@ setup(int *s)
+ {
+ 	struct wl_connection *connection;
+ 
+-	assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 
+ 	connection = wl_connection_create(s[0]);
+ 	assert(connection);
+@@ -181,8 +181,8 @@ struct marshal_data {
+ static void
+ setup_marshal_data(struct marshal_data *data)
+ {
+-	assert(socketpair(AF_UNIX,
+-			  SOCK_STREAM | SOCK_CLOEXEC, 0, data->s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX,
++			  SOCK_STREAM, 0, data->s) == 0);
+ 	data->read_connection = wl_connection_create(data->s[0]);
+ 	assert(data->read_connection);
+ 	data->write_connection = wl_connection_create(data->s[1]);
+@@ -837,7 +837,7 @@ TEST(request_bogus_size)
+ 	for (bogus_size = 11; bogus_size >= 0; bogus_size--) {
+ 		fprintf(stderr, "* bogus size %d\n", bogus_size);
+ 
+-		assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++		assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 		display = wl_display_create();
+ 		assert(display);
+ 		client = wl_client_create(display, s[0]);
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
-index 8d8c3ab..279a87f 100644
+index 8d8c3ab..1c1dfaa 100644
 --- a/tests/os-wrappers-test.c
 +++ b/tests/os-wrappers-test.c
 @@ -64,13 +64,11 @@ static int fall_back;
@@ -113,6 +176,98 @@ index 8d8c3ab..279a87f 100644
  
  DECL(int, socket, int, int, int);
  DECL(int, fcntl, int, int, ...);
+@@ -92,10 +90,12 @@ socket(int domain, int type, int protocol)
+ {
+ 	wrapped_calls_socket++;
+ 
++#ifdef SOCK_CLOEXEC
+ 	if (fall_back && (type & SOCK_CLOEXEC)) {
+ 		errno = EINVAL;
+ 		return -1;
+ 	}
++#endif
+ 
+ 	return real_socket(domain, type, protocol);
+ }
+@@ -141,10 +141,12 @@ recvmsg(int sockfd, struct msghdr *msg, int flags)
+ {
+ 	wrapped_calls_recvmsg++;
+ 
++#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
+ 	if (fall_back && (flags & MSG_CMSG_CLOEXEC)) {
+ 		errno = EINVAL;
+ 		return -1;
+ 	}
++#endif
+ 
+ 	return real_recvmsg(sockfd, msg, flags);
+ }
+@@ -179,7 +181,11 @@ do_os_wrappers_socket_cloexec(int n)
+ 	 * Must have 2 calls if falling back, but must also allow
+ 	 * falling back without a forced fallback.
+ 	 */
++#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
+ 	assert(wrapped_calls_socket > n);
++#else
++	assert(wrapped_calls_socket == 1);
++#endif
+ 
+ 	exec_fd_leak_check(nr_fds);
+ }
+@@ -219,7 +225,11 @@ do_os_wrappers_dupfd_cloexec(int n)
+ 	 * Must have 4 calls if falling back, but must also allow
+ 	 * falling back without a forced fallback.
+ 	 */
++#ifdef SOCK_CLOEXEC
+ 	assert(wrapped_calls_fcntl > n);
++#else
++	assert(wrapped_calls_fcntl == 0);
++#endif
+ 
+ 	exec_fd_leak_check(nr_fds);
+ }
+@@ -253,8 +263,8 @@ struct marshal_data {
+ static void
+ setup_marshal_data(struct marshal_data *data)
+ {
+-	assert(socketpair(AF_UNIX,
+-			  SOCK_STREAM | SOCK_CLOEXEC, 0, data->s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX,
++			  SOCK_STREAM, 0, data->s) == 0);
+ 
+ 	data->read_connection = wl_connection_create(data->s[0]);
+ 	assert(data->read_connection);
+diff --git a/tests/resources-test.c b/tests/resources-test.c
+index fa6ba2b..02f913c 100644
+--- a/tests/resources-test.c
++++ b/tests/resources-test.c
+@@ -40,7 +40,7 @@ TEST(create_resource_tst)
+ 	int s[2];
+ 	uint32_t id;
+ 
+-	assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 	display = wl_display_create();
+ 	assert(display);
+ 	client = wl_client_create(display, s[0]);
+@@ -111,7 +111,7 @@ TEST(destroy_res_tst)
+ 		.notify = &destroy_notify
+ 	};
+ 
+-	assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 	display = wl_display_create();
+ 	assert(display);
+ 	client = wl_client_create(display, s[0]);
+@@ -159,7 +159,7 @@ TEST(create_resource_with_same_id)
+ 	int s[2];
+ 	uint32_t id;
+ 
+-	assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, s) == 0);
++	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+ 	display = wl_display_create();
+ 	assert(display);
+ 	client = wl_client_create(display, s[0]);
 diff --git a/tests/test-runner.c b/tests/test-runner.c
 index d07dab1..71f220a 100644
 --- a/tests/test-runner.c
@@ -137,19 +292,10 @@ index d07dab1..71f220a 100644
  		timeouts_enabled = 0;
  	} else {
 diff --git a/tests/test-runner.h b/tests/test-runner.h
-index d073400..e2d5bc1 100644
+index d073400..8c977f0 100644
 --- a/tests/test-runner.h
 +++ b/tests/test-runner.h
-@@ -31,6 +31,8 @@
- 
- #include <unistd.h>
- 
-+#include "wayland-os.h"
-+
- struct test {
- 	const char *name;
- 	void (*run)(void);
-@@ -41,7 +43,7 @@ struct test {
+@@ -41,7 +41,7 @@ struct test {
  	static void name(void);						\
  									\
  	const struct test test##name					\
@@ -158,7 +304,7 @@ index d073400..e2d5bc1 100644
  		#name, name, 0						\
  	};								\
  									\
-@@ -51,7 +53,7 @@ struct test {
+@@ -51,7 +51,7 @@ struct test {
  	static void name(void);						\
  									\
  	const struct test test##name					\
