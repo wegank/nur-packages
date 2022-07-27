@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   pname = "epoll-shim";
-  version = "0.0.20220711";
+  version = "0.0.20220726";
 
   src = fetchFromGitHub {
     owner = "jiixyj";
     repo = pname;
-    rev = "605be8c2e14b21cd73a714fde93ed5f8c08a7a01";
-    sha256 = "sha256-jE3bRz8FhIEp/8sKPkHmvvGD7M1n82zbs9xie2QmE+8=";
+    rev = "09a01c242336103427f06e458f248cfac4ccbfab";
+    sha256 = "sha256-sElMJcrKnMZhV5GtDsRRYVRd955LuPdev3JQiNptLYc=";
   };
 
   patches = [
