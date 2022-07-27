@@ -1,27 +1,35 @@
 diff --git a/egl/wayland-egl-symbols-check b/egl/wayland-egl-symbols-check
-index d04fd04..824b496 100755
+index d04fd04..59e1e1a 100755
 --- a/egl/wayland-egl-symbols-check
 +++ b/egl/wayland-egl-symbols-check
-@@ -14,7 +14,7 @@ if ! test -n "$NM"; then
+@@ -14,7 +14,11 @@ if ! test -n "$NM"; then
  	exit 99
  fi
  
 -AVAIL_FUNCS="$($NM -D --format=bsd --defined-only $LIB | awk '{print $3}')"
-+AVAIL_FUNCS="$($NM $LIB | awk '{print $3}')"
++if [[ "$OSTYPE" == "darwin"* ]]; then
++    AVAIL_FUNCS="$($NM $LIB | awk '{print $3}')"
++else
++    AVAIL_FUNCS="$($NM -D --format=bsd --defined-only $LIB | awk '{print $3}')"
++fi
  
  # Official ABI, taken from the header.
  REQ_FUNCS="wl_egl_window_resize
-@@ -37,7 +37,7 @@ if test -n "$NEW_ABI"; then
+@@ -37,8 +41,11 @@ if test -n "$NEW_ABI"; then
  fi
  
  REMOVED_ABI=$(echo "$REQ_FUNCS" | while read func; do
--    echo "$AVAIL_FUNCS" | grep -q "^$func$" && continue
++if [[ "$OSTYPE" == "darwin"* ]]; then
 +    echo "$AVAIL_FUNCS" | grep -q "^_$func$" && continue
- 
++else
+     echo "$AVAIL_FUNCS" | grep -q "^$func$" && continue
+-
++fi
      echo $func
  done)
+ 
 diff --git a/meson.build b/meson.build
-index 8bb47c2..cdd06ba 100644
+index 8bb47c2..5262331 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -16,7 +16,7 @@ config_h.set_quoted('PACKAGE', meson.project_name())
@@ -29,30 +37,32 @@ index 8bb47c2..cdd06ba 100644
  
  cc_args = []
 -if host_machine.system() != 'freebsd'
-+if host_machine.system() != 'darwin'
++if host_machine.system() not in ['darwin', 'freebsd']
  	cc_args += ['-D_POSIX_C_SOURCE=200809L']
  endif
  add_project_arguments(cc_args, language: 'c')
-@@ -52,7 +52,7 @@ foreach f: have_funcs
+@@ -51,7 +51,7 @@ foreach f: have_funcs
+ 	config_h.set('HAVE_' + f.underscorify().to_upper(), cc.has_function(f))
  endforeach
  config_h.set10('HAVE_XUCRED_CR_PID', cc.has_member('struct xucred', 'cr_pid', prefix : '#include <sys/ucred.h>'))
- have_broken_msg_cmsg_cloexec = false
--if host_machine.system() == 'freebsd'
-+if host_machine.system() == 'darwin'
+-have_broken_msg_cmsg_cloexec = false
++have_broken_msg_cmsg_cloexec = (host_machine.system() == 'darwin')
+ if host_machine.system() == 'freebsd'
  	have_broken_msg_cmsg_cloexec = not cc.compiles('''
  #include <sys/param.h> /* To get __FreeBSD_version. */
- #if __FreeBSD_version < 1300502 || \
-@@ -69,7 +69,7 @@ endif
+@@ -69,8 +69,8 @@ endif
  config_h.set10('HAVE_BROKEN_MSG_CMSG_CLOEXEC', have_broken_msg_cmsg_cloexec)
  
  if get_option('libraries')
 -	if host_machine.system() == 'freebsd'
-+	if host_machine.system() == 'darwin'
- 		# When building for FreeBSD, epoll(7) is provided by a userspace
+-		# When building for FreeBSD, epoll(7) is provided by a userspace
++	if host_machine.system() in ['darwin', 'freebsd']
++		# When building for macOS or FreeBSD, epoll(7) is provided by a userspace
  		# wrapper around kqueue(2).
  		epoll_dep = dependency('epoll-shim')
+ 	else
 diff --git a/src/wayland-os.c b/src/wayland-os.c
-index a9066ca..e136792 100644
+index a9066ca..b804489 100644
 --- a/src/wayland-os.c
 +++ b/src/wayland-os.c
 @@ -69,17 +69,39 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
@@ -92,7 +102,7 @@ index a9066ca..e136792 100644
 +    return retval;
 +}
 +
-+#if defined(__APPLE__)
++#if defined(__APPLE__) || defined(__FreeBSD__)
  int
  wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
  {
@@ -157,26 +167,33 @@ index eea9287..cb70d19 100644
  		assert(display);
  		client = wl_client_create(display, s[0]);
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
-index 8d8c3ab..1c1dfaa 100644
+index 8d8c3ab..1680f62 100644
 --- a/tests/os-wrappers-test.c
 +++ b/tests/os-wrappers-test.c
-@@ -64,13 +64,11 @@ static int fall_back;
+@@ -63,6 +63,14 @@ static int fall_back;
+  * __interceptor_ and check at run time if they linked to anything or not.
  */
  
- #define DECL(ret_type, func, ...) \
--	ret_type __interceptor_ ## func(__VA_ARGS__) __attribute__((weak)); \
- 	static ret_type (*real_ ## func)(__VA_ARGS__);			\
- 	static int wrapped_calls_ ## func;
- 
--#define REAL(func) (__interceptor_ ## func) ?				\
--	__interceptor_ ## func :					\
--	(__typeof__(&__interceptor_ ## func))dlsym(RTLD_NEXT, #func)
++#ifdef __APPLE__
++#define DECL(ret_type, func, ...) \
++	static ret_type (*real_ ## func)(__VA_ARGS__);			\
++	static int wrapped_calls_ ## func;
++
 +#define REAL(func) \
-+	(__typeof__(real_ ## func))dlsym(RTLD_NEXT, #func)
++    (__typeof__(real_ ## func))dlsym(RTLD_NEXT, #func)
++#else
+ #define DECL(ret_type, func, ...) \
+ 	ret_type __interceptor_ ## func(__VA_ARGS__) __attribute__((weak)); \
+ 	static ret_type (*real_ ## func)(__VA_ARGS__);			\
+@@ -71,6 +79,7 @@ static int fall_back;
+ #define REAL(func) (__interceptor_ ## func) ?				\
+ 	__interceptor_ ## func :					\
+ 	(__typeof__(&__interceptor_ ## func))dlsym(RTLD_NEXT, #func)
++#endif
  
  DECL(int, socket, int, int, int);
  DECL(int, fcntl, int, int, ...);
-@@ -92,10 +90,12 @@ socket(int domain, int type, int protocol)
+@@ -92,10 +101,12 @@ socket(int domain, int type, int protocol)
  {
  	wrapped_calls_socket++;
  
@@ -189,7 +206,7 @@ index 8d8c3ab..1c1dfaa 100644
  
  	return real_socket(domain, type, protocol);
  }
-@@ -141,10 +141,12 @@ recvmsg(int sockfd, struct msghdr *msg, int flags)
+@@ -141,10 +152,12 @@ recvmsg(int sockfd, struct msghdr *msg, int flags)
  {
  	wrapped_calls_recvmsg++;
  
@@ -202,11 +219,11 @@ index 8d8c3ab..1c1dfaa 100644
  
  	return real_recvmsg(sockfd, msg, flags);
  }
-@@ -179,7 +181,11 @@ do_os_wrappers_socket_cloexec(int n)
+@@ -179,7 +192,11 @@ do_os_wrappers_socket_cloexec(int n)
  	 * Must have 2 calls if falling back, but must also allow
  	 * falling back without a forced fallback.
  	 */
-+#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
++#ifdef SOCK_CLOEXEC
  	assert(wrapped_calls_socket > n);
 +#else
 +	assert(wrapped_calls_socket == 1);
@@ -214,11 +231,11 @@ index 8d8c3ab..1c1dfaa 100644
  
  	exec_fd_leak_check(nr_fds);
  }
-@@ -219,7 +225,11 @@ do_os_wrappers_dupfd_cloexec(int n)
+@@ -219,7 +236,11 @@ do_os_wrappers_dupfd_cloexec(int n)
  	 * Must have 4 calls if falling back, but must also allow
  	 * falling back without a forced fallback.
  	 */
-+#ifdef SOCK_CLOEXEC
++#ifndef HAVE_BROKEN_MSG_CMSG_CLOEXEC
  	assert(wrapped_calls_fcntl > n);
 +#else
 +	assert(wrapped_calls_fcntl == 0);
@@ -226,7 +243,7 @@ index 8d8c3ab..1c1dfaa 100644
  
  	exec_fd_leak_check(nr_fds);
  }
-@@ -253,8 +263,8 @@ struct marshal_data {
+@@ -253,8 +274,8 @@ struct marshal_data {
  static void
  setup_marshal_data(struct marshal_data *data)
  {
@@ -269,47 +286,64 @@ index fa6ba2b..02f913c 100644
  	assert(display);
  	client = wl_client_create(display, s[0]);
 diff --git a/tests/test-runner.c b/tests/test-runner.c
-index d07dab1..71f220a 100644
+index d07dab1..7a61ecb 100644
 --- a/tests/test-runner.c
 +++ b/tests/test-runner.c
-@@ -63,7 +63,8 @@ static int timeouts_enabled = 1;
+@@ -63,7 +63,12 @@ static int timeouts_enabled = 1;
  /* set to one if the output goes to the terminal */
  static int is_atty = 0;
  
--extern const struct test __start_test_section, __stop_test_section;
++#ifdef __APPLE__
 +extern const struct test __start_test_section __asm("section$start$__RODATA$test_section");
 +extern const struct test __stop_test_section __asm("section$end$__RODATA$test_section");
++#else
+ extern const struct test __start_test_section, __stop_test_section;
++#endif
  
  static const struct test *
  find_test(const char *name)
-@@ -320,7 +321,7 @@ int main(int argc, char *argv[])
- 	if (isatty(fileno(stderr)))
- 		is_atty = 1;
+@@ -308,6 +313,12 @@ is_debugger_attached(void)
  
--	if (is_debugger_attached()) {
-+	if (0) {
- 		fd_leak_check_enabled = 0;
- 		timeouts_enabled = 0;
- 	} else {
+ 	return rc;
+ }
++#else
++static int
++is_debugger_attached(void)
++{
++	return 0;
++}
+ #endif
+ 
+ int main(int argc, char *argv[])
 diff --git a/tests/test-runner.h b/tests/test-runner.h
-index d073400..8c977f0 100644
+index d073400..b713380 100644
 --- a/tests/test-runner.h
 +++ b/tests/test-runner.h
-@@ -41,7 +41,7 @@ struct test {
+@@ -37,11 +37,17 @@ struct test {
+ 	int must_fail;
+ } __attribute__ ((aligned (16)));
+ 
++#ifdef __APPLE__
++#define TEST_SECTION "__RODATA,test_section"
++#else
++#define TEST_SECTION "test_section"
++#endif
++
+ #define TEST(name)							\
  	static void name(void);						\
  									\
  	const struct test test##name					\
 -		 __attribute__ ((used, section ("test_section"))) = {	\
-+		 __attribute__ ((used, section ("__RODATA,test_section"))) = {	\
++		 __attribute__ ((used, section (TEST_SECTION))) = {	\
  		#name, name, 0						\
  	};								\
  									\
-@@ -51,7 +51,7 @@ struct test {
+@@ -51,7 +57,7 @@ struct test {
  	static void name(void);						\
  									\
  	const struct test test##name					\
 -		 __attribute__ ((used, section ("test_section"))) = {	\
-+		 __attribute__ ((used, section ("__RODATA,test_section"))) = {	\
++		 __attribute__ ((used, section (TEST_SECTION))) = {	\
  		#name, name, 1						\
  	};								\
  									\
