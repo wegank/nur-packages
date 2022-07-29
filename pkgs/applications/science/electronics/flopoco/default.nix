@@ -42,6 +42,11 @@ stdenv.mkDerivation rec {
     })
   ];
 
+  postPatch = lib.optionalString (stdenv.isx86_64 && stdenv.isDarwin) ''
+    substituteInPlace CMakeLists.txt --replace "-pg" ""
+    substituteInPlace src/Apps/TaMaDi/CMakeLists.txt --replace "-pg" ""
+  '';
+
   nativeBuildInputs = [
     cmake
     installShellFiles
