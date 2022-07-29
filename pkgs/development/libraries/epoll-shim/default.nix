@@ -19,21 +19,17 @@ stdenv.mkDerivation rec {
     ./add-darwin-support.patch
   ];
 
-  postPatch = lib.optionalString (stdenv.system == "x86_64-darwin") ''
-    substituteInPlace test/epoll-test.c --replace "MSG_NOSIGNAL" "0"
-  '';
-
   nativeBuildInputs = [
     cmake
   ];
 
   cmakeFlags = [
-    "-DBUILD_TESTING=true"
+    "-DBUILD_TESTING=${lib.boolToString doCheck}"
     "-DCMAKE_INSTALL_INCLUDEDIR=include"
     "-DCMAKE_INSTALL_LIBDIR=lib"
   ];
 
-  doCheck = true;
+  doCheck = stdenv.isAarch64;
 
   meta = with lib; {
     description = "Small epoll implementation using kqueue";
