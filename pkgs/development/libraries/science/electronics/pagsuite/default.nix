@@ -2,6 +2,7 @@
 , stdenv
 , fetchurl
 , cmake
+, makeWrapper
 , unzip
 , gmp
 , scalp
@@ -18,6 +19,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
+    makeWrapper
     unzip
   ];
 
@@ -31,6 +33,10 @@ stdenv.mkDerivation rec {
   unpackPhase = ''
     unzip -qq $src
     mv pagsuite_1_80/* .
+  '';
+
+  postFixup = ''
+    wrapProgram $out/bin/omcm --chdir "${scalp}/lib"
   '';
 
   meta = with lib; {
