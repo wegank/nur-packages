@@ -19,6 +19,10 @@ stdenv.mkDerivation rec {
     ./add-darwin-support.patch
   ];
 
+  postPatch = lib.optionalString (stdenv.system == "x86_64-darwin") ''
+    substituteInPlace test/epoll-test.c --replace "MSG_NOSIGNAL" "0"
+  '';
+
   nativeBuildInputs = [
     cmake
   ];
