@@ -73,7 +73,6 @@ stdenv.mkDerivation rec {
     ./${pname} BuildAutocomplete
     install -Dm755 ${pname} $out/bin/${pname}
     cp bin* fp* ieee* longacc* $out/bin/
-    install -Dm644 libFloPoCoLib.a $out/lib/libFloPoCoLib.a
     installShellCompletion --bash ${pname}_autocomplete
   '';
 
