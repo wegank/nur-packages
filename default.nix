@@ -43,11 +43,6 @@ in
     pongified = true;
   };
 
-  # Pinephone
-  eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
-  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
-  pinephone-firmware = pkgs.callPackage ./pkgs/os-specific/linux/firmware/pinephone-firmware { };
-
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
   uxplay = callPackage ./pkgs/servers/uxplay/default.nix {
@@ -71,6 +66,9 @@ in
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
-  # some-qt5-package = libsForQt5.callPackage ./pkgs/some-qt5-package { };
-  # ...
+} // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
+  # Pinephone
+  eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
+  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
+  pinephone-firmware = pkgs.callPackage ./pkgs/os-specific/linux/firmware/pinephone-firmware { };
 }
