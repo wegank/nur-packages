@@ -44,6 +44,7 @@ stdenv.mkDerivation rec {
     })
   ] ++ lib.optionals stdenv.isDarwin [
     ./fix-build-on-darwin.patch
+    ./fix-build-on-outdated-sdk.patch
   ];
 
   postPatch = lib.optionalString withDocumentation ''
