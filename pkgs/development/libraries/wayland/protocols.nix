@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
     patchShebangs tests/
   ''
   # https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/48
-  + lib.optionalString (stdenv.system == "aarch64-darwin") ''
+  + lib.optionalString stdenv.isDarwin ''
     substituteInPlace meson.build --replace "'xdg-decoration': ['v1']," ""
   '';
 
