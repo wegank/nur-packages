@@ -1,6 +1,6 @@
 { lib
 , stdenv
-, fetchurl
+, fetchFromGitLab
 , fetchpatch
 , cmake
 , installShellFiles
@@ -21,12 +21,15 @@ stdenv.mkDerivation rec {
   pname = "flopoco";
   version = "4.1.2";
 
-  src = fetchurl {
-    url = "https://perso.citi-lab.fr/fdedinec/recherche/OldWarez/FloPoCo/flopoco-4.1.2.tgz";
-    sha256 = "sha256-MUm5WtyzouUe2TWTIjCU1mNJU8ifPwUfqMZoe4yNNmA=";
+  src = fetchFromGitLab {
+    owner = pname;
+    repo = pname;
+    # flopoco-4.1.2 is not tagged on GitLab
+    rev = "5f6886f55d3c74b547fb3d030a622a74b7dfed6e";
+    sha256 = "sha256-ccafc81aTXC9M7MqsoNR2Qj2X6xIl4FxsTYHLFcEVPM=";
   };
 
-  patches = [
+  patches = lib.optionals (!(lib.versionAtLeast version "5.0")) [
     (fetchpatch {
       name = "fix-clang-error-sin-cos.patch";
       url = "https://gitlab.com/flopoco/flopoco/-/commit/de3aa60ad19333952c176c2a2e51f12653ca736b.patch";
