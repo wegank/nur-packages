@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  postPatch = lib.optionalString (stdenv.isx86_64 && stdenv.isDarwin) ''
+  postPatch = lib.optionalString (stdenv.system == "x86_64-darwin") ''
     substituteInPlace CMakeLists.txt --replace "-pg" ""
     substituteInPlace src/Apps/TaMaDi/CMakeLists.txt --replace "-pg" ""
   '';

@@ -96,7 +96,7 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_42
   ] ++ lib.optionals (!stdenv.isLinux) [
     epoll-shim
-  ] ++ lib.optionals (stdenv.isx86_64 && stdenv.isDarwin) [
+  ] ++ lib.optionals (stdenv.system == "x86_64-darwin") [
     memstreamHook
   ];
 
