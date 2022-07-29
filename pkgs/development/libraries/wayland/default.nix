@@ -7,6 +7,7 @@
 , ninja
 , wayland-scanner
 , epoll-shim
+, memstreamHook
 , expat
 , libxml2
 , withLibraries ? true
@@ -94,6 +95,8 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_42
   ] ++ lib.optionals (!stdenv.isLinux) [
     epoll-shim
+  ] ++ lib.optionals (stdenv.isx86_64 && stdenv.isDarwin) [
+    memstreamHook
   ];
 
   postFixup = ''
