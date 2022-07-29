@@ -12,7 +12,7 @@
 
 stdenv.mkDerivation rec {
   pname = "scalp";
-  version = "63";
+  version = "unstable-2022-03-15";
 
   src = fetchgit {
     url = "https://digidev.digi.e-technik.uni-kassel.de/git/scalp.git";
