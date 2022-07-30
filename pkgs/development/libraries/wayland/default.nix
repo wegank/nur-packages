@@ -96,8 +96,6 @@ stdenv.mkDerivation rec {
     epoll-shim
   ];
 
-  doCheck = true;
-
   postFixup = ''
     # The pkg-config file is required for cross-compilation:
     mkdir -p $bin/lib/pkgconfig/
