@@ -183,7 +183,7 @@ index 9762e0d..80f4f44 100644
  		assert(display);
  		client = wl_client_create(display, s[0]);
 diff --git a/tests/display-test.c b/tests/display-test.c
-index bcb3267..f8bb42c 100644
+index bcb3267..874d1b9 100644
 --- a/tests/display-test.c
 +++ b/tests/display-test.c
 @@ -39,6 +39,10 @@
@@ -202,7 +202,7 @@ index bcb3267..f8bb42c 100644
  	 * that the test will cause an overflow. */
  	sock = wl_display_get_fd(c->wl_display);
 +#ifdef __APPLE__
-+	fcntl(sock, F_SETFL, ~O_NONBLOCK);
++	assert(fcntl(sock, F_SETFL, ~O_NONBLOCK) != -1);
 +#endif
  	assert(setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval)) == 0);
  
