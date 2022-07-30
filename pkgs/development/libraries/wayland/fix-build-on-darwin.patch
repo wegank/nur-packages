@@ -182,6 +182,31 @@ index 9762e0d..80f4f44 100644
  		display = wl_display_create();
  		assert(display);
  		client = wl_client_create(display, s[0]);
+diff --git a/tests/display-test.c b/tests/display-test.c
+index bcb3267..f8bb42c 100644
+--- a/tests/display-test.c
++++ b/tests/display-test.c
+@@ -39,6 +39,10 @@
+ #include <sys/stat.h>
+ #include <sys/mman.h>
+ 
++#ifdef __APPLE__
++#include <fcntl.h>
++#endif
++
+ #include <pthread.h>
+ #include <poll.h>
+ 
+@@ -1495,6 +1499,9 @@ send_overflow_client(void *data)
+ 	/* Limit the send buffer size for the display socket to guarantee
+ 	 * that the test will cause an overflow. */
+ 	sock = wl_display_get_fd(c->wl_display);
++#ifdef __APPLE__
++	fcntl(sock, F_SETFL, ~O_NONBLOCK);
++#endif
+ 	assert(setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval)) == 0);
+ 
+ 	/* Request to break out of 'display_run' in the main process */
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
 index 8d8c3ab..334a645 100644
 --- a/tests/os-wrappers-test.c
