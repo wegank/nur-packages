@@ -53,8 +53,6 @@ stdenv.mkDerivation rec {
     # delete line containing os-wrappers-test, disables
     # the building of os-wrappers-test
     sed -i '/os-wrappers-test/d' tests/meson.build
-  '' + lib.optionalString (stdenv.system == "x86_64-darwin") ''
-    substituteInPlace src/connection.c --replace "MSG_NOSIGNAL" "0"
   '';
 
   outputs = [ "out" "bin" "dev" ] ++ lib.optionals withDocumentation [ "doc" "man" ];
@@ -96,8 +94,6 @@ stdenv.mkDerivation rec {
     docbook_xml_dtd_42
   ] ++ lib.optionals (!stdenv.isLinux) [
     epoll-shim
-  ] ++ lib.optionals (stdenv.system == "x86_64-darwin") [
-    memstreamHook
   ];
 
   postFixup = ''

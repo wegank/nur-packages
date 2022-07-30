@@ -16,7 +16,7 @@ let
     inherit scalp;
   };
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
-  wayland = callPackage ./pkgs/development/libraries/wayland {
+  wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
     inherit epoll-shim;
   };
   wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
