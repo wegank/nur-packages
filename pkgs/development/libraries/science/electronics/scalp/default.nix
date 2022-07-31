@@ -34,7 +34,6 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DBUILD_TESTS=ON"
-    "-DCMAKE_SKIP_BUILD_RPATH=OFF"
   ] ++ lib.optionals withGurobi [
     "-DGUROBI_DIR=${gurobi}"
   ] ++ lib.optionals withCplex [
