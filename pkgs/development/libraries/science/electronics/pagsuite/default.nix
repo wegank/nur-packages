@@ -36,7 +36,8 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    wrapProgram $out/bin/omcm --chdir "${scalp}/lib"
+    wrapProgram $out/bin/omcm \
+      --prefix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath ([ scalp ])}
   '';
 
   meta = with lib; {
