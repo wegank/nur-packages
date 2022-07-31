@@ -32,8 +32,13 @@ stdenv.mkDerivation rec {
     lp_solve
   ];
 
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    substituteInPlace CMakeLists.txt \
+      --replace "\''$ORIGIN" "\''${CMAKE_INSTALL_PREFIX}/lib"
+  '';
+
   cmakeFlags = [
-    "-DBUILD_TESTS=ON"
+    "-DBUILD_TESTS=${lib.boolToString doCheck}"
   ] ++ lib.optionals withGurobi [
     "-DGUROBI_DIR=${gurobi}"
   ] ++ lib.optionals withCplex [
