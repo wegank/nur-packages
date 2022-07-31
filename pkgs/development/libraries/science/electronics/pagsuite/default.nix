@@ -2,7 +2,6 @@
 , stdenv
 , fetchurl
 , cmake
-, makeWrapper
 , unzip
 , gmp
 , scalp
@@ -19,7 +18,6 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
-    makeWrapper
     unzip
   ];
 
@@ -33,11 +31,6 @@ stdenv.mkDerivation rec {
   unpackPhase = ''
     unzip -qq $src
     mv pagsuite_1_80/* .
-  '';
-
-  postFixup = ''
-    wrapProgram $out/bin/omcm \
-      --prefix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath ([ scalp ])}
   '';
 
   meta = with lib; {
