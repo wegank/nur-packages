@@ -15,6 +15,11 @@ let
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
     inherit scalp;
   };
+  # PulseAudio
+  pulseaudio = callPackage ./pkgs/servers/pulseaudio {
+    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
+  };
+  # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
     inherit epoll-shim;
@@ -44,9 +49,6 @@ in
   };
 
   # PulseAudio
-  pulseaudio = callPackage ../servers/pulseaudio {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
-  };
   libpulseaudio = pulseaudio.override {
     libOnly = true;
   };
