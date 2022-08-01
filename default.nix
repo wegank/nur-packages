@@ -43,6 +43,11 @@ in
     pongified = true;
   };
 
+  # PulseAudio
+  pulseaudio = callPackage ../servers/pulseaudio {
+    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
+  };
+
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
   uxplay = callPackage ./pkgs/servers/uxplay/default.nix {
