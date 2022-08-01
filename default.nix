@@ -19,6 +19,9 @@ let
   pulseaudio = callPackage ./pkgs/servers/pulseaudio {
     inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa CoreAudio;
   };
+  libpulseaudio = pulseaudio.override {
+    libOnly = true;
+  };
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
@@ -49,10 +52,17 @@ in
   };
 
   # PulseAudio
-  libpulseaudio = pulseaudio.override {
-    libOnly = true;
+  inherit pulseaudio libpulseaudio;
+  libcanberra = callPackage ./pkgs/development/libraries/libcanberra {
+    inherit (darwin.apple_sdk.frameworks) Carbon CoreServices;
+    inherit libpulseaudio;
   };
-  inherit pulseaudio;
+  libcanberra-gtk2 = libcanberra.override {
+    gtkSupport = "gtk2";
+  };
+  libcanberra-gtk3 = libcanberra.override {
+    gtkSupport = "gtk3";
+  };
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
