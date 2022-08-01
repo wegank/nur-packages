@@ -1,30 +1,26 @@
 diff --git a/src/pulsecore/core-util.c b/src/pulsecore/core-util.c
-index c383a61c0..4633f2b2c 100644
+index c383a61c0..3d0a68c2e 100644
 --- a/src/pulsecore/core-util.c
 +++ b/src/pulsecore/core-util.c
-@@ -110,10 +110,6 @@
+@@ -110,7 +110,7 @@
  #include <sys/personality.h>
  #endif
  
 -#ifdef HAVE_CPUID_H
--#include <cpuid.h>
--#endif
--
- #include <pulse/xmalloc.h>
- #include <pulse/util.h>
- #include <pulse/utf8.h>
++#if !(defined(__APPLE__) && defined(__aarch64__)) && defined(HAVE_CPUID_H)
+ #include <cpuid.h>
+ #endif
+ 
 diff --git a/src/pulsecore/cpu-x86.c b/src/pulsecore/cpu-x86.c
-index 317a0101e..fa9a74ec3 100644
+index 317a0101e..d1eb95d2b 100644
 --- a/src/pulsecore/cpu-x86.c
 +++ b/src/pulsecore/cpu-x86.c
-@@ -24,10 +24,6 @@
+@@ -24,7 +24,7 @@
  
  #include <stdint.h>
  
 -#ifdef HAVE_CPUID_H
--#include <cpuid.h>
--#endif
--
- #include <pulsecore/log.h>
++#if !(defined(__APPLE__) && defined(__aarch64__)) && defined(HAVE_CPUID_H)
+ #include <cpuid.h>
+ #endif
  
- #include "cpu-x86.h"
