@@ -29,7 +29,7 @@
 , # Whether to build only the library.
   libOnly ? false
 
-, AudioUnit, Cocoa, CoreServices
+, AudioUnit, Cocoa, CoreServices, CoreAudio
 }:
 
 stdenv.mkDerivation rec {
@@ -78,7 +78,7 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ libtool libsndfile soxr speexdsp fftwFloat check ]
     ++ lib.optionals stdenv.isLinux [ glib dbus ]
-    ++ lib.optionals stdenv.isDarwin [ AudioUnit Cocoa CoreServices libintl ]
+    ++ lib.optionals stdenv.isDarwin [ AudioUnit Cocoa CoreServices CoreAudio libintl ]
     ++ lib.optionals (!libOnly) (
       [ libasyncns webrtc-audio-processing ]
       ++ lib.optional jackaudioSupport libjack2

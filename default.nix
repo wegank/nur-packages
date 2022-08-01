@@ -17,7 +17,7 @@ let
   };
   # PulseAudio
   pulseaudio = callPackage ./pkgs/servers/pulseaudio {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
+    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa CoreAudio;
   };
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
