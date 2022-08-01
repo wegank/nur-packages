@@ -63,6 +63,7 @@ stdenv.mkDerivation rec {
     ./0008-Use-correct-semaphore-on-darwin.patch
     ./0009-Do-not-include-cpuid.h-on-aarch64-darwin.patch
     ./0010-Enable-coreaudio-on-darwin.patch
+    ./0011-Patch-link-args-on-darwin.patch
   ];
 
   outputs = [ "out" "dev" ];
