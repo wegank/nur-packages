@@ -47,6 +47,9 @@ in
   pulseaudio = callPackage ../servers/pulseaudio {
     inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa;
   };
+  libpulseaudio = pulseaudio.override {
+    libOnly = true;
+  };
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
