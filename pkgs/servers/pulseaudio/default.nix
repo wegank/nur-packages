@@ -47,8 +47,12 @@ stdenv.mkDerivation rec {
     ./add-option-for-installation-sysconfdir.patch
   ] ++ lib.optionals stdenv.isDarwin [
     # https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/merge_requests/654
-    ./0001-Make-gio-2.0-optional-when-gsettings-is-disabled.patch
-
+    (
+      if (lib.versionAtLeast version "16.0") then
+        ./0001-Make-gio-2.0-optional-when-gsettings-is-disabled-16.patch
+      else
+        ./0001-Make-gio-2.0-optional-when-gsettings-is-disabled.patch
+    )
     # TODO (not sent upstream)
     ./0002-Ignore-SCM_CREDS-on-macOS.patch
     ./0003-Disable-z-nodelete-on-darwin.patch
