@@ -52,6 +52,7 @@ in
   libpulseaudio = pulseaudio.override {
     libOnly = true;
   };
+  inherit pulseaudio;
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };

@@ -9,7 +9,7 @@
 
 , x11Support ? false
 
-, useSystemd ? true
+, useSystemd ? stdenv.isLinux
 
 , # Whether to support the JACK sound system as a backend.
   jackaudioSupport ? false
@@ -19,7 +19,7 @@
 
 , airtunesSupport ? false
 
-, bluetoothSupport ? true
+, bluetoothSupport ? stdenv.isLinux
 , advancedBluetoothCodecs ? false
 
 , remoteControlSupport ? false
@@ -94,7 +94,7 @@ stdenv.mkDerivation rec {
   );
 
   mesonFlags = [
-    "-Dalsa=${if !libOnly then "enabled" else "disabled"}"
+    "-Dalsa=${if !libOnly && stdenv.isLinux then "enabled" else "disabled"}"
     "-Dasyncns=${if !libOnly then "enabled" else "disabled"}"
     "-Davahi=${if zeroconfSupport then "enabled" else "disabled"}"
     "-Dbluez5=${if !libOnly && bluetoothSupport then "enabled" else "disabled"}"
@@ -113,7 +113,7 @@ stdenv.mkDerivation rec {
     "-Dorc=disabled"
     "-Dsystemd=${if useSystemd && !libOnly then "enabled" else "disabled"}"
     "-Dtcpwrap=disabled"
-    "-Dudev=${if !libOnly then "enabled" else "disabled"}"
+    "-Dudev=${if !libOnly && stdenv.isLinux then "enabled" else "disabled"}"
     "-Dvalgrind=disabled"
     "-Dwebrtc-aec=${if !libOnly then "enabled" else "disabled"}"
     "-Dx11=${if x11Support then "enabled" else "disabled"}"
