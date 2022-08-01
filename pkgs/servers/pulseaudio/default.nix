@@ -57,6 +57,8 @@ stdenv.mkDerivation rec {
     ./0006-Only-use-version-script-on-GNU-ish-linkers.patch
     ./0007-Adapt-undefined-link-args-per-linker.patch
     ./0008-Use-correct-semaphore-on-darwin.patch
+  ] ++ lib.optionals (stdenv.isDarwin && stdenv.isAarch64) [
+    ./0009-Do-not-include-cpuid.h-on-aarch64-darwin.patch
   ];
 
   outputs = [ "out" "dev" ];
