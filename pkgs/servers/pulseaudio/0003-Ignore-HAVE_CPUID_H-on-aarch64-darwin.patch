@@ -7,7 +7,7 @@ index c383a61c0..3d0a68c2e 100644
  #endif
  
 -#ifdef HAVE_CPUID_H
-+#if !(defined(__APPLE__) && defined(__aarch64__)) && defined(HAVE_CPUID_H)
++#if defined(HAVE_CPUID_H) && !(defined(__APPLE__) && defined(__aarch64__))
  #include <cpuid.h>
  #endif
  
@@ -20,7 +20,7 @@ index 317a0101e..d1eb95d2b 100644
  #include <stdint.h>
  
 -#ifdef HAVE_CPUID_H
-+#if !(defined(__APPLE__) && defined(__aarch64__)) && defined(HAVE_CPUID_H)
++#if defined(HAVE_CPUID_H) && !(defined(__APPLE__) && defined(__aarch64__))
  #include <cpuid.h>
  #endif
  

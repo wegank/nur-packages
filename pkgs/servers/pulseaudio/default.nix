@@ -54,9 +54,9 @@ stdenv.mkDerivation rec {
         ./0001-Make-gio-2.0-optional-when-gsettings-is-disabled.patch
     )
     # TODO (not sent upstream)
-    ./0002-Ignore-SCM_CREDS-on-macOS.patch
-    ./0003-Ignore-HAVE_CPUID_H-on-macOS-aarch64.patch
-    ./0004-Prefer-clock_gettime.patch
+    ./0002-Ignore-SCM_CREDS-on-darwin.patch
+    ./0003-Ignore-HAVE_CPUID_H-on-aarch64-darwin.patch
+    ./0004-Prefer-HAVE_CLOCK_GETTIME-on-darwin.patch
     ./0008-Use-correct-sources-on-darwin.patch
     ./0010-Enable-coreaudio-on-darwin.patch
     ./0011-Patch-link-args-on-darwin.patch
