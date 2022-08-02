@@ -34,11 +34,11 @@
 
 stdenv.mkDerivation rec {
   pname = "${if libOnly then "lib" else ""}pulseaudio";
-  version = "16.1";
+  version = "15.0";
 
   src = fetchurl {
     url = "http://freedesktop.org/software/pulseaudio/releases/pulseaudio-${version}.tar.xz";
-    sha256 = "sha256-ju8yzpHUeXn5X9mpNec4zX63RjQw2rxyhjJRdR5QSuQ=";
+    sha256 = "sha256-pAuIejupjMJpdusRvbZhOYjxRbGQJNG2VVxqA8nLoaA=";
   };
 
   patches = [
@@ -57,9 +57,9 @@ stdenv.mkDerivation rec {
     ./0002-Ignore-SCM_CREDS-on-darwin.patch
     ./0003-Ignore-HAVE_CPUID_H-on-aarch64-darwin.patch
     ./0004-Prefer-HAVE_CLOCK_GETTIME-on-darwin.patch
-    ./0008-Fix-libpulsecommon-sources-on-darwin.patch
-    ./0010-Enable-coreaudio-on-darwin.patch
-    ./0011-Patch-link-args-on-darwin.patch
+    ./0005-Enable-CoreAudio-on-darwin.patch
+    ./0006-Fix-libpulsecommon-sources-on-darwin.patch
+    ./0007-Fix-link-args-on-darwin.patch
   ];
 
   outputs = [ "out" "dev" ];
