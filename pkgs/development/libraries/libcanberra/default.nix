@@ -1,7 +1,7 @@
 { stdenv, lib, fetchurl, fetchpatch, pkg-config, libtool
 , gtk2-x11, gtk3-x11 , gtkSupport ? null
 , libpulseaudio, gst_all_1, libvorbis, libcap
-, Carbon, CoreServices
+, Carbon, CoreServices, AppKit
 , withAlsa ? stdenv.isLinux, alsa-lib }:
 
 stdenv.mkDerivation rec {
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
   ] ++ (with gst_all_1; [ gstreamer gst-plugins-base ])
     ++ lib.optional (gtkSupport == "gtk2") gtk2-x11
     ++ lib.optional (gtkSupport == "gtk3") gtk3-x11
-    ++ lib.optionals stdenv.isDarwin [Carbon CoreServices]
+    ++ lib.optionals stdenv.isDarwin [ Carbon CoreServices AppKit ]
     ++ lib.optional stdenv.isLinux libcap
     ++ lib.optional withAlsa alsa-lib;
 

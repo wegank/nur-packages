@@ -23,7 +23,7 @@ let
     libOnly = true;
   };
   libcanberra = callPackage ./pkgs/development/libraries/libcanberra {
-    inherit (darwin.apple_sdk.frameworks) Carbon CoreServices;
+    inherit (darwin.apple_sdk.frameworks) Carbon CoreServices AppKit;
     inherit libpulseaudio;
   };
   # Wayland
