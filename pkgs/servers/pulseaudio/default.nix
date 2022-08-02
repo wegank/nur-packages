@@ -125,7 +125,7 @@ stdenv.mkDerivation rec {
     "-Dudevrulesdir=${placeholder "out"}/lib/udev/rules.d"
   ]
   ++ lib.optional (stdenv.isLinux && useSystemd) "-Dsystemduserunitdir=${placeholder "out"}/lib/systemd/user"
-  ++ lib.optionals (stdenv.isDarwin) [
+  ++ lib.optionals stdenv.isDarwin [
     "-Ddbus=disabled"
     "-Dglib=disabled"
     "-Doss-output=disabled"
@@ -151,10 +151,12 @@ stdenv.mkDerivation rec {
     wrapProgram $out/libexec/pulse/gsettings-helper \
      --prefix XDG_DATA_DIRS : "$out/share/gsettings-schemas/${pname}-${version}" \
      --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
-  '' + lib.optionalString (stdenv.isDarwin) ''
+  ''
+  # add .so symlinks for modules, so they can be found and loaded under macOS
+  + lib.optionalString stdenv.isDarwin ''
     for file in $out/lib/pulse*/modules/*.dylib; do
       ln -s "''$file" "''${file%.dylib}.so"
-      ln -s "''$file" "$out/lib/pulseaudio/`basename ''$file .dylib`.so"
+      ln -s "''$file" "$out/lib/pulseaudio/''$(basename ''$file .dylib).so"
     done
   '';
 
