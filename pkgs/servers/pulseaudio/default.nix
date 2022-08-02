@@ -57,10 +57,9 @@ stdenv.mkDerivation rec {
     ./0002-Ignore-SCM_CREDS-on-macOS.patch
     ./0003-Disable-z-nodelete-on-darwin.patch
     ./0004-Prefer-clock_gettime.patch
-    ./0005-Include-poll-posix.c-on-darwin.patch
     ./0006-Only-use-version-script-on-GNU-ish-linkers.patch
     ./0007-Adapt-undefined-link-args-per-linker.patch
-    ./0008-Use-correct-semaphore-on-darwin.patch
+    ./0008-Use-correct-sources-on-darwin.patch
     ./0009-Do-not-include-cpuid.h-on-aarch64-darwin.patch
     ./0010-Enable-coreaudio-on-darwin.patch
     ./0011-Patch-link-args-on-darwin.patch
