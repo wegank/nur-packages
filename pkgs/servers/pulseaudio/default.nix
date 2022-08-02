@@ -153,6 +153,7 @@ stdenv.mkDerivation rec {
      --prefix GIO_EXTRA_MODULES : "${lib.getLib dconf}/lib/gio/modules"
   '' + lib.optionalString (stdenv.isDarwin) ''
     for file in $out/lib/pulse-*/modules/*.dylib; do
+      ln -s "''$file" "''${file%.dylib}.so"
       ln -s "''$file" "$out/lib/pulseaudio/`basename ''$file .dylib`.so"
     done
   '';
