@@ -55,9 +55,9 @@ stdenv.mkDerivation rec {
     )
     # TODO (not sent upstream)
     ./0002-Ignore-SCM_CREDS-on-macOS.patch
+    ./0003-Ignore-HAVE_CPUID_H-on-macOS-aarch64.patch
     ./0004-Prefer-clock_gettime.patch
     ./0008-Use-correct-sources-on-darwin.patch
-    ./0009-Do-not-include-cpuid.h-on-aarch64-darwin.patch
     ./0010-Enable-coreaudio-on-darwin.patch
     ./0011-Patch-link-args-on-darwin.patch
   ];
