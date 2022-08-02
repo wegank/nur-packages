@@ -147,14 +147,18 @@ stdenv.mkDerivation rec {
   ''
   # add .so symlinks for modules to be found under macOS
   + lib.optionalString stdenv.isDarwin ''
-    for file in $out/lib/pulse*/modules/*.dylib; do
+    for file in $out/${passthru.pulseDir}/modules/*.dylib; do
       ln -s "''$file" "''${file%.dylib}.so"
       ln -s "''$file" "$out/lib/pulseaudio/''$(basename ''$file .dylib).so"
     done
   '';
 
   passthru = {
-    pulseDir = "lib/pulse-" + lib.versions.majorMinor version;
+    pulseDir = 
+      if (lib.versionAtLeast version "16.0") then
+        "lib/pulseaudio"
+      else
+        "lib/pulse-" + lib.versions.majorMinor version;
   };
 
   meta = {
