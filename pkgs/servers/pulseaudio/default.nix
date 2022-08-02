@@ -57,7 +57,7 @@ stdenv.mkDerivation rec {
     ./0002-Ignore-SCM_CREDS-on-darwin.patch
     ./0003-Ignore-HAVE_CPUID_H-on-aarch64-darwin.patch
     ./0004-Prefer-HAVE_CLOCK_GETTIME-on-darwin.patch
-    ./0008-Use-correct-sources-on-darwin.patch
+    ./0008-Fix-libpulsecommon-sources-on-darwin.patch
     ./0010-Enable-coreaudio-on-darwin.patch
     ./0011-Patch-link-args-on-darwin.patch
   ];
