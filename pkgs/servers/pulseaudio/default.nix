@@ -154,7 +154,7 @@ stdenv.mkDerivation rec {
   '';
 
   passthru = {
-    pulseDir = 
+    pulseDir =
       if (lib.versionAtLeast version "16.0") then
         "lib/pulseaudio"
       else
