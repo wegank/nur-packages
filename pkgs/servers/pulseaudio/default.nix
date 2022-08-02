@@ -26,6 +26,9 @@
 
 , zeroconfSupport ? false
 
+, alsaSupport ? stdenv.isLinux
+, udevSupport ? stdenv.isLinux
+
 , # Whether to build only the library.
   libOnly ? false
 
@@ -91,7 +94,7 @@ stdenv.mkDerivation rec {
   );
 
   mesonFlags = [
-    "-Dalsa=${if !libOnly && stdenv.isLinux then "enabled" else "disabled"}"
+    "-Dalsa=${if !libOnly && alsaSupport then "enabled" else "disabled"}"
     "-Dasyncns=${if !libOnly then "enabled" else "disabled"}"
     "-Davahi=${if zeroconfSupport then "enabled" else "disabled"}"
     "-Dbluez5=${if !libOnly && bluetoothSupport then "enabled" else "disabled"}"
@@ -110,7 +113,7 @@ stdenv.mkDerivation rec {
     "-Dorc=disabled"
     "-Dsystemd=${if useSystemd && !libOnly then "enabled" else "disabled"}"
     "-Dtcpwrap=disabled"
-    "-Dudev=${if !libOnly && stdenv.isLinux then "enabled" else "disabled"}"
+    "-Dudev=${if !libOnly && udevSupport then "enabled" else "disabled"}"
     "-Dvalgrind=disabled"
     "-Dwebrtc-aec=${if !libOnly then "enabled" else "disabled"}"
     "-Dx11=${if x11Support then "enabled" else "disabled"}"
