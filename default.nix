@@ -70,7 +70,7 @@ in
         tex = texlive.combined.scheme-small;
       }).ragelStable;
     };
-    inherit libcanberra libpulseaudio;
+    inherit epoll-shim libcanberra libpulseaudio;
     withValgrind = false;
   };
 

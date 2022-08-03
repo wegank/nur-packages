@@ -65,6 +65,8 @@
 , libcanberra
 , xorg
 , avbSupport ? stdenv.isLinux
+, epoll-shim
+, libinotify-kqueue
 }:
 
 let
@@ -143,7 +145,8 @@ let
     ++ lib.optional zeroconfSupport avahi
     ++ lib.optional raopSupport openssl
     ++ lib.optional rocSupport roc-toolkit
-    ++ lib.optionals x11Support [ libcanberra xorg.libX11 xorg.libXfixes ];
+    ++ lib.optionals x11Support [ libcanberra xorg.libX11 xorg.libXfixes ]
+    ++ lib.optional stdenv.isDarwin [ epoll-shim libinotify-kqueue ];
 
     # Valgrind binary is required for running one optional test.
     checkInputs = lib.optional withValgrind valgrind;
@@ -191,12 +194,111 @@ let
     # Fontconfig error: Cannot load default config file
     FONTCONFIG_FILE = makeFontsConf { fontDirectories = [ ]; };
 
-    doCheck = true;
+    doCheck = stdenv.isLinux;
 
     postUnpack = ''
       patchShebangs source/doc/input-filter.sh
       patchShebangs source/doc/input-filter-h.sh
     '';
+
+    postPatch =
+      let
+        patchTimerSpec = path: ''
+          sed -i "1i#define EPOLL_SHIM_DISABLE_WRAPPER_MACROS 1" ${path}
+          sed -i "2i#include <sys/timerfd.h>" ${path}
+        '';
+        patchTimerSpecDeps = path: ''
+          substituteInPlace ${path} \
+            --replace "dependencies : [ " "dependencies : [ epoll_shim_dep, " \
+            --replace "dependencies: [ " "dependencies: [ epoll_shim_dep, "
+        '';
+      in
+      ''
+        # pretend to be MidnightBSD
+        find . -type f -exec sed -i 's/__MidnightBSD__/__APPLE__/g' {} +
+        find . -type f -exec sed -i 's/midnightbsd/darwin/g' {} +
+        sed -i 's/#elif defined(__FreeBSD__) || defined(__APPLE__)/#elif defined(__FreeBSD__)/g' src/pipewire/mem.c
+        sed -i 's/#elif defined(__FreeBSD__) || defined(__APPLE__)/#elif defined(__FreeBSD__)/g' src/modules/module-rt.c
+        sed -i 's/#if defined(__FreeBSD__) || defined(__APPLE__)/#if defined(__FreeBSD__)/g' src/modules/module-rt.c
+        sed -i 's/#if defined(__FreeBSD__) || defined(__APPLE__)/#if defined(__FreeBSD__)/g' src/pipewire/thread.c
+        sed -i 's/#ifndef __FreeBSD__/#ifndef __APPLE__/g' spa/plugins/support/cpu.c
+
+        # patch linkers
+        find . -type f -exec sed -i 's/__attribute__((retain))//g' {} +
+
+        find . -type f -exec sed -i 's/pwtest_suite_section/pwtest_section/g' {} +
+        find . -type f -exec sed -i 's/section("pwtest_section")/section("__RODATA,pwtest_section")/g' {} +
+        substituteInPlace test/pwtest.c \
+          --replace 'pwtest_suite_decl __start_pwtest_section' 'pwtest_suite_decl __start_pwtest_section __asm("section$start$__RODATA$pwtest_section")' \
+          --replace 'pwtest_suite_decl __stop_pwtest_section' 'pwtest_suite_decl __stop_pwtest_section __asm("section$end$__RODATA$pwtest_section")' \
+
+        find . -type f -exec sed -i 's/pw_mod_pulse_modules/pw_modules/g' {} +
+        find . -type f -exec sed -i 's/section("pw_modules")/section("__RODATA,pw_modules")/g' {} +
+        substituteInPlace src/modules/module-protocol-pulse/module.c \
+          --replace '__start_pw_modules[]' '__start_pw_modules[] __asm("section$start$__RODATA$pw_modules")' \
+          --replace '__stop_pw_modules[]' '__stop_pw_modules[] __asm("section$end$__RODATA$pw_modules")' \
+
+        # patch <locale.h>
+        sed -i 's/<locale.h>/<xlocale.h>/g' spa/include/spa/utils/string.h
+
+        # patch sys/endian.h
+        substituteInPlace spa/plugins/audioconvert/fmt-ops.h \
+          --replace "#include <sys/endian.h>" "#include <libkern/OSByteOrder.h>" \
+          --replace "bswap16" "OSSwapInt16" --replace "bswap32" "OSSwapInt32" --replace "bswap64" "OSSwapInt64"
+
+        # patch gettid
+        substituteInPlace src/modules/module-rt.c \
+          --replace "#error \"No gettid impl\"" "syscall(SYS_thread_selfid);"
+
+        # patch sem_timedwait
+        sed -i 's/sem_timedwait(\&sem, \&ts)/sem_wait(\&sem)/g' spa/tests/stress-ringbuffer.c
+
+        # patch itimerspec
+        sed -i "31i#include <sys/time.h>" spa/include/spa/support/system.h
+        substituteInPlace spa/include/spa/support/system.h \
+          --replace "struct itimerspec;" ""
+
+        ${patchTimerSpec "spa/plugins/audiotestsrc/audiotestsrc.c"}
+        ${patchTimerSpecDeps "spa/plugins/audiotestsrc/meson.build"}
+
+        ${patchTimerSpec "spa/plugins/videotestsrc/videotestsrc.c"}
+        ${patchTimerSpecDeps "spa/plugins/videotestsrc/meson.build"}
+      
+        ${patchTimerSpec "spa/plugins/vulkan/vulkan-compute-source.c"}
+        ${patchTimerSpecDeps "spa/plugins/vulkan/meson.build"}
+
+        ${patchTimerSpec "spa/plugins/support/loop.c"}
+        ${patchTimerSpec "spa/plugins/support/node-driver.c"}
+        ${patchTimerSpec "spa/plugins/support/null-audio-sink.c"}
+
+        ${patchTimerSpecDeps "test/meson.build"}
+
+        # patch socket constants
+        find . -type f -exec sed -i 's/SOCK_CLOEXEC/0/g' {} +
+        find . -type f -exec sed -i 's/SOCK_NONBLOCK/0/g' {} +
+        find . -type f -exec sed -i 's/MSG_CMSG_CLOEXEC/0/g' {} +
+
+        # patch accept4
+        substituteInPlace src/modules/module-protocol-native.c \
+          --replace "accept4(fd, (struct sockaddr *) &name, &length, 0)" "accept(fd, (struct sockaddr *) &name, &length)"
+        substituteInPlace src/modules/module-protocol-pulse/server.c \
+          --replace "accept4(fd, (struct sockaddr *) &name, &length, 0)" "accept(fd, (struct sockaddr *) &name, &length)"
+        substituteInPlace src/modules/module-protocol-simple.c \
+          --replace "accept4(fd, &addr, &addrlen, 0 | 0)" "accept(fd, &addr, &addrlen)"
+
+        # patch pipe2
+        substituteInPlace test/pwtest.c \
+          --replace "pipe[2]" "fds[2]" \
+          --replace "pipe2(pipe, O_CLOEXEC | O_NONBLOCK)" "pipe(fds)" \
+          --replace "pipe[0]" "fds[0]" \
+          --replace "pipe[1]" "fds[1]" \
+
+        # TODO: fix me properly
+        substituteInPlace src/pipewire/thread.c \
+          --replace "pthread_setname_np(pt, str)" "0"
+        substituteInPlace src/pipewire/thread-loop.c \
+          --replace "CHECK(pthread_condattr_setclock(&cattr, CLOCK_REALTIME), clean_lock);" ""
+      '';
 
     postInstall = ''
       mkdir $out/nix-support
