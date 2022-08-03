@@ -64,6 +64,14 @@ in
         pipewireSupport = false;
       };
     };
+    roc-toolkit = callPackage ./pkgs/development/libraries/audio/roc-toolkit {
+      inherit libpulseaudio;
+      ragel = (callPackages ./pkgs/development/tools/parsing/ragel {
+        tex = texlive.combined.scheme-small;
+      }).ragelStable;
+    };
+    inherit libcanberra libpulseaudio;
+    withValgrind = false;
   };
 
   # PulseAudio
@@ -79,12 +87,6 @@ in
   };
   gtk-vnc = callPackage ./pkgs/tools/admin/gtk-vnc {
     inherit libpulseaudio;
-  };
-  roc-toolkit = callPackage ./pkgs/development/libraries/audio/roc-toolkit {
-    inherit libpulseaudio;
-    ragel = (callPackages ./pkgs/development/tools/parsing/ragel {
-      tex = texlive.combined.scheme-small;
-    }).ragelStable;
   };
 
   # UxPlay

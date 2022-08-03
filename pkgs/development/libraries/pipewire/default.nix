@@ -33,6 +33,7 @@
 , nixosTests
 , withValgrind ? lib.meta.availableOn stdenv.hostPlatform valgrind
 , valgrind
+, withMediaSession ? true
 , alsaSupport ? stdenv.isLinux
 , v4l2Support ? stdenv.isLinux
 , libcameraSupport ? stdenv.isLinux
@@ -249,7 +250,7 @@ let
       description = "Server and user space API to deal with multimedia pipelines";
       homepage = "https://pipewire.org/";
       license = licenses.mit;
-      platforms = platforms.linux;
+      platforms = platforms.unix;
       maintainers = with maintainers; [ jtojnar kranzes ];
     };
   };
