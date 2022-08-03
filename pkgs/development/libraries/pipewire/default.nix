@@ -201,7 +201,7 @@ let
       patchShebangs source/doc/input-filter-h.sh
     '';
 
-    postPatch =
+    postPatch = lib.optionals stdenv.isDarwin (
       let
         patchTimerSpec = path: ''
           sed -i "1i#define EPOLL_SHIM_DISABLE_WRAPPER_MACROS 1" ${path}
@@ -298,7 +298,8 @@ let
           --replace "pthread_setname_np(pt, str)" "0"
         substituteInPlace src/pipewire/thread-loop.c \
           --replace "CHECK(pthread_condattr_setclock(&cattr, CLOCK_REALTIME), clean_lock);" ""
-      '';
+      ''
+    );
 
     postInstall = ''
       mkdir $out/nix-support
