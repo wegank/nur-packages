@@ -80,6 +80,12 @@ in
   gtk-vnc = callPackage ./pkgs/tools/admin/gtk-vnc {
     inherit libpulseaudio;
   };
+  roc-toolkit = callPackage ./pkgs/development/libraries/audio/roc-toolkit {
+    inherit libpulseaudio;
+    ragel = (callPackages ./pkgs/development/tools/parsing/ragel {
+      tex = texlive.combined.scheme-small;
+    }).ragelStable;
+  };
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
