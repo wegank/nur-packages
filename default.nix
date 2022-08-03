@@ -55,6 +55,17 @@ in
     pongified = true;
   };
 
+  # PipeWire
+  pipewire = callPackage ./pkgs/development/libraries/pipewire {
+    # ffmpeg depends on SDL2 which depends on pipewire by default.
+    # Break the cycle by disabling pipewire support in our ffmpeg.
+    ffmpeg = ffmpeg.override {
+      SDL2 = SDL2.override {
+        pipewireSupport = false;
+      };
+    };
+  };
+
   # PulseAudio
   inherit libcanberra libpulseaudio pulseaudio;
   libcanberra-gtk2 = libcanberra.override {
