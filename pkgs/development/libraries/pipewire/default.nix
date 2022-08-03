@@ -8,7 +8,8 @@
 , ninja
 , eudev
 , systemd
-, enableSystemd ? true
+, enableSystemd ? stdenv.isLinux
+, enableUdev ? stdenv.isLinux && !enableSystemd
 , pkg-config
 , docutils
 , doxygen
@@ -32,15 +33,16 @@
 , nixosTests
 , withValgrind ? lib.meta.availableOn stdenv.hostPlatform valgrind
 , valgrind
-, withMediaSession ? true
-, libcameraSupport ? true
+, alsaSupport ? stdenv.isLinux
+, v4l2Support ? stdenv.isLinux
+, libcameraSupport ? stdenv.isLinux
 , libcamera
 , libdrm
 , gstreamerSupport ? true
 , gst_all_1
 , ffmpegSupport ? true
 , ffmpeg
-, bluezSupport ? true
+, bluezSupport ? stdenv.isLinux
 , bluez
 , sbc
 , libfreeaptx
@@ -61,6 +63,7 @@
 , x11Support ? true
 , libcanberra
 , xorg
+, avbSupport ? stdenv.isLinux
 }:
 
 let
@@ -116,7 +119,6 @@ let
     ];
 
     buildInputs = [
-      alsa-lib
       dbus
       glib
       libjack2
@@ -125,11 +127,13 @@ let
       lilv
       ncurses
       readline81
-      udev
       vulkan-headers
       vulkan-loader
       webrtc-audio-processing
-    ] ++ (if enableSystemd then [ systemd ] else [ eudev ])
+    ]
+    ++ lib.optionals enableSystemd [ systemd udev ]
+    ++ lib.optional enableUdev eudev
+    ++ lib.optional alsaSupport alsa-lib
     ++ lib.optionals gstreamerSupport [ gst_all_1.gst-plugins-base gst_all_1.gstreamer ]
     ++ lib.optionals libcameraSupport [ libcamera libdrm ]
     ++ lib.optional ffmpegSupport ffmpeg
@@ -145,19 +149,24 @@ let
 
     mesonFlags = [
       "-Ddocs=enabled"
-      "-Dudevrulesdir=lib/udev/rules.d"
+      "-Dtests=${mesonEnableFeature doCheck}"
       "-Dinstalled_tests=enabled"
       "-Dinstalled_test_prefix=${placeholder "installedTests"}"
       "-Dpipewire_pulse_prefix=${placeholder "pulse"}"
       "-Dlibjack-path=${placeholder "jack"}/lib"
+      "-Dalsa=${mesonEnableFeature alsaSupport}"
+      "-Dpipewire-alsa=${mesonEnableFeature alsaSupport}"
+      "-Dv4l2=${mesonEnableFeature v4l2Support}"
+      "-Dpipewire-v4l2=${mesonEnableFeature v4l2Support}"
       "-Dlibv4l2-path=${placeholder "out"}/lib"
       "-Dlibcamera=${mesonEnableFeature libcameraSupport}"
       "-Droc=${mesonEnableFeature rocSupport}"
       "-Dlibpulse=${mesonEnableFeature pulseTunnelSupport}"
       "-Davahi=${mesonEnableFeature zeroconfSupport}"
       "-Dgstreamer=${mesonEnableFeature gstreamerSupport}"
+      "-Dsystemd=${mesonEnableFeature enableSystemd}"
       "-Dsystemd-system-service=${mesonEnableFeature enableSystemd}"
-      "-Dudev=${mesonEnableFeature (!enableSystemd)}"
+      "-Dudev=${mesonEnableFeature enableUdev}"
       "-Dudevrulesdir=${placeholder "out"}/lib/udev/rules.d"
       "-Dffmpeg=${mesonEnableFeature ffmpegSupport}"
       "-Dbluez5=${mesonEnableFeature bluezSupport}"
@@ -172,7 +181,10 @@ let
       "-Dsession-managers="
       "-Dvulkan=enabled"
       "-Dx11=${mesonEnableFeature x11Support}"
+      "-Dx11-xfixes=${mesonEnableFeature x11Support}"
+      "-Dlibcanberra=${mesonEnableFeature x11Support}"
       "-Dsdl2=disabled" # required only to build examples, causes dependency loop
+      "-Davb=${mesonEnableFeature avbSupport}"
     ];
 
     # Fontconfig error: Cannot load default config file
