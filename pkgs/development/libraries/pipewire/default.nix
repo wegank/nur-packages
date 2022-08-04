@@ -244,20 +244,9 @@ let
         --replace "accept4(fd, (struct sockaddr *) &name, &length, SOCK_CLOEXEC)" "accept(fd, (struct sockaddr *) &name, &length)"
       substituteInPlace src/modules/module-protocol-simple.c \
         --replace "accept4(fd, &addr, &addrlen, SOCK_NONBLOCK | SOCK_CLOEXEC)" "accept(fd, &addr, &addrlen)"
-      
-      # FIXME: patch pipe2
-      # substituteInPlace test/pwtest.c \
-      #   --replace "pipe[2]" "fds[2]" \
-      #   --replace "pipe2(pipe, O_CLOEXEC | O_NONBLOCK)" "pipe(fds)" \
-      #   --replace "pipe[0]" "fds[0]" \
-      #   --replace "pipe[1]" "fds[1]" \
-
-      # FIXME: patch socket constants
-      # find . -type f -exec sed -i 's/SOCK_CLOEXEC/0/g' {} +
-      # find . -type f -exec sed -i 's/SOCK_NONBLOCK/0/g' {} +
-      find . -type f -exec sed -i 's/MSG_CMSG_CLOEXEC/0/g' {} +
 
       # FIXME: misc
+      find . -type f -exec sed -i 's/MSG_CMSG_CLOEXEC/0/g' {} +
       find . -type f -exec sed -i 's/__attribute__((retain))//g' {} +
       substituteInPlace spa/tests/stress-ringbuffer.c \
         --replace "sem_timedwait(&sem, &ts)" "sem_wait(&sem)"
