@@ -108,6 +108,8 @@ stdenv.mkDerivation rec {
     EOF
   '';
 
+  doCheck = stdenv.isAarch64;
+
   meta = with lib; {
     description = "Core Wayland window system code and protocol";
     longDescription = ''
