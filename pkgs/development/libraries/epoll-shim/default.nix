@@ -32,14 +32,14 @@ stdenv.mkDerivation rec {
   ];
 
   postInstall = lib.optionalString compatItimerspec ''
-    mkdir $out/include/libepoll-shim-compat
-    cp $src/src/compat_*.h $out/include/libepoll-shim-compat/
+    cp $src/src/compat_*.h $out/include/
   '';
 
   setupHook =
     if compatItimerspec then
       (writeText "setup-hook" ''
-        export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_ITIMERSPEC -include libepoll-shim-compat/compat_itimerspec.h"
+        export NIX_CFLAGS_COMPILE+=" -I$1/include/libepoll-shim"
+        export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_ITIMERSPEC -include compat_itimerspec.h"
       '')
     else null;
 

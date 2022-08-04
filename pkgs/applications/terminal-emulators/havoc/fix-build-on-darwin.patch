@@ -1,23 +1,18 @@
 diff --git a/Makefile b/Makefile
-index 8157695..10352f3 100644
+index 8157695..b7f9234 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -6,11 +6,11 @@ BINDIR ?= $(PREFIX)/bin
- 
- VERSION="0.4.0"
- 
--CFLAGS ?= -Wall -Wextra -Wno-unused-parameter -Wno-parentheses
-+CFLAGS ?= -Wall -Wextra -Wno-unused-parameter -Wno-parentheses `pkg-config --cflags epoll-shim`
+@@ -10,7 +10,7 @@ CFLAGS ?= -Wall -Wextra -Wno-unused-parameter -Wno-parentheses
  override CFLAGS += -DVERSION=\"$(VERSION)\"
  
  VPATH=$(WAYLAND_PROTOCOLS_DIR)/stable/xdg-shell
 -LIBS=-lrt -lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm
-+LIBS=-lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm `pkg-config --libs epoll-shim`
++LIBS=-lm -lutil -lwayland-client -lwayland-cursor -lxkbcommon -Ltsm -lhtsm
  OBJ=xdg-shell.o gtk-primary-selection.o glyph.o main.o
  GEN=xdg-shell.c xdg-shell.h gtk-primary-selection.c gtk-primary-selection.h
  
 diff --git a/main.c b/main.c
-index b35a743..09b223e 100644
+index b35a743..05200ff 100644
 --- a/main.c
 +++ b/main.c
 @@ -13,7 +13,7 @@
@@ -29,7 +24,7 @@ index b35a743..09b223e 100644
  
  #include <xkbcommon/xkbcommon-compose.h>
  #include <wayland-client-core.h>
-@@ -1482,7 +1487,7 @@ static void registry_get(void *data, struct wl_registry *r, uint32_t id,
+@@ -1482,7 +1482,7 @@ static void registry_get(void *data, struct wl_registry *r, uint32_t id,
  						1);
  		xdg_wm_base_add_listener(term.wm_base, &wm_base_listener, NULL);
  	} else if (strcmp(i, "wl_seat") == 0) {
