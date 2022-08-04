@@ -211,57 +211,56 @@ let
       sed -i 's/#if defined(__FreeBSD__) || defined(__APPLE__)/#if defined(__FreeBSD__)/g' src/pipewire/thread.c
       sed -i 's/#ifndef __FreeBSD__/#ifndef __APPLE__/g' spa/plugins/support/cpu.c
 
-      # patch linkers
-      find . -type f -exec sed -i 's/__attribute__((retain))//g' {} +
-
+      # patch test linkers
       find . -type f -exec sed -i 's/pwtest_suite_section/pwtest_section/g' {} +
       find . -type f -exec sed -i 's/section("pwtest_section")/section("__RODATA,pwtest_section")/g' {} +
       substituteInPlace test/pwtest.c \
         --replace 'pwtest_suite_decl __start_pwtest_section' 'pwtest_suite_decl __start_pwtest_section __asm("section$start$__RODATA$pwtest_section")' \
         --replace 'pwtest_suite_decl __stop_pwtest_section' 'pwtest_suite_decl __stop_pwtest_section __asm("section$end$__RODATA$pwtest_section")' \
 
+      # patch src linkers
       find . -type f -exec sed -i 's/pw_mod_pulse_modules/pw_modules/g' {} +
       find . -type f -exec sed -i 's/section("pw_modules")/section("__RODATA,pw_modules")/g' {} +
       substituteInPlace src/modules/module-protocol-pulse/module.c \
         --replace '__start_pw_modules[]' '__start_pw_modules[] __asm("section$start$__RODATA$pw_modules")' \
         --replace '__stop_pw_modules[]' '__stop_pw_modules[] __asm("section$end$__RODATA$pw_modules")' \
 
-      # patch <locale.h>
+      # replace <locale.h> with <xlocale.h>
       sed -i 's/<locale.h>/<xlocale.h>/g' spa/include/spa/utils/string.h
 
-      # patch sys/endian.h
+      # replace <sys/endian.h> with <libkern/OSByteOrder.h>
       substituteInPlace spa/plugins/audioconvert/fmt-ops.h \
         --replace "#include <sys/endian.h>" "#include <libkern/OSByteOrder.h>" \
         --replace "bswap16" "OSSwapInt16" --replace "bswap32" "OSSwapInt32" --replace "bswap64" "OSSwapInt64"
 
-      # patch gettid
+      # implement gettid
       substituteInPlace src/modules/module-rt.c \
         --replace "#error \"No gettid impl\"" "syscall(SYS_thread_selfid);"
 
-      # patch sem_timedwait
-      sed -i 's/sem_timedwait(\&sem, \&ts)/sem_wait(\&sem)/g' spa/tests/stress-ringbuffer.c
-
-      # patch socket constants
-      find . -type f -exec sed -i 's/SOCK_CLOEXEC/0/g' {} +
-      find . -type f -exec sed -i 's/SOCK_NONBLOCK/0/g' {} +
-      find . -type f -exec sed -i 's/MSG_CMSG_CLOEXEC/0/g' {} +
-
-      # patch accept4
+      # FIXME: patch accept4
       substituteInPlace src/modules/module-protocol-native.c \
-        --replace "accept4(fd, (struct sockaddr *) &name, &length, 0)" "accept(fd, (struct sockaddr *) &name, &length)"
+        --replace "accept4(fd, (struct sockaddr *) &name, &length, SOCK_CLOEXEC)" "accept(fd, (struct sockaddr *) &name, &length)"
       substituteInPlace src/modules/module-protocol-pulse/server.c \
-        --replace "accept4(fd, (struct sockaddr *) &name, &length, 0)" "accept(fd, (struct sockaddr *) &name, &length)"
+        --replace "accept4(fd, (struct sockaddr *) &name, &length, SOCK_CLOEXEC)" "accept(fd, (struct sockaddr *) &name, &length)"
       substituteInPlace src/modules/module-protocol-simple.c \
-        --replace "accept4(fd, &addr, &addrlen, 0 | 0)" "accept(fd, &addr, &addrlen)"
-
-      # patch pipe2
+        --replace "accept4(fd, &addr, &addrlen, SOCK_NONBLOCK | SOCK_CLOEXEC)" "accept(fd, &addr, &addrlen)"
+      
+      # FIXME: patch pipe2
       substituteInPlace test/pwtest.c \
         --replace "pipe[2]" "fds[2]" \
         --replace "pipe2(pipe, O_CLOEXEC | O_NONBLOCK)" "pipe(fds)" \
         --replace "pipe[0]" "fds[0]" \
         --replace "pipe[1]" "fds[1]" \
 
-      # TODO: fix me properly
+      # FIXME: patch socket constants
+      find . -type f -exec sed -i 's/SOCK_CLOEXEC/0/g' {} +
+      find . -type f -exec sed -i 's/SOCK_NONBLOCK/0/g' {} +
+      find . -type f -exec sed -i 's/MSG_CMSG_CLOEXEC/0/g' {} +
+
+      # FIXME: misc
+      find . -type f -exec sed -i 's/__attribute__((retain))//g' {} +
+      substituteInPlace spa/tests/stress-ringbuffer.c \
+        --replace "sem_timedwait(&sem, &ts)" "sem_wait(&sem)"
       substituteInPlace src/pipewire/thread.c \
         --replace "pthread_setname_np(pt, str)" "0"
       substituteInPlace src/pipewire/thread-loop.c \
