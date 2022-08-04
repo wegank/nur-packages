@@ -28,8 +28,11 @@ let
   };
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
+  epoll-shim-itimerspec = epoll-shim.override {
+    compatItimerspec = true;
+  };
   wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
-    inherit epoll-shim;
+    epoll-shim = epoll-shim-itimerspec;
   };
   wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
     inherit wayland wayland-scanner;
@@ -70,7 +73,8 @@ in
         tex = texlive.combined.scheme-small;
       }).ragelStable;
     };
-    inherit epoll-shim libcanberra libpulseaudio;
+    inherit libcanberra libpulseaudio;
+    epoll-shim = epoll-shim-itimerspec;
     withValgrind = false;
   };
 
@@ -96,9 +100,10 @@ in
   };
 
   # Wayland
-  inherit epoll-shim wayland wayland-scanner wayland-protocols;
+  inherit epoll-shim epoll-shim-itimerspec wayland wayland-scanner wayland-protocols;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
-    inherit wayland wayland-protocols epoll-shim;
+    inherit wayland wayland-protocols;
+    epoll-shim = epoll-shim-itimerspec;
   };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
     inherit wayland;
