@@ -21,6 +21,10 @@ stdenv.mkDerivation rec {
     ./add-darwin-support.patch
   ];
 
+  postPatch = ''
+    sed -i '1s/hidden/default/;2s/1/0/' src/CMakeLists.txt
+  '';
+
   nativeBuildInputs = [
     cmake
   ];
