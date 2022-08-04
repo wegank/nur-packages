@@ -3,7 +3,7 @@
 , fetchFromGitHub
 , cmake
 , writeText
-, compatItimerspec ? false
+, itimerspecHook ? false
 }:
 
 stdenv.mkDerivation rec {
@@ -35,12 +35,12 @@ stdenv.mkDerivation rec {
     "-DCMAKE_INSTALL_LIBDIR=lib"
   ];
 
-  postInstall = lib.optionalString compatItimerspec ''
+  postInstall = lib.optionalString itimerspecHook ''
     cp $src/src/compat_*.h $out/include/
   '';
 
   setupHook =
-    if compatItimerspec then
+    if itimerspecHook then
       (writeText "setup-hook" ''
         export NIX_CFLAGS_COMPILE+=" -I$1/include/libepoll-shim"
         export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_ITIMERSPEC -include compat_itimerspec.h"

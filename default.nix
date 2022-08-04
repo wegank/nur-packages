@@ -29,7 +29,7 @@ let
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-itimerspec = epoll-shim.override {
-    compatItimerspec = true;
+    itimerspecHook = true;
   };
   wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
     epoll-shim = epoll-shim-itimerspec;
