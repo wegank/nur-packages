@@ -4,8 +4,12 @@
 , cmake
 , writeText
 , itimerspecHook ? false
+, atomicCloseOnExecHook ? false
 }:
 
+let
+  hook = itimerspecHook || atomicCloseOnExecHook;
+in
 stdenv.mkDerivation rec {
   pname = "epoll-shim";
   version = "0.0.20220726";
@@ -21,9 +25,15 @@ stdenv.mkDerivation rec {
     ./add-darwin-support.patch
   ];
 
-  postPatch = ''
+  postPatch = lib.optionalString hook ''
     sed -i '1s/hidden/default/;2s/1/0/' src/CMakeLists.txt
-  '';
+  '' + lib.optionalString atomicCloseOnExecHook (
+    builtins.concatStringsSep "\n" (
+      builtins.map
+        (feature: "sed -i '118i''$<BUILD_INTERFACE:compat_enable_${feature}>' src/CMakeLists.txt")
+        [ "socket" "socketpair" "pipe2" ]
+    )
+  );
 
   nativeBuildInputs = [
     cmake
@@ -35,18 +45,23 @@ stdenv.mkDerivation rec {
     "-DCMAKE_INSTALL_LIBDIR=lib"
   ];
 
-  postInstall = lib.optionalString itimerspecHook ''
+  postInstall = lib.optionalString hook ''
     cp $src/src/compat_*.h $out/include/
   '';
 
   setupHook =
-    if itimerspecHook then
-      (writeText "setup-hook" ''
-        export NIX_CFLAGS_COMPILE+=" -I$1/include/libepoll-shim"
-        export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_ITIMERSPEC -include compat_itimerspec.h"
-        export NIX_LDFLAGS+=" -L$1/lib -lepoll-shim"
-      '')
-    else null;
+    if !hook then null else
+    (writeText "setup-hook" (''
+      export NIX_CFLAGS_COMPILE+=" -I$1/include/libepoll-shim"
+      export NIX_LDFLAGS+=" -L$1/lib -lepoll-shim"
+    '' + lib.optionalString itimerspecHook ''
+      export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_ITIMERSPEC -include compat_itimerspec.h"
+    '' + lib.optionalString atomicCloseOnExecHook ''
+      export NIX_CFLAGS_COMPILE+=" -D O_CLOEXEC=0x1000000"
+      export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_SOCKET -include compat_socket.h"
+      export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_SOCKETPAIR -include compat_socketpair.h"
+      export NIX_CFLAGS_COMPILE+=" -D COMPAT_ENABLE_PIPE2 -include compat_pipe2.h"
+    ''));
 
   doCheck = stdenv.isAarch64;
 
