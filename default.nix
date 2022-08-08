@@ -125,7 +125,11 @@ in
     harfbuzz = harfbuzzFull;
     inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
     inherit (darwin) apple_sdk;
-    inherit libproxy;
+    geoclue2 = geoclue2.override {
+      glib-networking = glib-networking.override {
+        inherit libproxy;
+      };
+    };
   };
 
   # Misc

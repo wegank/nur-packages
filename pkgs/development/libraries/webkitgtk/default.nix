@@ -2,6 +2,7 @@
 , stdenv
 , runCommand
 , fetchurl
+, fetchgit
 , perl
 , python3
 , ruby
@@ -78,6 +79,15 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-1VMvqITJQ9xI8ZEUc91mOrpAejs1yqewS6wUGbQeWQg=";
   };
 
+  srcDarwin = fetchgit {
+    url = "https://github.com/WebKit/WebKit.git";
+    sparseCheckout = ''
+      Source/WTF/wtf/spi/cocoa
+    '';
+    rev = "${pname}-${version}";
+    sha256 = "sha256-KhQldLAJpiCL/X5j/4xOjKOB6Pw270YoAl2tPfHacS8=";
+  };
+
   patches = lib.optionals stdenv.isLinux [
     (substituteAll {
       src = ./fix-bubblewrap-paths.patch;
@@ -93,6 +103,10 @@ stdenv.mkDerivation rec {
       src = ./fdo-backend-path.patch;
       wpebackend_fdo = libwpe-fdo;
     })
+  ] ++ lib.optionals stdenv.isDarwin [
+    # Fix build without OPENGL_OR_ES
+    # https://bugs.webkit.org/show_bug.cgi?id=232934
+    ./fix-build-without-opengl-or-es.patch
   ];
 
   preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -197,7 +211,7 @@ stdenv.mkDerivation rec {
   ] ++ lib.optionals stdenv.isDarwin [
     "-DENABLE_GAMEPAD=OFF"
     "-DENABLE_GTKDOC=OFF"
-    "-DENABLE_MINIBROWSER=OFF"
+    "-DENABLE_JOURNALD_LOG=OFF"
     "-DENABLE_QUARTZ_TARGET=ON"
     "-DENABLE_VIDEO=ON"
     "-DENABLE_WEBGL=OFF"
@@ -205,7 +219,7 @@ stdenv.mkDerivation rec {
     "-DENABLE_X11_TARGET=OFF"
     "-DUSE_APPLE_ICU=OFF"
     "-DUSE_OPENGL_OR_ES=OFF"
-    "-DUSE_SYSTEM_MALLOC=ON"
+    "-DUSE_SYSTEM_MALLOC=OFF"
   ] ++ lib.optionals (!systemdSupport) [
     "-DUSE_SYSTEMD=OFF"
   ] ++ lib.optionals (stdenv.isLinux && enableGLES) [
@@ -216,9 +230,26 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '' + lib.optionalString stdenv.isDarwin ''
     # It needs malloc_good_size.
-    sed 22i'#include <malloc/malloc.h>' -i Source/WTF/wtf/FastMalloc.h
+    sed 25i'#include <malloc/malloc.h>' -i Source/WTF/wtf/FastMalloc.cpp
+
     # <CommonCrypto/CommonRandom.h> needs CCCryptorStatus.
     sed 43i'#include <CommonCrypto/CommonCryptor.h>' -i Source/WTF/wtf/RandomDevice.cpp
+
+    # fix missing cocoa and darwin headers
+    cp -R $srcDarwin/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
+    sed -i '26i        spi/darwin/OSVariantSPI.h' Source/WTF/wtf/PlatformGTK.cmake
+
+    # fix regression from 233963 (Start using C++20)
+    substituteInPlace Source/WTF/wtf/FileSystem.cpp \
+      --replace "#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR)" "#if 1"
+
+    # apply 126433 (webkit-gtk 2.3.3 fails to build on OS X)
+    substituteInPlace Source/JavaScriptCore/API/WebKitAvailability.h \
+      --replace "#if defined(__APPLE__)" "#if defined(__APPLE__) && !defined(BUILDING_GTK__)"
+
+    # disable libpas, which causes linker errors.
+    substituteInPlace Source/bmalloc/bmalloc/BPlatform.h \
+      --replace "BOS(DARWIN) || " "(BOS(DARWIN) && !BPLATFORM(GTK)) || "
   '';
 
   requiredSystemFeatures = [ "big-parallel" ];
@@ -229,6 +260,5 @@ stdenv.mkDerivation rec {
     license = licenses.bsd2;
     platforms = platforms.linux ++ platforms.darwin;
     maintainers = teams.gnome.members;
-    broken = stdenv.isDarwin;
   };
 }
