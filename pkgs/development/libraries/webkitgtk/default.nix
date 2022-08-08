@@ -79,7 +79,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-1VMvqITJQ9xI8ZEUc91mOrpAejs1yqewS6wUGbQeWQg=";
   };
 
-  srcDarwin = fetchgit {
+  srcCocoa = fetchgit {
     url = "https://github.com/WebKit/WebKit.git";
     sparseCheckout = ''
       Source/WTF/wtf/spi/cocoa
@@ -235,8 +235,8 @@ stdenv.mkDerivation rec {
     # <CommonCrypto/CommonRandom.h> needs CCCryptorStatus.
     sed 43i'#include <CommonCrypto/CommonCryptor.h>' -i Source/WTF/wtf/RandomDevice.cpp
 
-    # fix missing cocoa and darwin headers
-    cp -R $srcDarwin/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
+    # fix cocoa and darwin headers
+    cp -R $srcCocoa/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
     sed -i '26i        spi/darwin/OSVariantSPI.h' Source/WTF/wtf/PlatformGTK.cmake
 
     # fix regression from 233963 (Start using C++20)
