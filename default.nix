@@ -115,6 +115,13 @@ in
     inherit wayland wayland-scanner wayland-protocols;
   };
 
+  # WebKitGTK
+  webkitgtk = callPackage ../development/libraries/webkitgtk {
+    harfbuzz = harfbuzzFull;
+    inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
+    inherit (darwin) apple_sdk;
+  };
+
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
