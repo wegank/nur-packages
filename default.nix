@@ -121,7 +121,7 @@ in
 
   # WebKitGTK
   inherit libproxy;
-  webkitgtk = callPackage ./pkgs/development/libraries/webkitgtk {
+  webkitgtk = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/webkitgtk {
     harfbuzz = harfbuzzFull;
     inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
     inherit (darwin) apple_sdk;
