@@ -66,6 +66,9 @@
 , systemdSupport ? stdenv.isLinux
 }:
 
+let
+  cmakeBool = x: if x then "ON" else "OFF";
+in
 stdenv.mkDerivation rec {
   pname = "webkitgtk";
   version = "2.36.5";
@@ -79,6 +82,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-1VMvqITJQ9xI8ZEUc91mOrpAejs1yqewS6wUGbQeWQg=";
   };
 
+  # Cocoa headers are not packaged in the tarball
   srcCocoa = fetchgit {
     url = "https://github.com/WebKit/WebKit.git";
     sparseCheckout = ''
@@ -103,10 +107,14 @@ stdenv.mkDerivation rec {
       src = ./fdo-backend-path.patch;
       wpebackend_fdo = libwpe-fdo;
     })
-  ] ++ lib.optionals stdenv.isDarwin [
-    # Fix build without OPENGL_OR_ES
+  ] ++ [
     # https://bugs.webkit.org/show_bug.cgi?id=232934
     ./fix-build-without-opengl-or-es.patch
+    # https://bugs.webkit.org/show_bug.cgi?id=126433
+    ./fix-conflicting-types-on-darwin.patch
+    # non upstreamed patches
+    ./fix-wtf-errors-on-darwin.patch
+    ./disable-libpas-on-darwin.patch # TODO: regenerate me on 2.37.1
   ];
 
   preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -200,9 +208,7 @@ stdenv.mkDerivation rec {
     libsoup
   ];
 
-  cmakeFlags = let
-    cmakeBool = x: if x then "ON" else "OFF";
-  in [
+  cmakeFlags = [
     "-DENABLE_INTROSPECTION=ON"
     "-DPORT=GTK"
     "-DUSE_LIBHYPHEN=OFF"
@@ -227,29 +233,8 @@ stdenv.mkDerivation rec {
   ];
 
   postPatch = ''
+    cp -r $srcCocoa/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
     patchShebangs .
-  '' + lib.optionalString stdenv.isDarwin ''
-    # It needs malloc_good_size.
-    sed 25i'#include <malloc/malloc.h>' -i Source/WTF/wtf/FastMalloc.cpp
-
-    # <CommonCrypto/CommonRandom.h> needs CCCryptorStatus.
-    sed 43i'#include <CommonCrypto/CommonCryptor.h>' -i Source/WTF/wtf/RandomDevice.cpp
-
-    # fix cocoa and darwin headers
-    cp -R $srcCocoa/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
-    sed -i '26i        spi/darwin/OSVariantSPI.h' Source/WTF/wtf/PlatformGTK.cmake
-
-    # fix regression from 233963 (Start using C++20)
-    substituteInPlace Source/WTF/wtf/FileSystem.cpp \
-      --replace "#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR)" "#if 1"
-
-    # apply 126433 (webkit-gtk 2.3.3 fails to build on OS X)
-    substituteInPlace Source/JavaScriptCore/API/WebKitAvailability.h \
-      --replace "#if defined(__APPLE__)" "#if defined(__APPLE__) && !defined(BUILDING_GTK__)"
-
-    # disable libpas, which causes linker errors.
-    substituteInPlace Source/bmalloc/bmalloc/BPlatform.h \
-      --replace "BOS(DARWIN) || " "(BOS(DARWIN) && !BPLATFORM(GTK)) || "
   '';
 
   requiredSystemFeatures = [ "big-parallel" ];

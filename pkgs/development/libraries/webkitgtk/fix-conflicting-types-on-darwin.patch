@@ -1,0 +1,13 @@
+diff --git a/Source/JavaScriptCore/API/WebKitAvailability.h b/Source/JavaScriptCore/API/WebKitAvailability.h
+index 2a1ce7ce16f6..04ae259f97c0 100644
+--- a/Source/JavaScriptCore/API/WebKitAvailability.h
++++ b/Source/JavaScriptCore/API/WebKitAvailability.h
+@@ -26,7 +26,7 @@
+ #ifndef __WebKitAvailability__
+ #define __WebKitAvailability__
+ 
+-#if defined(__APPLE__)
++#if defined(__APPLE__) && !defined(BUILDING_GTK__)
+ 
+ #include <AvailabilityMacros.h>
+ #include <CoreFoundation/CoreFoundation.h>

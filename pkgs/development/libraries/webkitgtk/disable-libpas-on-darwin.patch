@@ -1,0 +1,13 @@
+diff --git a/Source/bmalloc/bmalloc/BPlatform.h b/Source/bmalloc/bmalloc/BPlatform.h
+index 0eae025bc825..c7254f2fa455 100644
+--- a/Source/bmalloc/bmalloc/BPlatform.h
++++ b/Source/bmalloc/bmalloc/BPlatform.h
+@@ -324,7 +324,7 @@
+ 
+ /* BENABLE(LIBPAS) is enabling libpas build. But this does not mean we use libpas for bmalloc replacement. */
+ #if !defined(BENABLE_LIBPAS)
+-#if BCPU(ADDRESS64) && (BOS(DARWIN) || (BOS(LINUX) && !BPLATFORM(GTK) && !BPLATFORM(WPE)))
++#if BCPU(ADDRESS64) && ((BOS(DARWIN) && !BPLATFORM(GTK)) || (BOS(LINUX) && !BPLATFORM(GTK) && !BPLATFORM(WPE)))
+ #define BENABLE_LIBPAS 1
+ #ifndef PAS_BMALLOC
+ #define PAS_BMALLOC 1

@@ -1,0 +1,52 @@
+diff --git a/Source/WTF/wtf/FastMalloc.cpp b/Source/WTF/wtf/FastMalloc.cpp
+index f560f56b02a8..30e43b3b0e8c 100644
+--- a/Source/WTF/wtf/FastMalloc.cpp
++++ b/Source/WTF/wtf/FastMalloc.cpp
+@@ -29,6 +29,10 @@
+ #include <string.h>
+ #include <wtf/CheckedArithmetic.h>
+ 
++#if OS(DARWIN)
++#include <malloc/malloc.h>
++#endif
++
+ #if OS(WINDOWS)
+ #include <windows.h>
+ #else
+diff --git a/Source/WTF/wtf/FileSystem.cpp b/Source/WTF/wtf/FileSystem.cpp
+index 90dbf5a6c7cd..7e6693ed74f2 100644
+--- a/Source/WTF/wtf/FileSystem.cpp
++++ b/Source/WTF/wtf/FileSystem.cpp
+@@ -55,7 +55,7 @@ namespace WTF::FileSystemImpl {
+ 
+ static std::filesystem::path toStdFileSystemPath(StringView path)
+ {
+-#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR)
++#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR) || OS(DARWIN)
+     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
+     return std::filesystem::u8path(path.utf8().data());
+     ALLOW_DEPRECATED_DECLARATIONS_END
+diff --git a/Source/WTF/wtf/PlatformGTK.cmake b/Source/WTF/wtf/PlatformGTK.cmake
+index bb01bfeeac63..b5b9de3a9e92 100644
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -24,6 +24,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+     )
+ elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+     list(APPEND WTF_PUBLIC_HEADERS
++        spi/darwin/OSVariantSPI.h
+         spi/darwin/ProcessMemoryFootprint.h
+     )
+ endif ()
+diff --git a/Source/WTF/wtf/RandomDevice.cpp b/Source/WTF/wtf/RandomDevice.cpp
+index db85f5062bff..1e35bcd6e0d0 100644
+--- a/Source/WTF/wtf/RandomDevice.cpp
++++ b/Source/WTF/wtf/RandomDevice.cpp
+@@ -41,6 +41,7 @@
+ #endif
+ 
+ #if OS(DARWIN)
++#include <CommonCrypto/CommonCryptor.h>
+ #include <CommonCrypto/CommonRandom.h>
+ #endif
+ 
