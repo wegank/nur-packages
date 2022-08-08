@@ -39,6 +39,10 @@ let
     inherit wayland wayland-scanner;
   };
   wayland-scanner = wayland.bin;
+  # WebKitGTK
+  libproxy = callPackage ./pkgs/development/libraries/libproxy {
+    inherit (darwin.apple_sdk.frameworks) SystemConfiguration CoreFoundation JavaScriptCore;
+  };
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
@@ -116,10 +120,12 @@ in
   };
 
   # WebKitGTK
-  webkitgtk = callPackage ../development/libraries/webkitgtk {
+  inherit libproxy;
+  webkitgtk = callPackage ./pkgs/development/libraries/webkitgtk {
     harfbuzz = harfbuzzFull;
     inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
     inherit (darwin) apple_sdk;
+    inherit libproxy;
   };
 
   # Misc

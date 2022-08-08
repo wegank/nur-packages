@@ -28,6 +28,10 @@ stdenv.mkDerivation rec {
     hash = "sha256-pqj1LwRdOK2CUu3hYIsogQIXxWzShDuKEbDTbtWkgnQ=";
   };
 
+  patches = [
+    ./fix-build-on-darwin.patch
+  ];
+
   outputs = [ "out" "dev" "py3" ];
 
   nativeBuildInputs = [
