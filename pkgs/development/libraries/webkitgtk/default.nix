@@ -3,6 +3,7 @@
 , runCommand
 , fetchurl
 , fetchgit
+, fetchpatch
 , perl
 , python3
 , ruby
@@ -109,7 +110,10 @@ stdenv.mkDerivation rec {
     })
   ] ++ [
     # https://bugs.webkit.org/show_bug.cgi?id=232934
-    ./fix-build-without-opengl-or-es.patch
+    (fetchpatch {
+      url = "https://git.yoctoproject.org/poky/plain/meta/recipes-sato/webkit/webkitgtk/0001-Fix-build-without-opengl-or-es.patch";
+      sha256 = "sha256-9MUDNTda2yxo5knhBKu2PQXNASgTW2Z7H4F0aFt4b0Q=";
+    })
     # https://bugs.webkit.org/show_bug.cgi?id=126433
     ./fix-conflicting-types-on-darwin.patch
     # non upstreamed patches
