@@ -116,7 +116,7 @@ stdenv.mkDerivation rec {
       url = "https://git.yoctoproject.org/poky/plain/meta/recipes-sato/webkit/webkitgtk/0001-Fix-build-without-opengl-or-es.patch";
       sha256 = "sha256-9MUDNTda2yxo5knhBKu2PQXNASgTW2Z7H4F0aFt4b0Q=";
     })
-    # Fix conflicting types on Darwin.
+    # Fix conflicting types on OS X.
     # https://bugs.webkit.org/show_bug.cgi?id=126433
     # This patch was reverted by 152720 since it used to break builds under OS X 10.9 and earlier.
     # However, including CoreFoundation.h causes exactly the same errors in the link.
