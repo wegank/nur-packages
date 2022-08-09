@@ -109,16 +109,31 @@ stdenv.mkDerivation rec {
       wpebackend_fdo = libwpe-fdo;
     })
   ] ++ [
+    # Fix build without OpenGL.
     # https://bugs.webkit.org/show_bug.cgi?id=232934
+    # This is required when building WebKitGTK with Quartz backend on macOS.
     (fetchpatch {
       url = "https://git.yoctoproject.org/poky/plain/meta/recipes-sato/webkit/webkitgtk/0001-Fix-build-without-opengl-or-es.patch";
       sha256 = "sha256-9MUDNTda2yxo5knhBKu2PQXNASgTW2Z7H4F0aFt4b0Q=";
     })
+    # Fix conflicting types on Darwin.
     # https://bugs.webkit.org/show_bug.cgi?id=126433
-    ./fix-conflicting-types-on-darwin.patch
-    # non upstreamed patches
+    # This patch was reverted by 152720 since it used to break builds under OS X 10.9 and earlier.
+    # However, including CoreFoundation.h causes exactly the same errors in the link.
+    (fetchpatch {
+      url = "https://github.com/WebKit/WebKit/commit/68822eb73f2cdd843dbe6bdd346e7268b279650b.patch";
+      postFetch = ''sed -i 's/#ifdef __APPLE__/#if defined(__APPLE__)/' $out'';
+      excludes = [ "Source/JavaScriptCore/ChangeLog" ];
+      sha256 = "sha256-0jbQeOY9EC+8cgK4LWTO+q0TE50RdnWgSJalULc52m4=";
+    })
+    # Fix WTF errors on Darwin. (not upstreamed)
+    # This patch fixes missing headers and Apple Clang-specific C++20 regressions in WTF.
     ./fix-wtf-errors-on-darwin.patch
-    ./disable-libpas-on-darwin.patch # TODO: regenerate me on 2.37.1
+    # Disable libpas on Darwin. (not upstreamed)
+    # libpas is not compatible with the GTK port before 243201, which may arrive in 2.37.2.
+    # TODO: when upgrading to 2.37.1, slightly modify the patch, since the line is changed.
+    # TODO: when upgrading to newer versions, check if the patch is still needed.
+    ./disable-libpas-on-darwin.patch
   ];
 
   preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -222,6 +237,7 @@ stdenv.mkDerivation rec {
     "-DENABLE_GAMEPAD=OFF"
     "-DENABLE_GTKDOC=OFF"
     "-DENABLE_JOURNALD_LOG=OFF"
+    # "-DENABLE_MINIBROWSER=ON"
     "-DENABLE_QUARTZ_TARGET=ON"
     "-DENABLE_VIDEO=ON"
     "-DENABLE_WEBGL=OFF"
