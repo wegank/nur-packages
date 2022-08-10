@@ -51,7 +51,7 @@
 , openjpeg
 , geoclue2
 , sqlite
-, enableGLES ? true
+, enableGLES ? stdenv.isLinux
 , gst-plugins-base
 , gst-plugins-bad
 , woff2
@@ -234,21 +234,16 @@ stdenv.mkDerivation rec {
     "-DUSE_SOUP2=${cmakeBool (lib.versions.major libsoup.version == "2")}"
     "-DUSE_LIBSECRET=${cmakeBool withLibsecret}"
   ] ++ lib.optionals stdenv.isDarwin [
-    "-DENABLE_GAMEPAD=OFF"
-    "-DENABLE_GTKDOC=OFF"
+    "-DENABLE_GAMEPAD=OFF" # required, we don't have libmanette on darwin
     "-DENABLE_JOURNALD_LOG=OFF"
     # "-DENABLE_MINIBROWSER=ON"
     "-DENABLE_QUARTZ_TARGET=ON"
-    "-DENABLE_VIDEO=ON"
-    "-DENABLE_WEBGL=OFF"
-    "-DENABLE_WEB_AUDIO=OFF"
     "-DENABLE_X11_TARGET=OFF"
-    "-DUSE_APPLE_ICU=OFF"
+    "-DUSE_APPLE_ICU=OFF" # recommended, see 220081
     "-DUSE_OPENGL_OR_ES=OFF"
-    "-DUSE_SYSTEM_MALLOC=OFF"
   ] ++ lib.optionals (!systemdSupport) [
     "-DUSE_SYSTEMD=OFF"
-  ] ++ lib.optionals (stdenv.isLinux && enableGLES) [
+  ] ++ lib.optionals enableGLES [
     "-DENABLE_GLES2=ON"
   ];
 
