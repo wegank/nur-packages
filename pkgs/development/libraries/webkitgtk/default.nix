@@ -83,16 +83,6 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-1VMvqITJQ9xI8ZEUc91mOrpAejs1yqewS6wUGbQeWQg=";
   };
 
-  # Cocoa headers are not packaged in the tarball
-  srcCocoa = fetchgit {
-    url = "https://github.com/WebKit/WebKit.git";
-    sparseCheckout = ''
-      Source/WTF/wtf/spi/cocoa
-    '';
-    rev = "${pname}-${version}";
-    sha256 = "sha256-KhQldLAJpiCL/X5j/4xOjKOB6Pw270YoAl2tPfHacS8=";
-  };
-
   patches = lib.optionals stdenv.isLinux [
     (substituteAll {
       src = ./fix-bubblewrap-paths.patch;
@@ -254,7 +244,6 @@ stdenv.mkDerivation rec {
   ];
 
   postPatch = ''
-    cp -r $srcCocoa/Source/WTF/wtf/spi/. Source/WTF/wtf/spi
     patchShebangs .
   '';
 
