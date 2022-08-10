@@ -108,7 +108,7 @@ stdenv.mkDerivation rec {
     })
     # Fix conflicting types on OS X.
     # https://bugs.webkit.org/show_bug.cgi?id=126433
-    # This patch was reverted by 152720 since it used to break builds under OS X 10.9 and earlier.
+    # This patch was reverted later since it used to break builds under OS X 10.9 and earlier.
     # However, including CoreFoundation.h causes exactly the same errors in the link.
     (fetchpatch {
       url = "https://github.com/WebKit/WebKit/commit/68822eb73f2cdd843dbe6bdd346e7268b279650b.patch";
@@ -119,11 +119,6 @@ stdenv.mkDerivation rec {
     # Fix WTF errors on Darwin. (not upstreamed)
     # This patch fixes missing headers in WTF.
     ./fix-wtf-errors-on-darwin.patch
-    # Disable libpas on Darwin. (not upstreamed)
-    # libpas is not compatible with the GTK port before 243201, which may arrive in 2.37.2.
-    # TODO: when upgrading to 2.37.1, slightly modify the patch, since the line is changed.
-    # TODO: when upgrading to newer versions, check if the patch is still needed.
-    ./disable-libpas-on-darwin.patch
   ];
 
   preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -224,12 +219,12 @@ stdenv.mkDerivation rec {
     "-DUSE_SOUP2=${cmakeBool (lib.versions.major libsoup.version == "2")}"
     "-DUSE_LIBSECRET=${cmakeBool withLibsecret}"
   ] ++ lib.optionals stdenv.isDarwin [
-    "-DENABLE_GAMEPAD=OFF" # required, we don't have libmanette on darwin
+    "-DENABLE_GAMEPAD=OFF" # we don't have libmanette on darwin
     "-DENABLE_JOURNALD_LOG=OFF"
     # "-DENABLE_MINIBROWSER=ON"
     "-DENABLE_QUARTZ_TARGET=ON"
     "-DENABLE_X11_TARGET=OFF"
-    "-DUSE_APPLE_ICU=OFF" # recommended, see 220081
+    "-DUSE_APPLE_ICU=OFF" # https://bugs.webkit.org/show_bug.cgi?id=220081
     "-DUSE_OPENGL_OR_ES=OFF"
   ] ++ lib.optionals (!systemdSupport) [
     "-DUSE_SYSTEMD=OFF"
@@ -241,6 +236,10 @@ stdenv.mkDerivation rec {
     # FAILED: Source/WTF/wtf/CMakeFiles/WTF.dir/FileSystem.cpp.o
     # error: no matching constructor for initialization of 'std::filesystem::path'
     "-D HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR=1"
+    # FAILED: lib/libwebkit2gtk-4.0.37.56.9.dylib
+    # Undefined symbols for architecture arm64: "bmalloc::api::isoAllocate(__pas_heap_ref&)"
+    # TODO: check if it can be removed on 2.37.2+
+    "-D BENABLE_LIBPAS=0"
   ];
 
   postPatch = ''
