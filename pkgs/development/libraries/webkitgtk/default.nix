@@ -127,7 +127,7 @@ stdenv.mkDerivation rec {
       sha256 = "sha256-0jbQeOY9EC+8cgK4LWTO+q0TE50RdnWgSJalULc52m4=";
     })
     # Fix WTF errors on Darwin. (not upstreamed)
-    # This patch fixes missing headers and Apple Clang-specific C++20 regressions in WTF.
+    # This patch fixes missing headers in WTF.
     ./fix-wtf-errors-on-darwin.patch
     # Disable libpas on Darwin. (not upstreamed)
     # libpas is not compatible with the GTK port before 243201, which may arrive in 2.37.2.
@@ -245,6 +245,12 @@ stdenv.mkDerivation rec {
     "-DUSE_SYSTEMD=OFF"
   ] ++ lib.optionals enableGLES [
     "-DENABLE_GLES2=ON"
+  ];
+
+  NIX_CFLAGS_COMPILE = lib.optionals stdenv.isDarwin [
+    # FAILED: Source/WTF/wtf/CMakeFiles/WTF.dir/FileSystem.cpp.o
+    # error: no matching constructor for initialization of 'std::filesystem::path'
+    "-D HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR=1"
   ];
 
   postPatch = ''

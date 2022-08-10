@@ -13,19 +13,6 @@ index f560f56b02a8..30e43b3b0e8c 100644
  #if OS(WINDOWS)
  #include <windows.h>
  #else
-diff --git a/Source/WTF/wtf/FileSystem.cpp b/Source/WTF/wtf/FileSystem.cpp
-index 90dbf5a6c7cd..7e6693ed74f2 100644
---- a/Source/WTF/wtf/FileSystem.cpp
-+++ b/Source/WTF/wtf/FileSystem.cpp
-@@ -55,7 +55,7 @@ namespace WTF::FileSystemImpl {
- 
- static std::filesystem::path toStdFileSystemPath(StringView path)
- {
--#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR)
-+#if HAVE(MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR) || OS(DARWIN)
-     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-     return std::filesystem::u8path(path.utf8().data());
-     ALLOW_DEPRECATED_DECLARATIONS_END
 diff --git a/Source/WTF/wtf/PlatformGTK.cmake b/Source/WTF/wtf/PlatformGTK.cmake
 index bb01bfeeac63..b5b9de3a9e92 100644
 --- a/Source/WTF/wtf/PlatformGTK.cmake
