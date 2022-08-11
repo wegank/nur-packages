@@ -69,7 +69,7 @@ in
         pipewireSupport = false;
       };
     };
-    roc-toolkit = callPackage ./pkgs/development/libraries/audio/roc-toolkit {
+    roc-toolkit = roc-toolkit.override {
       inherit libpulseaudio;
     };
     inherit libcanberra libpulseaudio;
