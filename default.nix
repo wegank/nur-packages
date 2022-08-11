@@ -88,9 +88,6 @@ in
   gsound = callPackage ./pkgs/development/libraries/gsound {
     inherit libcanberra;
   };
-  gtk-vnc = callPackage ./pkgs/tools/admin/gtk-vnc {
-    inherit libpulseaudio;
-  };
 
   # UxPlay
   a52dec = callPackage ./pkgs/development/libraries/a52dec { };
