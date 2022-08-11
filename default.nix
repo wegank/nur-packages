@@ -71,9 +71,6 @@ in
     };
     roc-toolkit = callPackage ./pkgs/development/libraries/audio/roc-toolkit {
       inherit libpulseaudio;
-      ragel = (callPackages ./pkgs/development/tools/parsing/ragel {
-        tex = texlive.combined.scheme-small;
-      }).ragelStable;
     };
     inherit libcanberra libpulseaudio;
     epoll-shim = epoll-shim-hook;
