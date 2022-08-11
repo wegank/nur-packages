@@ -11,10 +11,7 @@
 with pkgs;
 
 let
-  scalp = callPackage ./pkgs/development/libraries/science/electronics/scalp { };
-  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite {
-    inherit scalp;
-  };
+  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
   # PulseAudio
   pulseaudio = callPackage ./pkgs/servers/pulseaudio {
     inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa CoreAudio;
@@ -52,9 +49,9 @@ in
 
   # Electronics
   flopoco = callPackage ./pkgs/applications/science/electronics/flopoco {
-    inherit pagsuite scalp;
+    inherit pagsuite;
   };
-  inherit pagsuite scalp;
+  inherit pagsuite;
 
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
