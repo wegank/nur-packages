@@ -14,17 +14,18 @@
 
 stdenv.mkDerivation rec {
   pname = "uxplay";
-  version = "1.52";
+  version = "1.56";
 
   src = fetchFromGitHub {
     owner = "FDH2";
     repo = "UxPlay";
-    rev = "v${version}";
-    sha256 = "sha256-2wPUG50fbXLg6w2Rni3NyeiCyUNPcOvxvqopD9QZJaQ=";
+    rev = "${version}";
+    sha256 = "sha256-hsM4bmW3AHKtmppWrxPz3rgN7meMeCXGHIwu7Ef/zHU=";
   };
 
   prePatch = lib.optionalString stdenv.isDarwin ''
-    sed -i "45,50d;55d;58d;65,71d;75d;79,95d" lib/CMakeLists.txt
+    sed -i '45,50d;55d;58d;65,71d;75d;79,95d' lib/CMakeLists.txt
+    sed -i '9d' renderers/CMakeLists.txt
   '';
 
   nativeBuildInputs = [
