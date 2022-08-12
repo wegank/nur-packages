@@ -15,17 +15,19 @@ let
   };
 in
 buildLinux (args // {
-  version = "5.18.14";
+  version = "5.19";
+  modDirVersion = "5.19.0";
+  extraMeta.branch = "5.19";
 
   src = fetchFromGitHub {
     # https://github.com/megous/linux
     owner = "megous";
     repo = "linux";
-    rev = "orange-pi-5.18-20220727-1139";
+    rev = "orange-pi-5.19-20220802-0940";
     postFetch = ''
       cat ${configfile} > $out/arch/arm64/configs/defconfig
     '';
-    sha256 = "sha256-lMjTBHyg2aGRsF3mMrsWXSVDAjCnJv5Zl82r//VMdQE=";
+    sha256 = "sha256-SwcHiIyU2KRB8X4mpyNWbpUMwPmY2nezipGpygSt38A=";
   };
 
   kernelPatches = [
