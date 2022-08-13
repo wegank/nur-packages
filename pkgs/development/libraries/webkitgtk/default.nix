@@ -116,9 +116,13 @@ stdenv.mkDerivation rec {
       excludes = [ "Source/JavaScriptCore/ChangeLog" ];
       sha256 = "sha256-0jbQeOY9EC+8cgK4LWTO+q0TE50RdnWgSJalULc52m4=";
     })
-    # Fix WTF errors on Darwin. (not upstreamed)
+    # Fix WTF errors on Darwin. (upstreamed)
     # This patch fixes missing headers in WTF.
-    ./fix-wtf-errors-on-darwin.patch
+    # TODO: remove me on 2.38+
+    (fetchpatch {
+      url = "https://github.com/WebKit/WebKit/commit/6bb3f1342f342358061b525c7b8f077b7b5ed15b.patch";
+      sha256 = "sha256-f0ovaxF0IT3EDXTjaoYSu9fQlJa55AtlpalRisrx+Wk=";
+    })
   ];
 
   preConfigure = lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
