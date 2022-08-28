@@ -12,17 +12,6 @@ with pkgs;
 
 let
   pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
-  # PulseAudio
-  pulseaudio = callPackage ./pkgs/servers/pulseaudio {
-    inherit (darwin.apple_sdk.frameworks) CoreServices AudioUnit Cocoa CoreAudio;
-  };
-  libpulseaudio = pulseaudio.override {
-    libOnly = true;
-  };
-  libcanberra = callPackage ./pkgs/development/libraries/libcanberra {
-    inherit (darwin.apple_sdk.frameworks) Carbon CoreServices AppKit;
-    inherit libpulseaudio;
-  };
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -36,10 +25,6 @@ let
     inherit wayland wayland-scanner;
   };
   wayland-scanner = wayland.bin;
-  # WebKitGTK
-  libproxy = callPackage ./pkgs/development/libraries/libproxy {
-    inherit (darwin.apple_sdk.frameworks) SystemConfiguration CoreFoundation JavaScriptCore;
-  };
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
@@ -69,24 +54,8 @@ in
         pipewireSupport = false;
       };
     };
-    roc-toolkit = roc-toolkit.override {
-      inherit libpulseaudio;
-    };
-    inherit libcanberra libpulseaudio;
     epoll-shim = epoll-shim-hook;
     withValgrind = false;
-  };
-
-  # PulseAudio
-  inherit libcanberra libpulseaudio pulseaudio;
-  libcanberra-gtk2 = libcanberra.override {
-    gtkSupport = "gtk2";
-  };
-  libcanberra-gtk3 = libcanberra.override {
-    gtkSupport = "gtk3";
-  };
-  gsound = callPackage ./pkgs/development/libraries/gsound {
-    inherit libcanberra;
   };
 
   # UxPlay
@@ -108,16 +77,10 @@ in
   };
 
   # WebKitGTK
-  inherit libproxy;
   webkitgtk = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/webkitgtk {
     harfbuzz = harfbuzzFull;
     inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
     inherit (darwin) apple_sdk;
-    geoclue2 = geoclue2.override {
-      glib-networking = glib-networking.override {
-        inherit libproxy;
-      };
-    };
   };
 
   # Misc
