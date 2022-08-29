@@ -1,8 +1,7 @@
 { lib
 , stdenv
-, fetchurl
+, fetchzip
 , cmake
-, unzip
 , gmp
 , scalp
 }:
@@ -11,14 +10,15 @@ stdenv.mkDerivation rec {
   pname = "pagsuite";
   version = "1.80";
 
-  src = fetchurl {
-    url = "https://gitlab.com/kumm/pagsuite/-/raw/master/releases/pagsuite_1_80.zip";
-    sha256 = "sha256-TYd+dleVPWEWU9Cb3XExd7ixJZyiUAp9QLtorYJSIbQ=";
+  src = fetchzip {
+    url = "https://gitlab.com/kumm/${pname}/-/raw/master/releases/${pname}_${builtins.replaceStrings ["."] ["_"] version}.zip";
+    stripRoot = false;
+    postFetch = ''mv $out/${pname}*/* $out'';
+    sha256 = "sha256-JuRuDPhKKBGz8jUBkZcZW5s2berOewjsPNR/n7kuofY=";
   };
 
   nativeBuildInputs = [
     cmake
-    unzip
   ];
 
   buildInputs = [
@@ -27,11 +27,6 @@ stdenv.mkDerivation rec {
   ];
 
   enableParallelBuilding = false;
-
-  unpackPhase = ''
-    unzip -qq $src
-    mv pagsuite_1_80/* .
-  '';
 
   meta = with lib; {
     description = "Optimization tools for the (P)MCM problem";
