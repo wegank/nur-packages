@@ -1,8 +1,7 @@
 { lib
 , gcc12Stdenv
-, fetchzip
-, fetchpatch
 , fetchFromGitHub
+, fetchpatch
 , pkg-config
 , curl
 , glib
@@ -29,10 +28,11 @@ stdenv.mkDerivation rec {
   pname = "freefilesync";
   version = "11.25";
 
-  src = fetchzip {
-    url = "https://freefilesync.org/download/FreeFileSync_${version}_Source.zip";
-    stripRoot = false;
-    sha256 = "sha256-+PR53t5O2zrlaRgOgp0Kwjaji1PvlvhnjNeUALiBy8A=";
+  src = fetchFromGitHub {
+    owner = "hkneptune";
+    repo = "FreeFileSync";
+    rev = "v${version}";
+    sha256 = "sha256-JV9qwBiF9kl+wc9+7lUufQVu6uiMQ6vojntxduNJ8MI=";
   };
 
   patches = [
