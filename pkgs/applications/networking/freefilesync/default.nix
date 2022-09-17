@@ -63,6 +63,7 @@ stdenv.mkDerivation rec {
   '';
 
   NIX_CFLAGS_COMPILE = [
+    # Undef g_object_ref on GLib 2.56+
     "-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_54"
     "-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_54"
   ];
