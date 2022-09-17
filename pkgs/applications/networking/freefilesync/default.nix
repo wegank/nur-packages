@@ -38,17 +38,17 @@ stdenv.mkDerivation rec {
   patches = [
     # Patches from ROSA Linux
     (fetchpatch {
-      url = "https://abf.io/import/${pname}/raw/rosa2021.1-${version}-1/ffs_devuan.patch";
+      url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan.patch";
       excludes = [ "FreeFileSync/Source/ffs_paths.cpp" ];
       postFetch = ''substituteInPlace $out --replace " for Rosa" ""'';
       sha256 = "sha256-o8T/tBinlhM1I82yXxm0ogZcZf+uri95vTJrca5mcqs=";
     })
     (fetchpatch {
-      url = "https://abf.io/import/${pname}/raw/rosa2021.1-${version}-1/ffs_devuan_gtk3.patch";
+      url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan_gtk3.patch";
       sha256 = "sha256-fsO3pZAjntFJCtdxsjgCTSW3QJxOr3MGlSo6azdkm/M=";
     })
     (fetchpatch {
-      url = "https://abf.io/import/${pname}/raw/rosa2021.1-${version}-1/ffs_sftp.patch";
+      url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_sftp.patch";
       sha256 = "sha256-tOIBIUgeTmOwNfrFFXUWu/7eXPHd9qdmqMHQ3ctvIpQ=";
     })
   ];
