@@ -84,6 +84,7 @@ in
   };
 
   # Misc
+  freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
 } // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
