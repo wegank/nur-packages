@@ -48,10 +48,6 @@ stdenv.mkDerivation rec {
       sha256 = "sha256-fsO3pZAjntFJCtdxsjgCTSW3QJxOr3MGlSo6azdkm/M=";
     })
     (fetchpatch {
-      url = "https://abf.io/import/${pname}/raw/rosa2021.1-${version}-1/ffs_openssl.patch";
-      sha256 = "sha256-6BIFZIKjfp0zcaAQIrc9OEaJUf4oRgebzihf3oPnjxg=";
-    })
-    (fetchpatch {
       url = "https://abf.io/import/${pname}/raw/rosa2021.1-${version}-1/ffs_sftp.patch";
       sha256 = "sha256-tOIBIUgeTmOwNfrFFXUWu/7eXPHd9qdmqMHQ3ctvIpQ=";
     })
