@@ -39,9 +39,11 @@ stdenv.mkDerivation rec {
     # Patches from ROSA Linux
     (fetchpatch {
       url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan.patch";
-      excludes = [ "FreeFileSync/Source/ffs_paths.cpp" ];
-      postFetch = ''substituteInPlace $out --replace " for Rosa" ""'';
       sha256 = "sha256-o8T/tBinlhM1I82yXxm0ogZcZf+uri95vTJrca5mcqs=";
+      excludes = [ "FreeFileSync/Source/ffs_paths.cpp" ];
+      postFetch = ''
+        substituteInPlace $out --replace " for Rosa" ""
+      '';
     })
     (fetchpatch {
       url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan_gtk3.patch";
