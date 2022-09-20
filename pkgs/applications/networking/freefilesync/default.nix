@@ -9,10 +9,10 @@
 , libssh2
 , openssl
 , wxGTK31-gtk3
+, wxGTK31-gtk3-override ? null
 }:
 
 let
-  stdenv = gcc12Stdenv;
   wxGTK316-gtk3 = wxGTK31-gtk3.overrideAttrs (old: rec {
     version = "3.1.6";
     src = fetchFromGitHub {
@@ -23,8 +23,9 @@ let
       fetchSubmodules = true;
     };
   });
+  wxGTK31-gtk3-override' = if wxGTK31-gtk3-override == null then wxGTK316-gtk3 else wxGTK31-gtk3-override;
 in
-stdenv.mkDerivation rec {
+gcc12Stdenv.mkDerivation rec {
   pname = "freefilesync";
   version = "11.25";
 
@@ -70,7 +71,7 @@ stdenv.mkDerivation rec {
     gtk3
     libssh2
     openssl
-    wxGTK316-gtk3
+    wxGTK31-gtk3-override'
   ];
 
   NIX_CFLAGS_COMPILE = [
@@ -98,7 +99,7 @@ stdenv.mkDerivation rec {
     description = "Open Source File Synchronization & Backup Software";
     homepage = "https://freefilesync.org";
     platforms = platforms.linux;
-    broken = !stdenv.isLinux;
+    broken = !gcc12Stdenv.isLinux;
     maintainers = with maintainers; [ wegank ];
   };
 }
