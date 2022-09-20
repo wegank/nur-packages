@@ -40,15 +40,17 @@ gcc12Stdenv.mkDerivation rec {
     # Patches from ROSA Linux
     (fetchpatch {
       url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan.patch";
-      sha256 = "sha256-o8T/tBinlhM1I82yXxm0ogZcZf+uri95vTJrca5mcqs=";
-      excludes = [ "FreeFileSync/Source/ffs_paths.cpp" ];
+      sha256 = "sha256-2zSmlBSSDHrU8Csts5Gm6dYaKbPEWC9+Nz3SFTBEpvk=";
       postFetch = ''
-        substituteInPlace $out --replace " for Rosa" ""
+        sed -i "1,12d;s/ for Rosa//" $out
       '';
     })
     (fetchpatch {
       url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_devuan_gtk3.patch";
-      sha256 = "sha256-fsO3pZAjntFJCtdxsjgCTSW3QJxOr3MGlSo6azdkm/M=";
+      sha256 = "sha256-NXt/+BRTcMk8bnjR9Hipv1NzV9YqRJqy0e3RMInoWsA=";
+      postFetch = ''
+        substituteInPlace $out --replace "-isystem/usr/include/gtk-3.0" ""
+      '';
     })
     (fetchpatch {
       url = "https://abf.io/import/freefilesync/raw/rosa2021.1-11.25-1/ffs_sftp.patch";
@@ -80,16 +82,24 @@ gcc12Stdenv.mkDerivation rec {
     "-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_54"
   ];
 
-  preBuild = ''
+  buildPhase = ''
+    runHook preBuild
+
     chmod +w FreeFileSync/Build
     cd FreeFileSync/Source
+    make
+    cd RealTimeSync
+    make
+    cd ../../..
+
+    runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out
-    cp -R ../Build/* $out
+    cp -R FreeFileSync/Build/* $out
     mv $out/{Bin,bin}
 
     runHook postInstall
