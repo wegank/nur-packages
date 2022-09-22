@@ -8,26 +8,27 @@
 } @ args:
 
 let
-  rev = "de9a88a70f0ae5fc0839ff94bf29e8a30af399f8";
+  rev = "1c86d6592b2ab309943dbb5d931359a40b5808ec";
   configfile = fetchurl {
     url = "https://raw.githubusercontent.com/NixOS/mobile-nixos/${rev}/devices/pine64-pinephone/kernel/config.aarch64";
-    sha256 = "sha256-Gs7sqQDzqLIs940yM2QUSlzVhRACkJDgTPw20D+AFxw=";
+    sha256 = "sha256-95rMZaylQzvDTOiX6rqVfF2pPlR/6bEiUQBHqP8JhIo=";
   };
+  version = "5.19.8"; # 5.19
+  modDirVersion = version; # 5.19.0
 in
 buildLinux (args // {
-  version = "5.19";
-  modDirVersion = "5.19.0";
-  extraMeta.branch = "5.19";
+  inherit version modDirVersion;
+  extraMeta.branch = version;
 
   src = fetchFromGitHub {
     # https://github.com/megous/linux
     owner = "megous";
     repo = "linux";
-    rev = "orange-pi-5.19-20220802-0940";
+    rev = "orange-pi-5.19-20220909-1622";
     postFetch = ''
       cat ${configfile} > $out/arch/arm64/configs/defconfig
     '';
-    sha256 = "sha256-SwcHiIyU2KRB8X4mpyNWbpUMwPmY2nezipGpygSt38A=";
+    sha256 = "sha256-cdFXepH+pytywAz6lmT62zkdbGC02BkJt+a/CPyH3ps=";
   };
 
   kernelPatches = [
