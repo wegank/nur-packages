@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
     })
   ];
 
-  postPatch = lib.optionalString (stdenv.system == "x86_64-darwin") ''
+  postPatch = lib.optionalString (stdenv.isDarwin && stdenv.isx86_64) ''
     substituteInPlace CMakeLists.txt --replace "-pg" ""
     substituteInPlace src/Apps/TaMaDi/CMakeLists.txt --replace "-pg" ""
   '';
@@ -70,10 +70,10 @@ stdenv.mkDerivation rec {
   ];
 
   installPhase = ''
-    ./${pname} BuildAutocomplete
-    install -Dm755 ${pname} $out/bin/${pname}
+    ./flopoco BuildAutocomplete
+    install -Dm755 flopoco $out/bin/flopoco
     cp bin* fp* ieee* longacc* $out/bin/
-    installShellCompletion --bash ${pname}_autocomplete
+    installShellCompletion --bash flopoco_autocomplete
   '';
 
   meta = with lib; {
