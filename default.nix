@@ -87,8 +87,6 @@ in
   freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
-  ocaml-ng = callPackage ./pkgs/top-level/ocaml-packages.nix { };
-
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
   heptagon = callPackage ./pkgs/development/ocaml-modules/heptagon { };
