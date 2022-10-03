@@ -87,7 +87,14 @@ in
   freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
-} // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
+  ocaml-ng = callPackage ./pkgs/top-level/ocaml-packages.nix { };
+
+} // (with pkgs.ocaml-ng.ocamlPackages_latest; {
+
+  heptagon = callPackage ./pkgs/development/ocaml-modules/heptagon { };
+  lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
+
+}) // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
   eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
   linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
