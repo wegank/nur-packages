@@ -11,7 +11,6 @@
 with pkgs;
 
 let
-  pagsuite = callPackage ./pkgs/development/libraries/science/electronics/pagsuite { };
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -33,10 +32,7 @@ in
   overlays = import ./overlays; # nixpkgs overlays
 
   # Electronics
-  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco {
-    inherit pagsuite;
-  };
-  inherit pagsuite;
+  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
 
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
