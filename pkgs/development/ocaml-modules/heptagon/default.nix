@@ -7,6 +7,8 @@
 , runtimeShell
 }:
 
+with ocamlPackages;
+
 lib.throwIfNot (lib.versionAtLeast ocaml.version "4.03.0")
   "heptagon is not available for OCaml ${ocaml.version}"
 
@@ -26,7 +28,7 @@ stdenv.mkDerivation rec {
     makeWrapper
   ];
 
-  buildInputs = with ocamlPackages; [
+  buildInputs = [
     ocaml
     findlib
     menhir
@@ -35,18 +37,14 @@ stdenv.mkDerivation rec {
     ocamlbuild
   ];
 
-  propagatedBuildInputs = with ocamlPackages; [
+  propagatedBuildInputs = [
     lablgtk
     ocamlgraph
   ];
 
   postFixup = ''
-    mv $out/bin/hepts $out/bin/.hepts-unwrapped
-    cat > $out/bin/hepts << EOF
-    #!${runtimeShell}
-    ${ocaml}/bin/ocamlrun -I ${ocamlPackages.lablgtk}/lib/ocaml/${ocaml.version}/site-lib/lablgtk2 $out/bin/.hepts-unwrapped "\$@"
-    EOF
-    chmod +x $out/bin/hepts
+    wrapProgram $out/bin/hepts \
+      --prefix CAML_LD_LIBRARY_PATH : "${lablgtk}/lib/ocaml/${ocaml.version}/site-lib/lablgtk2"
   '';
 
   meta = with lib; {
