@@ -66,7 +66,7 @@ stdenv.mkDerivation rec {
     '' + lib.concatMapStrings enableFeature atomicFeatures
     )));
 
-  doCheck = stdenv.isAarch64;
+  doCheck = false;
 
   meta = with lib; {
     description = "Small epoll implementation using kqueue";
