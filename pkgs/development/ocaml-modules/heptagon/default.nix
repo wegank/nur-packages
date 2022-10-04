@@ -3,14 +3,10 @@
 , fetchFromGitLab
 , makeWrapper
 , ocamlPackages
-, ocaml
 , runtimeShell
 }:
 
 with ocamlPackages;
-
-lib.throwIfNot (lib.versionAtLeast ocaml.version "4.03.0")
-  "heptagon is not available for OCaml ${ocaml.version}"
 
 stdenv.mkDerivation rec {
   pname = "heptagon";
