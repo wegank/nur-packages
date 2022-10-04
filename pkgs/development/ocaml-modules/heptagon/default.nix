@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "A synchronous dataflow language whose syntax and semantics is inspired from Lustre";
+    description = "A synchronous dataflow language inspired from Lustre";
     homepage = "https://gitlab.inria.fr/synchrone/heptagon";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ wegank ];
