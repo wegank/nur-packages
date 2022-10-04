@@ -11,7 +11,6 @@
 , libxml2
 , mpfi
 , mpfr
-, pagsuite
 , scalp
 , sollya
 , wcpg
@@ -29,7 +28,7 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-ccafc81aTXC9M7MqsoNR2Qj2X6xIl4FxsTYHLFcEVPM=";
   };
 
-  patches = lib.optionals (!(lib.versionAtLeast version "5.0")) [
+  patches = [
     (fetchpatch {
       name = "fix-clang-error-sin-cos.patch";
       url = "https://gitlab.com/flopoco/flopoco/-/commit/de3aa60ad19333952c176c2a2e51f12653ca736b.patch";
@@ -63,7 +62,6 @@ stdenv.mkDerivation rec {
     libxml2
     mpfi
     mpfr
-    pagsuite
     scalp
     sollya
     wcpg
