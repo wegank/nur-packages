@@ -7,6 +7,9 @@
 , runtimeShell
 }:
 
+lib.throwIfNot (lib.versionAtLeast ocaml.version "4.03.0")
+  "heptagon is not available for OCaml ${ocaml.version}"
+
 stdenv.mkDerivation rec {
   pname = "heptagon";
   version = "1.05.00";
