@@ -3,7 +3,6 @@
 , fetchFromGitLab
 , makeWrapper
 , ocamlPackages
-, runtimeShell
 }:
 
 with ocamlPackages;
