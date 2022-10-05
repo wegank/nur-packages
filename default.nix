@@ -85,7 +85,7 @@ in
 
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
-  heptagon = callPackage ./pkgs/development/ocaml-modules/heptagon { };
+  heptagon = callPackage ./pkgs/development/compilers/heptagon { };
   lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
 
 }) // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
