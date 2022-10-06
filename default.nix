@@ -11,6 +11,12 @@
 with pkgs;
 
 let
+  # Robotics
+  eigenpy = python3Packages.callPackage ./pkgs/development/python-modules/eigenpy { };
+  pinocchio = python3Packages.callPackage ./pkgs/development/python-modules/pinocchio {
+    inherit eigenpy;
+  };
+
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -83,7 +89,14 @@ in
   freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
-} // (with pkgs.ocaml-ng.ocamlPackages_latest; {
+} // (with pkgs.python3Packages; {
+
+  inherit eigenpy pinocchio;
+  example-robot-data = callPackage ./pkgs/development/python-modules/example-robot-data {
+    inherit eigenpy pinocchio;
+  };
+
+}) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
   heptagon = callPackage ./pkgs/development/compilers/heptagon { };
   lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
