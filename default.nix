@@ -16,6 +16,9 @@ let
   pinocchio = python3Packages.callPackage ./pkgs/development/python-modules/pinocchio {
     inherit eigenpy;
   };
+  example-robot-data = python3Packages.callPackage ./pkgs/development/python-modules/example-robot-data {
+    inherit eigenpy pinocchio;
+  };
 
   pyngrok = python3Packages.callPackage ./pkgs/development/python-modules/pyngrok { };
   meshcat = python3Packages.callPackage ./pkgs/development/python-modules/meshcat {
@@ -98,8 +101,8 @@ in
 
   inherit eigenpy pinocchio;
   inherit pyngrok meshcat;
-  example-robot-data = callPackage ./pkgs/development/python-modules/example-robot-data {
-    inherit eigenpy pinocchio;
+  crocoddyl = callPackage ./pkgs/development/python-modules/crocoddyl {
+    inherit eigenpy example-robot-data pinocchio;
   };
   quadprog = callPackage ./pkgs/development/python-modules/quadprog { };
 
