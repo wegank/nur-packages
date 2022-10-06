@@ -17,6 +17,11 @@ let
     inherit eigenpy;
   };
 
+  pyngrok = python3Packages.callPackage ./pkgs/development/python-modules/pyngrok { };
+  meshcat = python3Packages.callPackage ./pkgs/development/python-modules/meshcat {
+    inherit pyngrok;
+  };
+
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -92,6 +97,7 @@ in
 } // (with pkgs.python3Packages; {
 
   inherit eigenpy pinocchio;
+  inherit pyngrok meshcat;
   example-robot-data = callPackage ./pkgs/development/python-modules/example-robot-data {
     inherit eigenpy pinocchio;
   };
