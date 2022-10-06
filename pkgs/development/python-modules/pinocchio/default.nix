@@ -22,6 +22,7 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = ''
+    substituteInPlace src/math/sincos.hpp --replace "__APPLE__" "0"
     sed -i '/pybind11/d' unittest/python/CMakeLists.txt
   '';
 
@@ -40,10 +41,6 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     numpy
-  ];
-
-  NIX_CFLAGS_COMPILE = [
-    "-include math.h"
   ];
 
   meta = with lib; {
