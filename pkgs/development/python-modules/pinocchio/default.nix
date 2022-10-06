@@ -42,6 +42,10 @@ stdenv.mkDerivation rec {
     numpy
   ];
 
+  NIX_CFLAGS_COMPILE = [
+    "-include math.h"
+  ];
+
   meta = with lib; {
     description = "A fast and flexible implementation of Rigid Body Dynamics algorithms and their analytical derivatives";
     homepage = "https://github.com/stack-of-tasks/pinocchio";
