@@ -101,6 +101,7 @@ in
   example-robot-data = callPackage ./pkgs/development/python-modules/example-robot-data {
     inherit eigenpy pinocchio;
   };
+  quadprog = callPackage ./pkgs/development/python-modules/quadprog { };
 
 }) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
