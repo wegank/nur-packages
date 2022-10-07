@@ -100,7 +100,7 @@ in
 
   # Misc
   freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
-  ldid = callPackage ./pkgs/applications/editors/ldid {
+  ldid = callPackage ./pkgs/development/tools/ldid {
     inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
   };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
