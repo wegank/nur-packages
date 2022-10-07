@@ -63,8 +63,8 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Link Identity Editor";
     homepage = "https://cydia.saurik.com/info/ldid/";
-    maintainers = with lib.maintainers; [ wegank ];
-    platforms = platforms.darwin;
-    license = lib.licenses.agpl3Only;
+    maintainers = with maintainers; [ wegank ];
+    platforms = platforms.unix;
+    license = licenses.agpl3Only;
   };
 }
