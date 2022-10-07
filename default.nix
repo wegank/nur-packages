@@ -11,6 +11,11 @@
 with pkgs;
 
 let
+  # Jupyter Lab
+  anyio = python3Packages.anyio.overrideAttrs (old: {
+    doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
+  });
+
   # Robotics
   eigenpy = python3Packages.callPackage ./pkgs/development/python-modules/eigenpy { };
   pinocchio = python3Packages.callPackage ./pkgs/development/python-modules/pinocchio {
@@ -95,6 +100,9 @@ in
 
   # Misc
   freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
+  ldid = callPackage ./pkgs/os-specific/darwin/ldid {
+    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
+  };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
 } // (with pkgs.python3Packages; {
