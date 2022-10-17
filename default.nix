@@ -119,6 +119,8 @@ in
   heptagon = callPackage ./pkgs/development/compilers/heptagon { };
   lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
 
+  rml = callPackage ./pkgs/development/compilers/rml { };
+
 }) // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
   eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
