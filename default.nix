@@ -117,6 +117,8 @@ in
 }) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
   heptagon = callPackage ./pkgs/development/compilers/heptagon { };
+
+  bdd = callPackage ./pkgs/development/ocaml-modules/bdd { };
   lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
 
   rml = callPackage ./pkgs/development/compilers/rml { };
