@@ -55,8 +55,6 @@ jobs:
             --drv-path --show-trace \
             -I nixpkgs=$(nix-instantiate --find-file nixpkgs) \
             -I $PWD
-      - name: Build Qt WebEngine (debug only)
-        run: nix-build . -A qtwebengine
       - name: Build nix packages
         run: nix shell -f '<nixpkgs>' nix-build-uncached -c nix-build-uncached ci.nix -A cacheOutputs
       - name: Trigger NUR update
