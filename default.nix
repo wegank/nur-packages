@@ -74,12 +74,8 @@ in
   };
 
   # Qt WebEngine
-  qtwebengine = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
-    inherit (darwin) cctools libobjc libunwind xnu;
-    inherit (darwin.apple_sdk_11_0.libs) sandbox;
-    inherit (darwin.apple_sdk_11_0.frameworks) ApplicationServices AVFoundation Foundation ForceFeedback GameController AppKit
-      ImageCaptureCore CoreBluetooth IOBluetooth CoreWLAN Quartz Cocoa LocalAuthentication
-      MediaPlayer MediaAccessibility SecurityInterface Vision CoreML;
+  qtwebengine = callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
+    inherit (darwin.apple_sdk.frameworks) MediaPlayer MediaAccessibility SecurityInterface Vision CoreML;
   };
 
   # UxPlay
