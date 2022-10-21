@@ -74,7 +74,7 @@ in
   };
 
   # Qt WebEngine
-  qt5.qtwebengine = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
+  qtwebengine = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
     inherit (darwin.apple_sdk_11_0.frameworks) MediaPlayer MediaAccessibility SecurityInterface Vision CoreML;
   };
 
