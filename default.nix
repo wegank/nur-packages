@@ -104,7 +104,6 @@ in
   };
 
   # Misc
-  freefilesync = callPackage ./pkgs/applications/networking/freefilesync { };
   ldid = callPackage ./pkgs/development/tools/ldid {
     inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
   };
