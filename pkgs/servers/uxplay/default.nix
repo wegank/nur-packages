@@ -23,9 +23,8 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-KkYIj5W6yMQi8En24Bo77GMK/AOS2qJhadQJYSd7gXs=";
   };
 
-  prePatch = lib.optionalString stdenv.isDarwin ''
-    sed -i '55,68d;73d;76,82d;89d;93,113d;117d' lib/CMakeLists.txt
-    sed -i '4,10d' renderers/CMakeLists.txt
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    sed -i 's/if *( *APPLE.*/if (0)/g' {lib,renderers}/CMakeLists.txt
   '';
 
   nativeBuildInputs = [
