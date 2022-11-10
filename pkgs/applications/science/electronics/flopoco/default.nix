@@ -18,14 +18,14 @@
 
 stdenv.mkDerivation rec {
   pname = "flopoco";
-  version = "4.1.2";
+  version = "4.1.3";
 
   src = fetchFromGitLab {
     owner = pname;
     repo = pname;
-    # flopoco-4.1.2 is not tagged on GitLab
-    rev = "5f6886f55d3c74b547fb3d030a622a74b7dfed6e";
-    sha256 = "sha256-ccafc81aTXC9M7MqsoNR2Qj2X6xIl4FxsTYHLFcEVPM=";
+    # flopoco-4.1.3 is not tagged on GitLab
+    rev = "67598298207c9f3261c35679c8a5966480c4343c";
+    sha256 = "sha256-0jRjg4/qciqBcjsi6BTbKO4VJkcoEzpC98wFkUOIGbI=";
   };
 
   patches = [
@@ -45,8 +45,7 @@ stdenv.mkDerivation rec {
   ];
 
   postPatch = lib.optionalString (stdenv.isDarwin && stdenv.isx86_64) ''
-    substituteInPlace CMakeLists.txt --replace "-pg" ""
-    substituteInPlace src/Apps/TaMaDi/CMakeLists.txt --replace "-pg" ""
+    sed -i "s/-pg//g" {,src/Apps/TaMaDi/}CMakeLists.txt
   '';
 
   nativeBuildInputs = [
