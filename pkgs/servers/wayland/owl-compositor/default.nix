@@ -19,20 +19,10 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-a+TznasOVEzSNrs66/y91AeMRDEfyd+WO5mO811hLj0=";
   };
 
-  prePatch = lib.optionalString stdenv.isDarwin ''
-    sed -i "181s/ibtool/\/usr\/bin\/ibtool/" configure
-    sed -i "201,202d;204,209d" configure
-  '';
-
-  # requires ibtool
-  sandboxProfile = lib.optionalString stdenv.isDarwin ''
-    (allow process-exec
-      (literal "/usr/bin/ibtool")
-      (regex "/Xcode.app/Contents/Developer/usr/bin/ibtool")
-      (regex "/Xcode.app/Contents/Developer/usr/bin/xcodebuild"))
-    (allow file-read*)
-    (deny file-read* (subpath "/usr/local") (with no-log))
-    (allow file-write* (subpath "/private/var/folders"))
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    substituteInPlace configure \
+      --replace "ibtool" "# ibtool" \
+      --replace "sw_vers -productName" "echo Mac OS X"
   '';
 
   nativeBuildInputs = [
@@ -48,17 +38,21 @@ stdenv.mkDerivation rec {
   ];
 
   preConfigure = ''
-    mkdir build
+    mkdir -p build/Owl.app/Contents/Resources/English.lproj
     cd build
+    cp -r ${./mac/MainMenu.nib} Owl.app/Contents/Resources/English.lproj/
+    cp -r ${./mac/OwlPreferences.nib} Owl.app/Contents/Resources/English.lproj/
   '';
 
   configureScript = "../configure";
 
   installPhase = ''
     runHook preInstall
+
     mkdir -p $out/Applications $out/bin
     mv Owl.app $out/Applications
     makeWrapper $out/Applications/Owl.app/Contents/MacOS/Owl $out/bin/Owl
+
     runHook postInstall
   '';
 
