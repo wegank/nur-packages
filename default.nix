@@ -50,9 +50,6 @@ in
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  # Electronics
-  flopoco = callPackage ./pkgs/applications/science/electronics/flopoco { };
-
   # Perpetual Pools
   perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
   perpetual-pools-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
