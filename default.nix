@@ -101,9 +101,6 @@ in
   };
 
   # Misc
-  ldid = callPackage ./pkgs/development/tools/ldid {
-    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
-  };
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
 } // (with pkgs.python3Packages; {
