@@ -115,7 +115,6 @@ in
 }) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
   bdd = callPackage ./pkgs/development/ocaml-modules/bdd { };
-  lustre-v6 = callPackage ./pkgs/development/ocaml-modules/lustre-v6 { };
 
 }) // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
