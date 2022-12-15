@@ -16,15 +16,6 @@ let
     doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
   });
 
-  # Robotics
-  eigenpy = python3Packages.callPackage ./pkgs/development/python-modules/eigenpy { };
-  pinocchio = python3Packages.callPackage ./pkgs/development/python-modules/pinocchio {
-    inherit eigenpy;
-  };
-  example-robot-data = python3Packages.callPackage ./pkgs/development/python-modules/example-robot-data {
-    inherit eigenpy pinocchio;
-  };
-
   pyngrok = python3Packages.callPackage ./pkgs/development/python-modules/pyngrok { };
   meshcat = python3Packages.callPackage ./pkgs/development/python-modules/meshcat {
     inherit pyngrok;
@@ -105,11 +96,7 @@ in
 
 } // (with pkgs.python3Packages; {
 
-  inherit eigenpy pinocchio;
   inherit pyngrok meshcat;
-  crocoddyl = callPackage ./pkgs/development/python-modules/crocoddyl {
-    inherit eigenpy example-robot-data pinocchio;
-  };
   quadprog = callPackage ./pkgs/development/python-modules/quadprog { };
 
 }) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
