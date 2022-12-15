@@ -19,6 +19,10 @@ buildPythonPackage rec {
     sha256 = "sha256-LP4XzeT+hdByo94Bip2r9WJvgMJV//LOY7JqSNJIStk=";
   };
 
+  postPatch = ''
+    sed -i '/PYTHONPATH/d' src/meshcat/servers/zmqserver.py
+  '';
+
   propagatedBuildInputs = [
     ipython
     u-msgpack-python
@@ -29,6 +33,7 @@ buildPythonPackage rec {
     pillow
   ];
 
+  # requires a running server
   doCheck = false;
 
   meta = with lib; {
