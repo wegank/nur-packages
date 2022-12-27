@@ -38,4 +38,6 @@ qt5.qtwebengine.overrideAttrs (old: {
     Vision
     CoreML
   ];
+
+  meta.broken = stdenv.isDarwin && stdenv.isx86_64;
 })
