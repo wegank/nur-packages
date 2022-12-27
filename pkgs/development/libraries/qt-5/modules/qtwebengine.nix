@@ -11,16 +11,6 @@
 
 qt5.qtwebengine.overrideAttrs (old: {
   postPatch = old.postPatch
-    # Set host_cpu to 'arm64' on aarch64-darwin hosts
-    + lib.optionalString (stdenv.isDarwin && stdenv.isAarch64) ''
-    substituteInPlace src/3rdparty/gn/tools/gn/args.cc \
-      --replace "arch = kArm;" "arch = kArm64;"
-  ''
-    # error: functional-style cast from 'neon::F' (aka 'V<float>') to '__fp16' is not allowed
-    + lib.optionalString (stdenv.isDarwin && stdenv.isAarch64) ''
-    substituteInPlace src/3rdparty/chromium/third_party/skia/src/opts/SkRasterPipeline_opts.h \
-      --replace "!defined(SK_BUILD_FOR_GOOGLE3)" "0"
-  ''
     # ld: library not found for -lpmenergy
     + lib.optionalString stdenv.isDarwin ''
     sed -i "/pmsample/d;/pmenergy/d" src/3rdparty/chromium/base/BUILD.gn
