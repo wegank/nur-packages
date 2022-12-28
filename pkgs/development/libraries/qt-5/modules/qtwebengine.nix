@@ -17,6 +17,7 @@ qt5.qtwebengine.overrideAttrs (old: {
     sed -z -i 's|extern "C".*extern "C"||' src/3rdparty/chromium/base/process/process_metrics_mac.cc
     sed -i "/pm_sample_task/d;/pm_energy_impact/d" src/3rdparty/chromium/base/process/process_metrics_mac.cc
   ''
+    # ld: warning: directory not found for option '-L/nix/store/...-xcodebuild-0.1.2-pre/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib'
     # ld: fatal warning(s) induced error (-fatal_warnings)
     + lib.optionalString stdenv.isDarwin ''
     substituteInPlace src/3rdparty/chromium/build/config/compiler/BUILD.gn \
