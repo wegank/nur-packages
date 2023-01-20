@@ -16,11 +16,6 @@ let
     doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
   });
 
-  pyngrok = python3Packages.callPackage ./pkgs/development/python-modules/pyngrok { };
-  meshcat = python3Packages.callPackage ./pkgs/development/python-modules/meshcat {
-    inherit pyngrok;
-  };
-
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -94,12 +89,7 @@ in
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
 
-} // (with pkgs.python3Packages; {
-
-  inherit pyngrok meshcat;
-  quadprog = callPackage ./pkgs/development/python-modules/quadprog { };
-
-}) // (with pkgs.ocaml-ng.ocamlPackages_latest; {
+} // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
   bdd = callPackage ./pkgs/development/ocaml-modules/bdd { };
 
