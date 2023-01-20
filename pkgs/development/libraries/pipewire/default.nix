@@ -22,6 +22,7 @@
 , udev
 , libva
 , libsndfile
+, vulkanSupport ? stdenv.isLinux
 , vulkan-headers
 , vulkan-loader
 , webrtc-audio-processing
@@ -60,7 +61,7 @@
 , avahi
 , raopSupport ? true
 , openssl
-, rocSupport ? true
+, rocSupport ? stdenv.isLinux
 , roc-toolkit
 , x11Support ? true
 , libcanberra
@@ -131,8 +132,6 @@ let
       lilv
       ncurses
       readline
-      vulkan-headers
-      vulkan-loader
       webrtc-audio-processing
     ]
     ++ lib.optionals enableSystemd [ systemd udev ]
@@ -146,6 +145,7 @@ let
     ++ lib.optional zeroconfSupport avahi
     ++ lib.optional raopSupport openssl
     ++ lib.optional rocSupport roc-toolkit
+    ++ lib.optionals vulkanSupport [ vulkan-headers vulkan-loader ]
     ++ lib.optionals x11Support [ libcanberra xorg.libX11 xorg.libXfixes ]
     ++ lib.optional stdenv.isDarwin [ epoll-shim libinotify-kqueue ];
 
@@ -184,7 +184,7 @@ let
       "-Dpipewire_confdata_dir=${placeholder "lib"}/share/pipewire"
       "-Draop=${mesonEnableFeature raopSupport}"
       "-Dsession-managers="
-      "-Dvulkan=enabled"
+      "-Dvulkan=${mesonEnableFeature vulkanSupport}"
       "-Dx11=${mesonEnableFeature x11Support}"
       "-Dx11-xfixes=${mesonEnableFeature x11Support}"
       "-Dlibcanberra=${mesonEnableFeature x11Support}"
