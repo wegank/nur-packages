@@ -4,6 +4,7 @@
 , makeWrapper
 , libxkbcommon
 , wayland
+, DarwinTools
 , bootstrap_cmds
 , Cocoa
 }:
@@ -20,20 +21,20 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = lib.optionalString stdenv.isDarwin ''
-    substituteInPlace configure \
-      --replace "ibtool" "# ibtool" \
-      --replace "sw_vers -productName" "echo Mac OS X"
+    sed -i "/ibtool/d" configure
   '';
 
   nativeBuildInputs = [
     makeWrapper
+  ] ++ lib.optionals stdenv.isDarwin [
+    DarwinTools
+    bootstrap_cmds
   ];
 
   buildInputs = [
     libxkbcommon
     wayland
   ] ++ lib.optionals stdenv.isDarwin [
-    bootstrap_cmds
     Cocoa
   ];
 
