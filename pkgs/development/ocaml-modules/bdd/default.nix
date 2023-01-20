@@ -10,10 +10,12 @@ buildDunePackage rec {
     owner = "backtracking";
     repo = "ocaml-bdd";
     rev = "6d1b1d3c24e5784b87e599a00230ce652acb2dcc";
-    sha256 = "sha256-3mJZlAFQsI7AgrNQOe6N94CDfX5gXYqQBooV0jcoYEA=";
+    hash = "sha256-3mJZlAFQsI7AgrNQOe6N94CDfX5gXYqQBooV0jcoYEA=";
   };
 
-  propagatedBuildInputs = [ stdlib-shims ];
+  propagatedBuildInputs = [
+    stdlib-shims
+  ];
 
   meta = with lib; {
     homepage = "https://github.com/backtracking/ocaml-bdd";
