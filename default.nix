@@ -37,11 +37,11 @@ in
   overlays = import ./overlays; # nixpkgs overlays
 
   # Perpetual Pools
-  perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
-  perpetual-pools-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
-  pong-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
-    pongified = true;
-  };
+  # perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
+  # perpetual-pools-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
+  # pong-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
+  #   pongified = true;
+  # };
 
   # PipeWire
   pipewire = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/pipewire {
