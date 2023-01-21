@@ -43,19 +43,6 @@ in
   #   pongified = true;
   # };
 
-  # PipeWire
-  pipewire = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/pipewire {
-    # ffmpeg depends on SDL2 which depends on pipewire by default.
-    # Break the cycle by disabling pipewire support in our ffmpeg.
-    ffmpeg = ffmpeg.override {
-      SDL2 = SDL2.override {
-        pipewireSupport = false;
-      };
-    };
-    epoll-shim = epoll-shim-hook;
-    withValgrind = false;
-  };
-
   # Qt WebEngine
   qtwebengine = callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
     inherit (darwin.apple_sdk.frameworks) MediaPlayer MediaAccessibility SecurityInterface Vision CoreML;
