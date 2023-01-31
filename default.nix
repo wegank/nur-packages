@@ -17,6 +17,7 @@ let
   });
 
   # Misc
+  flexdock = callPackage ./pkgs/applications/science/math/flexdock { };
   jgraphx = callPackage ./pkgs/applications/science/math/jgraphx { };
 
   # Wayland
@@ -78,7 +79,7 @@ in
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
-  inherit jgraphx;
+  inherit flexdock jgraphx;
 
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
