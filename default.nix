@@ -75,6 +75,7 @@ in
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
+  jgraphx = callPackage ./pkgs/applications/science/math/jgraphx { };
 
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
