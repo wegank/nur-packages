@@ -16,6 +16,9 @@ let
     doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
   });
 
+  # Misc
+  jgraphx = callPackage ./pkgs/applications/science/math/jgraphx { };
+
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
   epoll-shim-hook = epoll-shim.override {
@@ -74,8 +77,8 @@ in
   };
 
   # Misc
-  mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper/default.nix { };
-  jgraphx = callPackage ./pkgs/applications/science/math/jgraphx { };
+  mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
+  inherit jgraphx;
 
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
