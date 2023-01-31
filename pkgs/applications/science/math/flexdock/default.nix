@@ -42,9 +42,9 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "Java Swing diagramming (graph visualisation) library";
-    homepage = "https://github.com/jgraph/jgraphx";
-    license = licenses.bsd3;
+    description = "Java docking framework for use in cross-platform Swing applications";
+    homepage = "https://github.com/opencollab/flexdock";
+    license = licenses.asl20;
     maintainers = with maintainers; [ wegank ];
     platforms = platforms.unix;
   };

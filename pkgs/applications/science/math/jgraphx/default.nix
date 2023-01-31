@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "Java Swing diagramming (graph visualisation) library";
+    description = "A Java Swing diagramming (graph visualisation) library";
     homepage = "https://github.com/jgraph/jgraphx";
     license = licenses.bsd3;
     maintainers = with maintainers; [ wegank ];
