@@ -20,6 +20,7 @@ let
   flexdock = callPackage ./pkgs/applications/science/math/flexdock { };
   jgoodies-looks = callPackage ./pkgs/applications/science/math/jgoodies-looks { };
   jgraphx = callPackage ./pkgs/applications/science/math/jgraphx { };
+  skinlf = callPackage ./pkgs/applications/science/math/skinlf { };
 
   # Wayland
   epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
@@ -80,7 +81,7 @@ in
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
-  inherit flexdock jgoodies-looks jgraphx;
+  inherit flexdock jgoodies-looks jgraphx skinlf;
 
 } // (with pkgs.ocaml-ng.ocamlPackages_latest; {
 
