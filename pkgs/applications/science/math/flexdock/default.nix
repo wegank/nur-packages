@@ -1,19 +1,17 @@
 { lib
 , stdenv
-, fetchFromGitHub
+, fetchurl
 , ant
 , openjdk
 }:
 
 stdenv.mkDerivation rec {
   pname = "flexdock";
-  version = "1.2.3";
+  version = "1.2.4";
 
-  src = fetchFromGitHub {
-    owner = "opencollab";
-    repo = pname;
-    rev = version;
-    hash = "sha256-ae6atAa84mj0fZ9O6YhM864k/7Jdqdxt4o+C4Fj79UM=";
+  src = fetchurl {
+    url = "https://src.fedoraproject.org/repo/pkgs/flexdock/flexdock-1.2.4.tar.gz/79883baeb9d628d45fa4d16897f6d96b/flexdock-1.2.4.tar.gz";
+    hash = "sha256-/wODkpxTc99sFLoyGSO1ZoAjszwDRcHosbRuBWUw/aI=";
   };
 
   postPatch = ''
