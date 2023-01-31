@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
     runHook preInstall
 
     mkdir -p $out/share/java
-    cp build/flexdock-${version}.jar $out/share/java
+    cp build/${pname}-${version}.jar $out/share/java/${pname}.jar
 
     runHook postInstall
   '';
