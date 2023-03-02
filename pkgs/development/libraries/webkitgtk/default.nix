@@ -236,7 +236,7 @@ stdenv.mkDerivation rec {
     "-DENABLE_GLES2=ON"
   ];
 
-  NIX_CFLAGS_COMPILE = lib.optionals stdenv.isDarwin [
+  env.NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin (toString [
     # FAILED: Source/WTF/wtf/CMakeFiles/WTF.dir/FileSystem.cpp.o
     # error: no matching constructor for initialization of 'std::filesystem::path'
     "-D HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR=1"
@@ -244,7 +244,7 @@ stdenv.mkDerivation rec {
     # Undefined symbols for architecture arm64: "bmalloc::api::isoAllocate(__pas_heap_ref&)"
     # TODO: check if it can be removed on 2.37.2+
     "-D BENABLE_LIBPAS=0"
-  ];
+  ]);
 
   postPatch = ''
     patchShebangs .
