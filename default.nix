@@ -49,11 +49,6 @@ in
   #   pongified = true;
   # };
 
-  # Qt WebEngine
-  qtwebengine = callPackage ./pkgs/development/libraries/qt-5/modules/qtwebengine.nix {
-    inherit (darwin.apple_sdk.frameworks) MediaPlayer MediaAccessibility SecurityInterface Vision CoreML;
-  };
-
   # UxPlay
   uxplay = callPackage ./pkgs/servers/uxplay/default.nix { };
 
