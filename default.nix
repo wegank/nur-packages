@@ -28,7 +28,7 @@ let
     itimerspecHook = true;
     atomicCloseOnExecHook = true;
   };
-  wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
+  wayland = callPackage ./pkgs/development/libraries/wayland {
     epoll-shim = epoll-shim-hook;
   };
   wayland-scanner = wayland.bin;
