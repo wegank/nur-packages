@@ -31,10 +31,10 @@ let
   wayland = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/wayland {
     epoll-shim = epoll-shim-hook;
   };
+  wayland-scanner = wayland.bin;
   wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
     inherit wayland wayland-scanner;
   };
-  wayland-scanner = wayland.bin;
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
