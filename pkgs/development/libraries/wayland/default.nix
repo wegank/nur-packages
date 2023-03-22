@@ -14,6 +14,10 @@
     epoll-shim
   ];
 
+  mesonFlags = old.mesonFlags ++ [
+    "-Dtests=false"
+  ];
+
   meta.platforms = lib.platforms.unix;
 })).override {
   stdenv = if stdenv.isDarwin then darwin.apple_sdk_11_0.stdenv else stdenv;
