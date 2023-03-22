@@ -49,9 +49,6 @@ in
   #   pongified = true;
   # };
 
-  # UxPlay
-  uxplay = callPackage ./pkgs/servers/uxplay/default.nix { };
-
   # Wayland
   inherit epoll-shim epoll-shim-hook wayland wayland-scanner wayland-protocols;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
