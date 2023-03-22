@@ -29,7 +29,7 @@ index d04fd04..f8248cb 100755
  done)
  
 diff --git a/meson.build b/meson.build
-index f469756..03b845d 100644
+index 8bb47c2..ab51c67 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -16,7 +16,7 @@ config_h.set_quoted('PACKAGE', meson.project_name())
@@ -41,35 +41,34 @@ index f469756..03b845d 100644
  	cc_args += ['-D_POSIX_C_SOURCE=200809L']
  endif
  add_project_arguments(cc_args, language: 'c')
-@@ -51,7 +51,7 @@ foreach f: have_funcs
- 	config_h.set('HAVE_' + f.underscorify().to_upper(), cc.has_function(f))
+@@ -52,6 +52,9 @@ foreach f: have_funcs
  endforeach
  config_h.set10('HAVE_XUCRED_CR_PID', cc.has_member('struct xucred', 'cr_pid', prefix : '#include <sys/ucred.h>'))
--have_broken_msg_cmsg_cloexec = false
-+have_broken_msg_cmsg_cloexec = (host_machine.system() == 'darwin')
+ have_broken_msg_cmsg_cloexec = false
++if host_machine.system() == 'darwin'
++	have_broken_msg_cmsg_cloexec = true
++endif
  if host_machine.system() == 'freebsd'
  	have_broken_msg_cmsg_cloexec = not cc.compiles('''
  #include <sys/param.h> /* To get __FreeBSD_version. */
-@@ -69,8 +69,8 @@ endif
+@@ -69,7 +72,7 @@ endif
  config_h.set10('HAVE_BROKEN_MSG_CMSG_CLOEXEC', have_broken_msg_cmsg_cloexec)
  
  if get_option('libraries')
 -	if host_machine.system() == 'freebsd'
--		# When building for FreeBSD, epoll(7) is provided by a userspace
 +	if host_machine.system() in ['darwin', 'freebsd']
-+		# When building for macOS or FreeBSD, epoll(7) is provided by a userspace
+ 		# When building for FreeBSD, epoll(7) is provided by a userspace
  		# wrapper around kqueue(2).
  		epoll_dep = dependency('epoll-shim')
- 	else
 diff --git a/src/wayland-os.c b/src/wayland-os.c
-index a9066ca..c2ee1c6 100644
+index a9066ca..44921fe 100644
 --- a/src/wayland-os.c
 +++ b/src/wayland-os.c
 @@ -69,17 +69,19 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
  {
  	int fd;
  
-+#ifndef COMPAT_SOCK_CLOEXEC
++#ifndef __APPLE__
  	fd = socket(domain, type | SOCK_CLOEXEC, protocol);
  	if (fd >= 0)
  		return fd;
@@ -86,33 +85,8 @@ index a9066ca..c2ee1c6 100644
  int
  wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
  {
-diff --git a/tests/display-test.c b/tests/display-test.c
-index bcb3267..874d1b9 100644
---- a/tests/display-test.c
-+++ b/tests/display-test.c
-@@ -39,6 +39,10 @@
- #include <sys/stat.h>
- #include <sys/mman.h>
- 
-+#ifdef __APPLE__
-+#include <fcntl.h>
-+#endif
-+
- #include <pthread.h>
- #include <poll.h>
- 
-@@ -1495,6 +1499,9 @@ send_overflow_client(void *data)
- 	/* Limit the send buffer size for the display socket to guarantee
- 	 * that the test will cause an overflow. */
- 	sock = wl_display_get_fd(c->wl_display);
-+#ifdef __APPLE__
-+	assert(fcntl(sock, F_SETFL, ~O_NONBLOCK) != -1);
-+#endif
- 	assert(setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &optval, sizeof(optval)) == 0);
- 
- 	/* Request to break out of 'display_run' in the main process */
 diff --git a/tests/os-wrappers-test.c b/tests/os-wrappers-test.c
-index 8d8c3ab..334a645 100644
+index 8d8c3ab..428a92b 100644
 --- a/tests/os-wrappers-test.c
 +++ b/tests/os-wrappers-test.c
 @@ -63,6 +63,14 @@ static int fall_back;
@@ -138,7 +112,7 @@ index 8d8c3ab..334a645 100644
  
  DECL(int, socket, int, int, int);
  DECL(int, fcntl, int, int, ...);
-@@ -141,10 +152,12 @@ recvmsg(int sockfd, struct msghdr *msg, int flags)
+@@ -141,10 +150,12 @@ recvmsg(int sockfd, struct msghdr *msg, int flags)
  {
  	wrapped_calls_recvmsg++;
  
@@ -150,28 +124,6 @@ index 8d8c3ab..334a645 100644
 +#endif
  
  	return real_recvmsg(sockfd, msg, flags);
- }
-@@ -179,7 +192,11 @@ do_os_wrappers_socket_cloexec(int n)
- 	 * Must have 2 calls if falling back, but must also allow
- 	 * falling back without a forced fallback.
- 	 */
-+#ifndef COMPAT_SOCK_CLOEXEC
- 	assert(wrapped_calls_socket > n);
-+#else
-+	assert(wrapped_calls_socket == 1);
-+#endif
- 
- 	exec_fd_leak_check(nr_fds);
- }
-@@ -219,7 +236,9 @@ do_os_wrappers_dupfd_cloexec(int n)
- 	 * Must have 4 calls if falling back, but must also allow
- 	 * falling back without a forced fallback.
- 	 */
-+#if !(HAVE_BROKEN_MSG_CMSG_CLOEXEC)
- 	assert(wrapped_calls_fcntl > n);
-+#endif
- 
- 	exec_fd_leak_check(nr_fds);
  }
 diff --git a/tests/test-runner.c b/tests/test-runner.c
 index d07dab1..7a61ecb 100644
