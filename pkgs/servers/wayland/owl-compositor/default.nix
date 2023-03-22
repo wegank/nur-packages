@@ -11,7 +11,7 @@
 
 stdenv.mkDerivation rec {
   pname = "owl-compositor";
-  version = "0.0.20211110";
+  version = "unstable-2021-11-10";
 
   src = fetchFromGitHub {
     owner = pname;
