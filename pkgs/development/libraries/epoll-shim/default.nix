@@ -13,18 +13,14 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "epoll-shim";
-  version = "0.0.20220802";
+  version = "unstable-2023-02-05";
 
   src = fetchFromGitHub {
     owner = "jiixyj";
     repo = pname;
-    rev = "22bbd01de491d87cdf6b56fa1cea5bdaca68ea4d";
-    sha256 = "sha256-YqnRUZDkTAXoDHy/tm4CX827YqCHrMJBFIS0Dn3x7Uo=";
+    rev = "702e845d7850e30a7b9e29f759c9c8f7bb40784b";
+    hash = "sha256-QfBnF0/P2KjQggEdJCdqVJDeV/+iaN0OZIwIGyIyr68=";
   };
-
-  patches = [
-    ./add-darwin-support.patch
-  ];
 
   postPatch = lib.optionalString hook ''
     sed -i '1s/hidden/default/;2s/1/0/' src/CMakeLists.txt
@@ -40,9 +36,8 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
+    "-DCMAKE_INSTALL_PKGCONFIGDIR=${placeholder "out"}/lib/pkgconfig"
     "-DBUILD_TESTING=${lib.boolToString doCheck}"
-    "-DCMAKE_INSTALL_INCLUDEDIR=include"
-    "-DCMAKE_INSTALL_LIBDIR=lib"
   ];
 
   postInstall = lib.optionalString hook ''
