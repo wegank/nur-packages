@@ -7,7 +7,7 @@
 
 (wayland.overrideAttrs (old: {
   patches = old.patches or [ ] ++ lib.optionals (!stdenv.isLinux) [
-    ./fix-build-on-darwin.patch
+    ./darwin.patch
   ];
 
   buildInputs = old.buildInputs ++ lib.optionals (!stdenv.isLinux) [
