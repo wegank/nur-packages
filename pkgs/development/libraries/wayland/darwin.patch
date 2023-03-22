@@ -49,14 +49,14 @@ index 37cf95d..49a38cb 100644
  struct wl_event_source_interface;
  struct wl_event_source_timer;
 diff --git a/src/wayland-os.c b/src/wayland-os.c
-index a9066ca..44921fe 100644
+index a9066ca..483fe64 100644
 --- a/src/wayland-os.c
 +++ b/src/wayland-os.c
 @@ -69,17 +69,19 @@ wl_os_socket_cloexec(int domain, int type, int protocol)
  {
  	int fd;
  
-+#ifndef __APPLE__
++#ifdef SOCK_CLOEXEC
  	fd = socket(domain, type | SOCK_CLOEXEC, protocol);
  	if (fd >= 0)
  		return fd;
