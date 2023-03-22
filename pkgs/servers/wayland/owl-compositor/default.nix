@@ -22,6 +22,9 @@ stdenv.mkDerivation rec {
 
   postPatch = lib.optionalString stdenv.isDarwin ''
     sed -i "/ibtool/d" configure
+    mkdir -p build/Owl.app/Contents/Resources/English.lproj
+    cp -R ${./mac/MainMenu.nib} build/Owl.app/Contents/Resources/English.lproj/MainMenu.nib
+    cp -R ${./mac/OwlPreferences.nib} build/Owl.app/Contents/Resources/English.lproj/OwlPreferences.nib
   '';
 
   nativeBuildInputs = [
@@ -39,10 +42,7 @@ stdenv.mkDerivation rec {
   ];
 
   preConfigure = ''
-    mkdir -p build/Owl.app/Contents/Resources/English.lproj
     cd build
-    cp -r ${./mac/MainMenu.nib} Owl.app/Contents/Resources/English.lproj/
-    cp -r ${./mac/OwlPreferences.nib} Owl.app/Contents/Resources/English.lproj/
   '';
 
   configureScript = "../configure";
