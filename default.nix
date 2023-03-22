@@ -29,7 +29,7 @@ let
     atomicCloseOnExecHook = true;
   };
   wayland = callPackage ./pkgs/development/libraries/wayland {
-    epoll-shim = epoll-shim-hook;
+    inherit epoll-shim;
   };
   wayland-scanner = wayland.bin;
   wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {

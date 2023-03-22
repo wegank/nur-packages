@@ -30,6 +30,24 @@ index 8bb47c2..ab51c67 100644
  		# When building for FreeBSD, epoll(7) is provided by a userspace
  		# wrapper around kqueue(2).
  		epoll_dep = dependency('epoll-shim')
+diff --git a/src/event-loop.c b/src/event-loop.c
+index 37cf95d..49a38cb 100644
+--- a/src/event-loop.c
++++ b/src/event-loop.c
+@@ -48,6 +48,13 @@
+ 
+ #define TIMER_REMOVED -2
+ 
++#ifdef __APPLE__
++struct itimerspec {
++	struct timespec it_interval;
++	struct timespec it_value;
++};
++#endif
++
+ struct wl_event_loop;
+ struct wl_event_source_interface;
+ struct wl_event_source_timer;
 diff --git a/src/wayland-os.c b/src/wayland-os.c
 index a9066ca..44921fe 100644
 --- a/src/wayland-os.c
