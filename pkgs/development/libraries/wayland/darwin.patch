@@ -1,5 +1,5 @@
 diff --git a/meson.build b/meson.build
-index 8bb47c2..ab51c67 100644
+index 35c3b95..f27e472 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -16,7 +16,7 @@ config_h.set_quoted('PACKAGE', meson.project_name())
@@ -11,17 +11,16 @@ index 8bb47c2..ab51c67 100644
  	cc_args += ['-D_POSIX_C_SOURCE=200809L']
  endif
  add_project_arguments(cc_args, language: 'c')
-@@ -52,6 +52,9 @@ foreach f: have_funcs
+@@ -52,7 +52,7 @@ foreach f: have_funcs
  endforeach
  config_h.set10('HAVE_XUCRED_CR_PID', cc.has_member('struct xucred', 'cr_pid', prefix : '#include <sys/ucred.h>'))
  have_broken_msg_cmsg_cloexec = false
-+if host_machine.system() == 'darwin'
-+	have_broken_msg_cmsg_cloexec = true
-+endif
- if host_machine.system() == 'freebsd'
+-if host_machine.system() == 'freebsd'
++if host_machine.system() in ['darwin', 'freebsd']
  	have_broken_msg_cmsg_cloexec = not cc.compiles('''
  #include <sys/param.h> /* To get __FreeBSD_version. */
-@@ -69,7 +72,7 @@ endif
+ #if __FreeBSD_version < 1300502 || \
+@@ -69,7 +69,7 @@ endif
  config_h.set10('HAVE_BROKEN_MSG_CMSG_CLOEXEC', have_broken_msg_cmsg_cloexec)
  
  if get_option('libraries')
