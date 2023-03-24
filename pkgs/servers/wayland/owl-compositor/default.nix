@@ -22,7 +22,7 @@ mkDerivation {
     owner = "owl-compositor";
     repo = "owl";
     rev = "91abf02613cd2ddb97be58b5b6703240320233a0";
-    sha256 = "sha256-a+TznasOVEzSNrs66/y91AeMRDEfyd+WO5mO811hLj0=";
+    hash = "sha256-a+TznasOVEzSNrs66/y91AeMRDEfyd+WO5mO811hLj0=";
   };
 
   prePatch = lib.optionalString stdenv.isDarwin ''
@@ -68,9 +68,9 @@ mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/Applications $out/bin
+    mkdir -p $out/{Applications,bin}
     mv Owl.app $out/Applications
-    makeWrapper $out/Applications/Owl.app/${lib.optionalString stdenv.isDarwin "Contents/MacOS/"}Owl $out/bin/Owl
+    makeWrapper $out/{Applications/Owl.app${lib.optionalString stdenv.isDarwin "/Contents/MacOS"},bin}/Owl
 
     runHook postInstall
   '';
