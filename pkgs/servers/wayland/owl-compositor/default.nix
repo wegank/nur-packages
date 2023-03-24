@@ -1,32 +1,37 @@
 { lib
 , stdenv
+, gnustep
 , fetchFromGitHub
 , makeWrapper
 , darwin
-, gnustep
 , libxkbcommon
 , wayland
 }:
 
 let
-  stdenv' = if stdenv.isDarwin then stdenv else gnustep.stdenv;
+  mkDerivation = if stdenv.isDarwin then stdenv.mkDerivation else gnustep.gsmakeDerivation;
 in
-stdenv'.mkDerivation rec {
+mkDerivation {
   pname = "owl-compositor";
   version = "unstable-2021-11-10";
 
   src = fetchFromGitHub {
-    owner = pname;
+    owner = "owl-compositor";
     repo = "owl";
     rev = "91abf02613cd2ddb97be58b5b6703240320233a0";
     sha256 = "sha256-a+TznasOVEzSNrs66/y91AeMRDEfyd+WO5mO811hLj0=";
   };
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
+  prePatch = lib.optionalString stdenv.isDarwin ''
     sed -i "/ibtool/d" configure
     mkdir -p build/Owl.app/Contents/Resources/English.lproj
     cp ${./mac/MainMenu.nib} build/Owl.app/Contents/Resources/English.lproj/MainMenu.nib
     cp ${./mac/OwlPreferences.nib} build/Owl.app/Contents/Resources/English.lproj/OwlPreferences.nib
+  '';
+
+  postPatch = ''
+    mkdir -p build
+    cd build
   '';
 
   nativeBuildInputs = [
@@ -44,17 +49,13 @@ stdenv'.mkDerivation rec {
   ] ++ lib.optionals stdenv.isDarwin [
     darwin.apple_sdk.frameworks.Cocoa
   ] ++ lib.optionals (!stdenv.isDarwin) [
+    gnustep.back
     gnustep.base
     gnustep.gui
   ];
 
   # error: "Your gnustep-base was configured for the objc-nonfragile-abi but you are not using it now."
   env.NIX_CFLAGS_COMPILE = lib.optionalString (!stdenv.isDarwin) "-fobjc-runtime=gnustep-2.0";
-
-  preConfigure = ''
-    mkdir -p build
-    cd build
-  '';
 
   configureScript = "../configure";
 
@@ -73,7 +74,6 @@ stdenv'.mkDerivation rec {
     homepage = "https://github.com/owl-compositor/owl";
     license = licenses.gpl3Plus;
     platforms = platforms.unix;
-    broken = stdenv.isLinux;
     maintainers = with maintainers; [ wegank ];
   };
 }
