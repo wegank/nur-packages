@@ -51,8 +51,6 @@ in
   };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
     inherit wayland;
-    inherit (darwin) DarwinTools bootstrap_cmds;
-    inherit (darwin.apple_sdk.frameworks) Cocoa;
   };
   wl-clipboard = callPackage ./pkgs/tools/wayland/wl-clipboard {
     inherit wayland wayland-scanner wayland-protocols;

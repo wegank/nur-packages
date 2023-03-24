@@ -2,14 +2,16 @@
 , stdenv
 , fetchFromGitHub
 , makeWrapper
+, darwin
+, gnustep
 , libxkbcommon
 , wayland
-, DarwinTools
-, bootstrap_cmds
-, Cocoa
 }:
 
-stdenv.mkDerivation rec {
+let
+  stdenv' = if stdenv.isDarwin then stdenv else gnustep.stdenv;
+in
+stdenv'.mkDerivation rec {
   pname = "owl-compositor";
   version = "unstable-2021-11-10";
 
@@ -30,18 +32,27 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     makeWrapper
   ] ++ lib.optionals stdenv.isDarwin [
-    DarwinTools
-    bootstrap_cmds
+    darwin.DarwinTools
+    darwin.bootstrap_cmds
+  ] ++ lib.optionals (!stdenv.isDarwin) [
+    gnustep.make
   ];
 
   buildInputs = [
     libxkbcommon
     wayland
   ] ++ lib.optionals stdenv.isDarwin [
-    Cocoa
+    darwin.apple_sdk.frameworks.Cocoa
+  ] ++ lib.optionals (!stdenv.isDarwin) [
+    gnustep.base
+    gnustep.gui
   ];
 
+  # error: "Your gnustep-base was configured for the objc-nonfragile-abi but you are not using it now."
+  env.NIX_CFLAGS_COMPILE = lib.optionalString (!stdenv.isDarwin) "-fobjc-runtime=gnustep-2.0";
+
   preConfigure = ''
+    mkdir -p build
     cd build
   '';
 
@@ -52,7 +63,7 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/Applications $out/bin
     mv Owl.app $out/Applications
-    makeWrapper $out/Applications/Owl.app/Contents/MacOS/Owl $out/bin/Owl
+    makeWrapper $out/Applications/Owl.app/${lib.optionalString stdenv.isDarwin "Contents/MacOS/"}Owl $out/bin/Owl
 
     runHook postInstall
   '';
