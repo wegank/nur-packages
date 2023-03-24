@@ -50,7 +50,7 @@ in
     epoll-shim = epoll-shim-hook;
   };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
-    inherit wayland;
+    inherit wayland wayland-scanner;
   };
   wl-clipboard = callPackage ./pkgs/tools/wayland/wl-clipboard {
     inherit wayland wayland-scanner wayland-protocols;

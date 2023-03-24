@@ -1,12 +1,15 @@
 { lib
 , stdenv
-, gnustep
 , fetchFromGitHub
-, makeWrapper
-, darwin
+, gnustep
 , libxkbcommon
+, makeWrapper
 , wayland
+, wayland-scanner
+, darwin
 }:
+
+assert wayland.withLibraries;
 
 let
   mkDerivation = if stdenv.isDarwin then stdenv.mkDerivation else gnustep.gsmakeDerivation;
@@ -34,8 +37,11 @@ mkDerivation {
     cd build
   '';
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     makeWrapper
+    wayland-scanner
   ] ++ lib.optionals stdenv.isDarwin [
     darwin.DarwinTools
     darwin.bootstrap_cmds
@@ -73,7 +79,8 @@ mkDerivation {
     description = "A portable Wayland compositor in Objective-C";
     homepage = "https://github.com/owl-compositor/owl";
     license = licenses.gpl3Plus;
-    platforms = platforms.unix;
     maintainers = with maintainers; [ wegank ];
+    platforms = platforms.unix;
+    mainProgram = "Owl";
   };
 }
