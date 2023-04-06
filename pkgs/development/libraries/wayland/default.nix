@@ -6,16 +6,8 @@
 }:
 
 (wayland.overrideAttrs (old: {
-  patches = old.patches or [ ] ++ lib.optionals (!stdenv.isLinux) [
+  patches = old.patches or [ ] ++ [
     ./darwin.patch
-  ];
-
-  buildInputs = old.buildInputs ++ lib.optionals (!stdenv.isLinux) [
-    epoll-shim
-  ];
-
-  mesonFlags = old.mesonFlags ++ [
-    "-Dtests=false"
   ];
 
   meta.platforms = lib.platforms.unix;

@@ -17,16 +17,13 @@ let
   });
 
   # Wayland
-  epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim { };
-  epoll-shim-hook = epoll-shim.override {
+  epoll-shim-hook = callPackage ./pkgs/development/libraries/epoll-shim {
     itimerspecHook = true;
     atomicCloseOnExecHook = true;
   };
-  wayland = callPackage ./pkgs/development/libraries/wayland {
-    inherit epoll-shim;
-  };
+  wayland = callPackage ./pkgs/development/libraries/wayland { };
   wayland-scanner = wayland.bin;
-  wayland-protocols = callPackage ./pkgs/development/libraries/wayland/protocols.nix {
+  wayland-protocols = pkgs.wayland-protocols.override {
     inherit wayland wayland-scanner;
   };
 in
@@ -44,7 +41,7 @@ in
   # };
 
   # Wayland
-  inherit epoll-shim epoll-shim-hook wayland wayland-scanner wayland-protocols;
+  inherit epoll-shim-hook wayland wayland-scanner wayland-protocols;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
     inherit wayland wayland-protocols;
     epoll-shim = epoll-shim-hook;
