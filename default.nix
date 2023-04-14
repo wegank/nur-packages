@@ -15,12 +15,6 @@ let
   anyio = python3Packages.anyio.overrideAttrs (old: {
     doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
   });
-
-  # Wayland
-  epoll-shim-hook = callPackage ./pkgs/development/libraries/epoll-shim-hook {
-    itimerspecHook = true;
-    atomicCloseOnExecHook = true;
-  };
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
@@ -36,9 +30,11 @@ in
   # };
 
   # Wayland
-  inherit epoll-shim-hook;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
-    epoll-shim = epoll-shim-hook;
+    epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim-hook {
+      itimerspecHook = true;
+      atomicCloseOnExecHook = true;
+    };
   };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
 
