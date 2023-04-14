@@ -1,7 +1,6 @@
 { lib
 , stdenv
-, fetchFromGitHub
-, cmake
+, epoll-shim
 , writeText
 , itimerspecHook ? false
 , atomicCloseOnExecHook ? false
@@ -11,17 +10,7 @@ let
   hook = itimerspecHook || atomicCloseOnExecHook;
   atomicFeatures = [ "socket" "socketpair" "pipe2" ];
 in
-stdenv.mkDerivation rec {
-  pname = "epoll-shim";
-  version = "unstable-2023-02-05";
-
-  src = fetchFromGitHub {
-    owner = "jiixyj";
-    repo = pname;
-    rev = "702e845d7850e30a7b9e29f759c9c8f7bb40784b";
-    hash = "sha256-QfBnF0/P2KjQggEdJCdqVJDeV/+iaN0OZIwIGyIyr68=";
-  };
-
+epoll-shim.overrideAttrs (old: {
   postPatch = lib.optionalString hook ''
     sed -i '1s/hidden/default/;2s/1/0/' src/CMakeLists.txt
   '' + lib.optionalString atomicCloseOnExecHook (lib.concatMapStrings
@@ -30,15 +19,6 @@ stdenv.mkDerivation rec {
     '')
     atomicFeatures
   );
-
-  nativeBuildInputs = [
-    cmake
-  ];
-
-  cmakeFlags = [
-    "-DCMAKE_INSTALL_PKGCONFIGDIR=${placeholder "out"}/lib/pkgconfig"
-    "-DBUILD_TESTING=${lib.boolToString doCheck}"
-  ];
 
   postInstall = lib.optionalString hook ''
     cp $src/src/compat_*.h $out/include/
@@ -60,15 +40,4 @@ stdenv.mkDerivation rec {
       export NIX_CFLAGS_COMPILE+=" -D O_CLOEXEC=0x1000000"
     '' + lib.concatMapStrings enableFeature atomicFeatures
     )));
-
-  doCheck = false;
-
-  meta = with lib; {
-    description = "Small epoll implementation using kqueue";
-    homepage = "https://github.com/jiixyj/epoll-shim";
-    license = licenses.mit;
-    platforms = platforms.unix;
-    broken = stdenv.isLinux;
-    maintainers = with maintainers; [ wegank ];
-  };
-}
+})

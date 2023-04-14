@@ -17,14 +17,9 @@ let
   });
 
   # Wayland
-  epoll-shim-hook = callPackage ./pkgs/development/libraries/epoll-shim {
+  epoll-shim-hook = callPackage ./pkgs/development/libraries/epoll-shim-hook {
     itimerspecHook = true;
     atomicCloseOnExecHook = true;
-  };
-  wayland = callPackage ./pkgs/development/libraries/wayland { };
-  wayland-scanner = wayland.bin;
-  wayland-protocols = pkgs.wayland-protocols.override {
-    inherit wayland wayland-scanner;
   };
 in
 {
@@ -41,17 +36,11 @@ in
   # };
 
   # Wayland
-  inherit epoll-shim-hook wayland wayland-scanner wayland-protocols;
+  inherit epoll-shim-hook;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
-    inherit wayland wayland-protocols;
     epoll-shim = epoll-shim-hook;
   };
-  owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor {
-    inherit wayland wayland-scanner;
-  };
-  wl-clipboard = callPackage ./pkgs/tools/wayland/wl-clipboard {
-    inherit wayland wayland-scanner wayland-protocols;
-  };
+  owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
 
   # WebKitGTK
   webkitgtk = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/webkitgtk {
