@@ -1,10 +1,14 @@
-{ lib, buildDunePackage, fetchFromGitHub, stdlib-shims }:
+{ lib
+, buildDunePackage
+, fetchFromGitHub
+, stdlib-shims
+}:
 
 buildDunePackage rec {
   pname = "bdd";
   version = "unstable-2022-07-14";
 
-  minimalOCamlVersion = "4.00.0";
+  duneVersion = "3";
 
   src = fetchFromGitHub {
     owner = "backtracking";
