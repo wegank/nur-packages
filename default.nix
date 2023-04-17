@@ -22,13 +22,6 @@ in
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  # Perpetual Pools
-  # perpetual-pools-keeper = callPackage ./pkgs/servers/monitoring/perpetual-pools-keeper { };
-  # perpetual-pools-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client { };
-  # pong-client = callPackage ./pkgs/servers/web-apps/perpetual-pools-client {
-  #   pongified = true;
-  # };
-
   # Wayland
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
