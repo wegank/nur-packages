@@ -1,0 +1,42 @@
+diff --git a/main.c b/main.c
+index 8241374..464b23f 100644
+--- a/main.c
++++ b/main.c
+@@ -13,7 +13,11 @@
+ #include <sys/timerfd.h>
+ #include <fcntl.h>
+ #include <unistd.h>
++#ifdef __APPLE__
++#include <util.h>
++#else
+ #include <pty.h>
++#endif
+ 
+ #include <xkbcommon/xkbcommon-compose.h>
+ #include <wayland-client-core.h>
+@@ -25,6 +29,13 @@
+ #include "gtk-primary-selection.h"
+ #include "xdg-decoration-unstable-v1.h"
+ 
++#ifdef __APPLE__
++struct itimerspec {
++	struct timespec it_interval;
++	struct timespec it_value;
++};
++#endif
++
+ #define ARRAY_LENGTH(a) (sizeof (a) / sizeof (a)[0])
+ 
+ int font_init(int, char *, int *, int *);
+@@ -1522,7 +1533,11 @@ static void registry_get(void *data, struct wl_registry *r, uint32_t id,
+ 						1);
+ 		xdg_wm_base_add_listener(term.wm_base, &wm_base_listener, NULL);
+ 	} else if (strcmp(i, "wl_seat") == 0) {
++#ifdef __APPLE__
++		term.seat = wl_registry_bind(r, id, &wl_seat_interface, 2);
++#else
+ 		term.seat = wl_registry_bind(r, id, &wl_seat_interface, 5);
++#endif
+ 		wl_seat_add_listener(term.seat, &seat_listener, NULL);
+ 	} else if (strcmp(i, "wl_data_device_manager") == 0) {
+ 		term.d_dm = wl_registry_bind(r, id,

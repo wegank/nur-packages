@@ -30,12 +30,7 @@ in
   # };
 
   # Wayland
-  havoc = callPackage ./pkgs/applications/terminal-emulators/havoc {
-    epoll-shim = callPackage ./pkgs/development/libraries/epoll-shim-hook {
-      itimerspecHook = true;
-      atomicCloseOnExecHook = true;
-    };
-  };
+  havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
 
   # WebKitGTK

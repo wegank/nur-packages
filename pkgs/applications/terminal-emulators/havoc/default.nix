@@ -27,15 +27,22 @@ stdenv.mkDerivation rec {
     libxkbcommon
     wayland
     wayland-protocols
-  ] ++ lib.optionals stdenv.isDarwin [
-    epoll-shim
   ];
 
-  patches = lib.optionals stdenv.isDarwin [
-    ./fix-build-on-darwin.patch
+  patches = [
+    ./darwin.patch
   ];
+
+  postPatch = lib.optionalString stdenv.isDarwin ''
+    substituteInPlace Makefile \
+      --replace "-lrt" ""
+  '';
 
   dontConfigure = true;
+
+  env.NIX_CFLAGS_COMPILE = "-I${epoll-shim}/include/libepoll-shim";
+
+  env.NIX_CFLAGS_LINK = "-L${epoll-shim}/lib -lepoll-shim";
 
   installFlags = [ "PREFIX=$$out" ];
 
