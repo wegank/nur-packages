@@ -26,13 +26,6 @@ in
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
   owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
 
-  # WebKitGTK
-  webkitgtk = darwin.apple_sdk_11_0.callPackage ./pkgs/development/libraries/webkitgtk {
-    harfbuzz = harfbuzzFull;
-    inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
-    inherit (darwin) apple_sdk;
-  };
-
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
 
