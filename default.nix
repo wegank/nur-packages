@@ -10,12 +10,6 @@
 
 with pkgs;
 
-let
-  # Jupyter Lab
-  anyio = python3Packages.anyio.overrideAttrs (old: {
-    doCheck = !(stdenv.isDarwin && stdenv.isAarch64);
-  });
-in
 {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
