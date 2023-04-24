@@ -18,16 +18,11 @@ with pkgs;
 
   # Wayland
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
-  owl-compositor = callPackage ./pkgs/servers/wayland/owl-compositor { };
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
 
-} // (with pkgs.ocaml-ng.ocamlPackages_latest; {
-
-  bdd = callPackage ./pkgs/development/ocaml-modules/bdd { };
-
-}) // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
+} // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
   eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
   linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
