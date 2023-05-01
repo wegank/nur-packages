@@ -21,6 +21,7 @@ with pkgs;
 
   # Misc
   mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
+  snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
 } // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
