@@ -20,7 +20,6 @@ with pkgs;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
 
   # Misc
-  mpvpaper = callPackage ./pkgs/applications/graphics/mpvpaper { };
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
 } // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
