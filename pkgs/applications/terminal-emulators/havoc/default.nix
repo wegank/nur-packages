@@ -14,9 +14,9 @@ havoc.overrideAttrs (old: {
       --replace "-lrt" ""
   '';
 
-  env = {
-    NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${epoll-shim}/include/libepoll-shim";
-    NIX_CFLAGS_LINK = lib.optionalString stdenv.isDarwin "-L${epoll-shim}/lib -lepoll-shim";
+  env = lib.optionalAttrs stdenv.isDarwin {
+    NIX_CFLAGS_COMPILE = "-I${epoll-shim}/include/libepoll-shim";
+    NIX_CFLAGS_LINK = "-L${epoll-shim}/lib -lepoll-shim";
   };
 
   meta.platforms = lib.platforms.unix;
