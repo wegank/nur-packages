@@ -8,7 +8,7 @@ stdenv.mkDerivation (finalAttrs: {
   version = "5.92";
 
   src = fetchurl {
-    url = "https://download.tuxfamily.org/slitaz/sources/packages-stable/e/esterel-${version}.tgz";
+    url = "https://download.tuxfamily.org/slitaz/sources/packages-stable/e/esterel-${finalAttrs.version}.tgz";
     hash = "sha256-DJYu4tK4c0Zux+ZB/ap+qIOohmN1rFoOkgW/9OuGXcY=";
   };
 
