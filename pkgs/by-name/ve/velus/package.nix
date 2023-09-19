@@ -49,11 +49,10 @@ stdenv.mkDerivation {
   # remove vendored compcert
   postPatch = ''
     sed -i "/compcert\.ini driver\/Version\.ml proof/d" Makefile
-    substituteInPlace Makefile \
-      --replace "\$(COMPCERTDIR)/compcert.ini" "${coqPackages_8_15.compcert}/share/compcert.ini"
   '';
 
   preBuild = ''
+    cp ${coqPackages_8_15.compcert}/share/compcert.ini CompCert/compcert.ini
     cp -R ${coqPackages_8_15.compcert.lib}/lib/coq/${coqPackages_8_15.coq.coq-version}/user-contrib/compcert/* CompCert
   '';
 
