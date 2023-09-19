@@ -21,6 +21,8 @@ stdenv.mkDerivation {
   pname = "velus";
   version = "unstable-2023-06-13";
 
+  outputs = [ "out" "examples" ];
+
   src = fetchFromGitHub {
     owner = "INRIA";
     repo = "velus";
@@ -47,6 +49,15 @@ stdenv.mkDerivation {
   configureFlags = [ target ];
 
   enableParallelBuilding = true;
+
+  installPhase = ''
+    runHook preInstall
+
+    install -Dm755 velus $out/bin/velus
+    cp -R examples $examples
+
+    runHook postInstall
+  '';
 
   meta = with lib; {
     description = "A Lustre compiler in Coq";
