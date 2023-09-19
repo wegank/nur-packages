@@ -59,7 +59,7 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    makeWrapper velus $out/bin/velus
+    makeWrapper $out/share/velus/velus $out/bin/velus
 
     runHook postInstall
   '';
