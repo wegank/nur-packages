@@ -30,12 +30,12 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [
-    coqPackages_8_15.compcert
     coqPackages_8_15.coq
     ncurses
     ocamlPackages.findlib
     ocamlPackages.menhir
     ocamlPackages.ocaml
+    ocamlPackages.ocamlbuild
   ];
 
   buildInputs = [
@@ -45,16 +45,6 @@ stdenv.mkDerivation {
   prefixKey = "-prefix ";
 
   configureFlags = [ target ];
-
-  # remove vendored compcert
-  postPatch = ''
-    sed -i "/compcert\.ini driver\/Version\.ml proof/d" Makefile
-  '';
-
-  preBuild = ''
-    cp ${coqPackages_8_15.compcert}/share/compcert.ini CompCert/compcert.ini
-    cp -R ${coqPackages_8_15.compcert.lib}/lib/coq/${coqPackages_8_15.coq.coq-version}/user-contrib/compcert/* CompCert
-  '';
 
   meta = with lib; {
     description = "A Lustre compiler in Coq";
