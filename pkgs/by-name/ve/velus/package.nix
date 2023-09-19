@@ -46,6 +46,8 @@ stdenv.mkDerivation {
 
   configureFlags = [ target ];
 
+  enableParallelBuilding = true;
+
   meta = with lib; {
     description = "A Lustre compiler in Coq";
     homepage = "https://velus.inria.fr";
