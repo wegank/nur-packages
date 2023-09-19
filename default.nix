@@ -23,6 +23,7 @@ with pkgs;
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
+  esterel = callPackage ./pkgs/by-name/es/esterel/package.nix { };
   velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
   zelus = callPackage ./pkgs/by-name/ze/zelus/package.nix { };
 
