@@ -22,6 +22,9 @@ with pkgs;
   # Misc
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
+  # Synchronous systems
+  velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
+
 } // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
   eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
