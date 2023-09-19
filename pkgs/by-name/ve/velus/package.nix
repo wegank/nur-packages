@@ -56,6 +56,8 @@ stdenv.mkDerivation {
     cp -R ${coqPackages_8_15.compcert.lib}/lib/coq/${coqPackages_8_15.coq.coq-version}/user-contrib/compcert/* CompCert
   '';
 
+  enableParallelBuilding = true;
+
   meta = with lib; {
     description = "A Lustre compiler in Coq";
     homepage = "https://velus.inria.fr";
