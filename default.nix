@@ -24,6 +24,7 @@ with pkgs;
 
   # Synchronous systems
   velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
+  zelus = callPackage ./pkgs/by-name/ze/zelus/package.nix { };
 
 } // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
