@@ -22,8 +22,6 @@ stdenv.mkDerivation {
   pname = "velus";
   version = "unstable-2023-06-13";
 
-  outputs = [ "out" "examples" ];
-
   src = fetchFromGitHub {
     owner = "INRIA";
     repo = "velus";
