@@ -5,7 +5,7 @@
 
 ocamlPackages.buildDunePackage {
   pname = "zelus";
-  version = "unstable-2023-06-16";
+  version = "2.2-unstable-2023-06-16";
 
   src = fetchFromGitHub {
     owner = "INRIA";
@@ -26,7 +26,7 @@ ocamlPackages.buildDunePackage {
     description = "A synchronous language with ODEs";
     homepage = "https://zelus.di.ens.fr";
     license = licenses.unfree;
+    mainProgram = "zeluc";
     maintainers = with maintainers; [ wegank ];
-    platforms = platforms.all;
   };
 }
