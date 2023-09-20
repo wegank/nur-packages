@@ -2,7 +2,6 @@
 , stdenv
 , fetchFromGitHub
 , coqPackages_8_15
-, makeWrapper
 , ncurses
 , ocamlPackages
 }:
@@ -30,15 +29,8 @@ stdenv.mkDerivation {
     hash = "sha256-Nlwbv99E9lnOp+gYaHespRBuns63nQ6FpBVSOWDxJpU=";
   };
 
-  postPatch = ''
-    mkdir -p $out/share/velus
-    mv * $out/share/velus
-    cd $out/share/velus
-  '';
-
   nativeBuildInputs = [
     coqPackages_8_15.coq
-    makeWrapper
     ncurses
     ocamlPackages.findlib
     ocamlPackages.menhir
@@ -59,7 +51,9 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    makeWrapper $out/share/velus/velus $out/bin/velus
+    mkdir -p $out/{bin,share/velus}
+    cp $out/share/velus/_build/src/{velusmain.native,compcert.ini} $out/share/velus
+    ln -s $out/share/velus/velusmain.native $out/bin/velus
 
     runHook postInstall
   '';
