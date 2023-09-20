@@ -21,6 +21,8 @@ stdenv.mkDerivation {
   pname = "velus";
   version = "unstable-2023-06-13";
 
+  outputs = [ "out" "examples" ];
+
   src = fetchFromGitHub {
     owner = "INRIA";
     repo = "velus";
@@ -52,8 +54,10 @@ stdenv.mkDerivation {
     runHook preInstall
 
     mkdir -p $out/{bin,share/velus}
-    cp $out/share/velus/_build/src/{velusmain.native,compcert.ini} $out/share/velus
+    cp _build/src/{velusmain.native,compcert.ini} $out/share/velus
     ln -s $out/share/velus/velusmain.native $out/bin/velus
+
+    cp -R examples $examples
 
     runHook postInstall
   '';
