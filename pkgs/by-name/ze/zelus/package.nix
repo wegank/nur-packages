@@ -14,6 +14,8 @@ ocamlPackages.buildDunePackage {
     hash = "sha256-Y0YosTtAiH+/6hf8Q4jzOHSrXSOh44ODdVQElYAuyGU=";
   };
 
+  strictDeps = true;
+
   nativeBuildInputs = [
     ocamlPackages.menhir
   ];
