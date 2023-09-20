@@ -67,6 +67,6 @@ stdenv.mkDerivation {
     homepage = "https://velus.inria.fr";
     license = licenses.unfree;
     maintainers = with maintainers; [ wegank ];
-    platforms = platforms.all;
+    platforms = builtins.attrNames targets;
   };
 }
