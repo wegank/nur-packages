@@ -1,8 +1,8 @@
 { lib
 , buildNpmPackage
+, gcc11Stdenv
 , nodejs_16
 , electron_19
-, gcc11Stdenv
 , fetchFromGitHub
 , autoPatchelfHook
 , python3
@@ -12,11 +12,12 @@
 }:
 
 let
+  stdenv = gcc11Stdenv;
   buildNpmPackage' = buildNpmPackage.override {
+    inherit stdenv;
     nodejs = nodejs_16;
   };
   electron = electron_19;
-  stdenv = gcc11Stdenv;
 in
 buildNpmPackage' rec {
   pname = "etcher";
