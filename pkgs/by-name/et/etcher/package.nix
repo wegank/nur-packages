@@ -1,6 +1,6 @@
 { lib
+, stdenv
 , buildNpmPackage
-, gcc11Stdenv
 , nodejs_16
 , electron_19
 , fetchFromGitHub
@@ -12,9 +12,7 @@
 }:
 
 let
-  stdenv = gcc11Stdenv;
   buildNpmPackage' = buildNpmPackage.override {
-    inherit stdenv;
     nodejs = nodejs_16;
   };
   electron = electron_19;
@@ -65,5 +63,7 @@ buildNpmPackage' rec {
     license = licenses.asl20;
     maintainers = with maintainers; [ wegank ];
     platforms = platforms.linux;
+    # undefined symbol: _ZN2v82V818GlobalizeReferenceEPNS_8internal7IsolateEPm
+    broken = true;
   };
 }
