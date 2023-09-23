@@ -48,7 +48,7 @@ buildNpmPackage' rec {
 
   env = {
     ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
-    LDFLAGS = "-lv8 -licui18n -licuuc";
+    NIX_LDFLAGS = "-lv8 -licui18n -licuuc";
   };
 
   postInstall = ''
