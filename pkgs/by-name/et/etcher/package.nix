@@ -1,21 +1,23 @@
 { lib
 , stdenv
 , buildNpmPackage
-, nodejs_16
 , electron_19
+, nodejs_16
 , fetchFromGitHub
 , autoPatchelfHook
 , python3
+, icu
 , udev
 , bash
 , util-linux
 }:
 
 let
-  buildNpmPackage' = buildNpmPackage.override {
-    nodejs = nodejs_16;
-  };
   electron = electron_19;
+  nodejs = nodejs_16;
+  buildNpmPackage' = buildNpmPackage.override {
+    inherit nodejs;
+  };
 in
 buildNpmPackage' rec {
   pname = "etcher";
@@ -38,11 +40,16 @@ buildNpmPackage' rec {
   ];
 
   buildInputs = [
+    icu
+    nodejs.libv8
     stdenv.cc.cc.lib
     udev
   ];
 
-  env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+  env = {
+    ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+    LDFLAGS = "-lv8 -licui18n -licuuc";
+  };
 
   postInstall = ''
     makeWrapper ${electron}/bin/electron $out/bin/etcher \
