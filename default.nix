@@ -20,6 +20,7 @@ with pkgs;
   havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
 
   # Misc
+  etcher = callPackage ./pkgs/by-name/et/etcher/package.nix { };
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
