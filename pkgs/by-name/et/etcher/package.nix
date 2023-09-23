@@ -6,6 +6,8 @@
 , python3
 , udev
 , electron_19
+, bash
+, util-linux
 }:
 
 buildNpmPackage rec {
@@ -39,6 +41,13 @@ buildNpmPackage rec {
     makeWrapper ${electron_19}/bin/electron $out/bin/etcher \
       --add-flags $out/lib/node_modules/balena-etcher \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath buildInputs}"
+  '';
+
+  preFixup = ''
+    substituteInPlace $out/lib/node_modules/balena-etcher/generated/gui.js \
+      --replace '/usr/bin/pkexec' '/usr/bin/pkexec", "/run/wrappers/bin/pkexec' \
+      --replace '/bin/bash' '${bash}/bin/bash' \
+      --replace '"lsblk"' '"${util-linux}/bin/lsblk"'
   '';
 
   meta = with lib; {
