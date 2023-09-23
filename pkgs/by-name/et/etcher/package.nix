@@ -1,16 +1,24 @@
 { lib
-, stdenv
 , buildNpmPackage
+, nodejs_16
+, electron_19
+, gcc11Stdenv
 , fetchFromGitHub
 , autoPatchelfHook
 , python3
 , udev
-, electron_19
 , bash
 , util-linux
 }:
 
-buildNpmPackage rec {
+let
+  buildNpmPackage' = buildNpmPackage.override {
+    nodejs = nodejs_16;
+  };
+  electron = electron_19;
+  stdenv = gcc11Stdenv;
+in
+buildNpmPackage' rec {
   pname = "etcher";
   version = "1.18.11";
 
@@ -38,7 +46,7 @@ buildNpmPackage rec {
   env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   postInstall = ''
-    makeWrapper ${electron_19}/bin/electron $out/bin/etcher \
+    makeWrapper ${electron}/bin/electron $out/bin/etcher \
       --add-flags $out/lib/node_modules/balena-etcher \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath buildInputs}"
   '';
