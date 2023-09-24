@@ -54,12 +54,20 @@ buildNpmPackage' rec {
   };
 
   postInstall = ''
+    install -Dm644 $out/lib/node_modules/balena-etcher/package.json \
+      -t $out/share/${pname}/resources/app
+    install -Dm644 $out/lib/node_modules/balena-etcher/lib/shared/catalina-sudo/*.js \
+      -t $out/share/${pname}/resources/app/lib/shared/catalina-sudo
+    mv $out/lib/node_modules/balena-etcher/generated \
+      $out/share/${pname}/resources/app
+    rm -r $out/lib/node_modules/balena-etcher
+
     makeWrapper ${electron}/bin/electron $out/bin/etcher \
-      --add-flags $out/lib/node_modules/balena-etcher
+      --add-flags $out/share/${pname}/resources/app
   '';
 
   preFixup = ''
-    substituteInPlace $out/lib/node_modules/balena-etcher/generated/gui.js \
+    substituteInPlace $out/share/${pname}/resources/app/generated/gui.js \
       --replace '/usr/bin/pkexec' '/usr/bin/pkexec", "/run/wrappers/bin/pkexec' \
       --replace '/bin/bash' '${bash}/bin/bash' \
       --replace '"lsblk"' '"${util-linux}/bin/lsblk"'
