@@ -21,16 +21,16 @@ let
 in
 buildNpmPackage' rec {
   pname = "etcher";
-  version = "1.18.11";
+  version = "1.18.12";
 
   src = fetchFromGitHub {
     owner = "balena-io";
     repo = "etcher";
     rev = "v${version}";
-    hash = "sha256-Y1PTw7Yz3NAtW/IMm6Ko4qDJSr2Yy7G+SxN6K3b/C+Q=";
+    hash = "sha256-Sn4WIYfDeF0qJSj+PpSmV/7aX7TX352Gvb4J+7teSSk=";
   };
 
-  npmDepsHash = "sha256-Wlja8wwugoGMiauq04z56QEOj1Ks0SSE8nPS1+5DAXY=";
+  npmDepsHash = "sha256-s9aat4tTOXTkwGQ7ifMejIxJokEOeHQAYuTTn+2zne8=";
 
   makeCacheWritable = true;
 
