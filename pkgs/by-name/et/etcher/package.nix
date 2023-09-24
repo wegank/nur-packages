@@ -53,8 +53,7 @@ buildNpmPackage' rec {
 
   postInstall = ''
     makeWrapper ${electron}/bin/electron $out/bin/etcher \
-      --add-flags $out/lib/node_modules/balena-etcher \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath buildInputs}"
+      --add-flags $out/lib/node_modules/balena-etcher
   '';
 
   preFixup = ''
