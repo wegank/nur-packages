@@ -70,7 +70,6 @@ buildNpmPackage' rec {
     license = licenses.asl20;
     maintainers = with maintainers; [ wegank ];
     platforms = platforms.linux;
-    # undefined symbol: _ZN2v82V818GlobalizeReferenceEPNS_8internal7IsolateEPm
     broken = true;
   };
 }
