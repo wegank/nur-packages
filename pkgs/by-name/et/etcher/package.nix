@@ -32,6 +32,8 @@ buildNpmPackage' rec {
 
   npmDepsHash = "sha256-s9aat4tTOXTkwGQ7ifMejIxJokEOeHQAYuTTn+2zne8=";
 
+  npmPruneFlags = "--production";
+
   makeCacheWritable = true;
 
   nativeBuildInputs = [
