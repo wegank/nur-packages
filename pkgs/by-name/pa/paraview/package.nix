@@ -1,5 +1,6 @@
 { paraview
 , fetchFromGitLab
+, stdenv
 }:
 
 paraview.overrideAttrs rec {
@@ -13,4 +14,6 @@ paraview.overrideAttrs rec {
     fetchSubmodules = true;
     hash = "sha256-YCbtVEDKtDOmgSX0GHbDZH3pw19tXITQg/9LpaA7x58=";
   };
+
+  meta.broken = stdenv.isDarwin;
 }
