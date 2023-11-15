@@ -22,6 +22,7 @@ with pkgs;
   # Misc
   drgeo = callPackage ./pkgs/by-name/dr/drgeo/package.nix { };
   etcher = callPackage ./pkgs/by-name/et/etcher/package.nix { };
+  paraview = callPackage ./pkgs/by-name/pa/paraview/package.nix { };
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
