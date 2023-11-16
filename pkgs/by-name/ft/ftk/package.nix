@@ -2,6 +2,14 @@
 , stdenv
 , fetchFromGitHub
 , cmake
+, qt5
+, boost
+, ffmpeg
+, gdal
+, mpi
+, paraview
+, tbb
+, vtk
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -15,8 +23,17 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-kWp8DGeSUhfOWLK5fVaiJeaTMRy5NbhFBU+8uhxumjg=";
   };
 
-  nativeBuildInputs = [
-    cmake
+  inherit (paraview) nativeBuildInputs preConfigure;
+
+  buildInputs = [
+    paraview
+  ] ++ paraview.buildInputs;
+
+  cmakeFlags = [
+    (lib.cmakeBool "FTK_BUILD_PARAVIEW" true)
+    (lib.cmakeOptionType "PATH" "CMAKE_INSTALL_BINDIR" "bin")
+    (lib.cmakeOptionType "PATH" "CMAKE_INSTALL_INCLUDEDIR" "include")
+    (lib.cmakeOptionType "PATH" "CMAKE_INSTALL_LIBDIR" "lib")
   ];
 
   meta = with lib; {
