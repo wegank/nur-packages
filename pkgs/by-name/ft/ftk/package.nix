@@ -1,15 +1,7 @@
 { lib
 , stdenv
 , fetchFromGitHub
-, cmake
-, qt5
-, boost
-, ffmpeg
-, gdal
-, mpi
 , paraview
-, tbb
-, vtk
 }:
 
 stdenv.mkDerivation (finalAttrs: {
