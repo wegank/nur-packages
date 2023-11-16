@@ -10,6 +10,10 @@
 
 with pkgs;
 
+let
+  # Misc
+  paraview = callPackage ./pkgs/by-name/pa/paraview/package.nix { };
+in
 {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
@@ -22,8 +26,9 @@ with pkgs;
   # Misc
   drgeo = callPackage ./pkgs/by-name/dr/drgeo/package.nix { };
   etcher = callPackage ./pkgs/by-name/et/etcher/package.nix { };
-  ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix { };
-  paraview = callPackage ./pkgs/by-name/pa/paraview/package.nix { };
+  ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix {
+    inherit paraview;
+  };
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
