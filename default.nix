@@ -29,6 +29,7 @@ in
   ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix {
     inherit paraview;
   };
+  inherit paraview;
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
