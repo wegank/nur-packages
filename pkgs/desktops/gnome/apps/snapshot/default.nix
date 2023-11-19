@@ -1,12 +1,13 @@
 { lib
 , stdenv
 , fetchFromGitLab
-, fetchpatch
 , desktop-file-utils
 , meson
 , ninja
 , pkg-config
 , rustPlatform
+, cargo
+, rustc
 , wrapGAppsHook4
 , glib
 , gsettings-desktop-schemas
@@ -39,8 +40,8 @@ stdenv.mkDerivation (finalAttrs: {
     ninja
     pkg-config
     rustPlatform.cargoSetupHook
-    rustPlatform.rust.cargo
-    rustPlatform.rust.rustc
+    cargo
+    rustc
     wrapGAppsHook4
   ];
 
