@@ -7,6 +7,7 @@
 , alsa-lib
 , cairo
 , glib
+, libGL
 , libICE
 , libSM
 , libX11
@@ -38,6 +39,7 @@ stdenv.mkDerivation rec {
     alsa-lib
     cairo
     glib
+    libGL
     libICE
     libSM
     libX11
