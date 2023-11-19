@@ -15,7 +15,10 @@ havoc.overrideAttrs (old: {
   '';
 
   env = lib.optionalAttrs stdenv.isDarwin {
-    NIX_CFLAGS_COMPILE = "-I${epoll-shim}/include/libepoll-shim";
+    NIX_CFLAGS_COMPILE = toString [
+      "-Wno-error=implicit-function-declaration"
+      "-I${epoll-shim}/include/libepoll-shim"
+    ];
     NIX_CFLAGS_LINK = "-L${epoll-shim}/lib -lepoll-shim";
   };
 
