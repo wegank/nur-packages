@@ -15,5 +15,7 @@ paraview.overrideAttrs rec {
     hash = "sha256-YCbtVEDKtDOmgSX0GHbDZH3pw19tXITQg/9LpaA7x58=";
   };
 
+  patches = [ ];
+
   meta.broken = stdenv.isDarwin;
 }
