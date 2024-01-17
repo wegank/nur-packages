@@ -33,6 +33,11 @@ buildPythonPackage rec {
     xmltodict
   ];
 
+  preConfigure = ''
+    mkdir -p $out/${python.sitePackages}/ioh
+    mv ioh/{iohcpp,__init__.py*} -t $out/${python.sitePackages}/ioh
+  '';
+
   cmakeFlags = [
     (lib.cmakeBool "BUILD_EXAMPLE" false)
     (lib.cmakeBool "BUILD_PYTHON_PACKAGE" true)
@@ -40,9 +45,10 @@ buildPythonPackage rec {
   ];
 
   postInstall = ''
-    mkdir -p $out/${python.sitePackages}
-    mv ioh/iohcpp.cpython-*.so $out/${python.sitePackages}
+    mv ioh/iohcpp.cpython-*.so $out/${python.sitePackages}/ioh
   '';
+
+  pythonImportsCheck = [ "ioh" ];
 
   meta = {
     description = "The experimenter for Iterative Optimization Heuristics";
