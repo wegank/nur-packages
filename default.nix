@@ -29,6 +29,7 @@ in
   ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix {
     inherit paraview;
   };
+  ioh = python3Packages.callPackage ./pkgs/by-name/io/ioh/package.nix { };
   inherit paraview;
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
