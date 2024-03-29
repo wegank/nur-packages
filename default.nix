@@ -30,6 +30,7 @@ in
     inherit paraview;
   };
   ioh = python3Packages.callPackage ./pkgs/by-name/io/ioh/package.nix { };
+  liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix { };
   inherit paraview;
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
