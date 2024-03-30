@@ -25,8 +25,8 @@ in
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/share/godot/templates/${templateVersion}
-    cp bin/godot.*.template_${buildType}.* $out/share/godot/templates/${templateVersion}/${template}
+    mkdir -p $out/share/godot/export_templates/${templateVersion}
+    cp bin/godot.*.template_${buildType}.* $out/share/godot/export_templates/${templateVersion}/${template}
 
     runHook postInstall
   '';
