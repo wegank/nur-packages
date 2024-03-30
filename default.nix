@@ -29,6 +29,7 @@ in
   ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix {
     inherit paraview;
   };
+  godot_4-export-templates = callPackage ./pkgs/by-name/go/godot_4-export-templates/package.nix { };
   ioh = python3Packages.callPackage ./pkgs/by-name/io/ioh/package.nix { };
   liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix { };
   inherit paraview;
