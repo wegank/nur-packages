@@ -25,4 +25,5 @@ in
     '';
 
     meta.description = prevAttrs.meta.description + " (export templates)";
+    meta.broken = stdenv.isDarwin;
   })
