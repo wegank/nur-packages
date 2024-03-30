@@ -6,24 +6,29 @@
 
 let
   buildType = if withDebug then "debug" else "release";
+  template =
+    {
+      "arm7l-linux" = "linux_${buildType}.arm32";
+      "aarch64-linux" = "linux_${buildType}.arm64";
+      "x86_64-linux" = "linux_${buildType}.x86_64";
+      "i686-linux" = "linux_${buildType}.x86_32";
+    }
+    .${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
 in
-(godot_4.override {
-  withTarget = "template_${buildType}";
-}).overrideAttrs
-  (prevAttrs: {
-    pname = "godot_4-export-templates";
+(godot_4.override { withTarget = "template_${buildType}"; }).overrideAttrs (prevAttrs: {
+  pname = "godot_4-export-templates";
 
-    outputs = [ "out" ];
+  outputs = [ "out" ];
 
-    installPhase = ''
-      runHook preInstall
+  installPhase = ''
+    runHook preInstall
 
-      mkdir -p $out/share/godot/templates/${prevAttrs.version}.stable
-      cp bin/godot.*.template_${buildType}.* $out/share/godot/templates/${prevAttrs.version}.stable/linux_x11_${toString stdenv.hostPlatform.parsed.cpu.bits}_${buildType}
+    mkdir -p $out/share/godot/templates/${prevAttrs.version}.stable
+    cp bin/godot.*.template_${buildType}.* $out/share/godot/templates/${prevAttrs.version}.stable/${template}
 
-      runHook postInstall
-    '';
+    runHook postInstall
+  '';
 
-    meta.description = prevAttrs.meta.description + " (export templates)";
-    meta.broken = stdenv.isDarwin;
-  })
+  meta.description = prevAttrs.meta.description + " (export templates)";
+  meta.broken = stdenv.isDarwin;
+})
