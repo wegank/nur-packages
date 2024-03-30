@@ -4,7 +4,21 @@
   fetchFromGitLab,
   rustPlatform,
   cargo,
+  makeWrapper,
   godot_4,
+  godot_4-export-templates,
+  alsa-lib,
+  libGL,
+  libX11,
+  libXcursor,
+  libXext,
+  libXi,
+  libXinerama,
+  libXrandr,
+  libXrender,
+  libpulseaudio,
+  udev,
+  vulkan-loader,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -20,9 +34,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   postPatch = ''
     substituteInPlace grcc.mk \
-      --replace-fail "\$(wildcard /opt/godot-rust-cross-compiler.txt)" "yes" \
-      --replace-fail "godot_headless" "godot4 --headless" \
-      --replace-fail "--export" "--export-release"
+      --replace-fail "\$(wildcard /opt/godot-rust-cross-compiler.txt)" "yes"
+    substituteInPlace godot/liquidwar7game.gdextension \
+      --replace-fail ".x86_64" ""
     cp ${./export_presets.cfg} godot/export_presets.cfg
   '';
 
@@ -39,17 +53,63 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     cargo
     godot_4
+    makeWrapper
+    rustPlatform.bindgenHook
     rustPlatform.cargoSetupHook
   ];
 
-  preBuild = ''
+  buildInputs = [
+    alsa-lib
+    libGL
+    libX11
+    libXcursor
+    libXext
+    libXi
+    libXinerama
+    libXrandr
+    libXrender
+    libpulseaudio
+    udev
+    vulkan-loader
+  ];
+
+  buildPhase = ''
+    runHook preBuild
+
     export HOME=$(mktemp -d)
+    mkdir -p $HOME/.local/share/
+    cp -R ${godot_4-export-templates}/share/godot $HOME/.local/share/godot
+    chmod -R +w $HOME/.local/share/godot
+
+  '' + lib.optionalString (!stdenv.isx86_64) ''
+    pushd $HOME/.local/share/godot/export_templates/*/
+    cp linux_release.* linux_release.x86_64
+    popd
+
+  '' + ''
+    pushd rust
+    cargo build --release
+    install -Dm755 -t godot/gdnative/linux/${stdenv.hostPlatform.config} target/release/libliquidwar7game.so
+    popd
+
+    mkdir -p $out/share/liquidwar7
+    for i in warmup real; do
+      godot4 --headless --path godot --export-release "Linux/X11" $out/share/liquidwar7/liquidwar7
+    done
+
+    runHook postBuild
   '';
 
-  makeFlags = [
-    "all"
-    "linux"
-  ];
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p $out/bin
+    ln -s $out/share/liquidwar7/liquidwar7 $out/bin/liquidwar7
+    wrapProgram $out/share/liquidwar7/liquidwar7 \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath finalAttrs.buildInputs}
+
+    runHook postInstall
+  '';
 
   meta = {
     description = "A distributed wargame";
@@ -57,6 +117,6 @@ stdenv.mkDerivation (finalAttrs: {
     license = lib.licenses.gpl3Plus;
     maintainers = with lib.maintainers; [ wegank ];
     platforms = lib.platforms.linux;
-    broken = true; # requires godot_4-export-templates
+    broken = stdenv.isDarwin;
   };
 })

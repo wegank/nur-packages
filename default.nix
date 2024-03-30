@@ -32,7 +32,9 @@ in
   };
   inherit godot_4-export-templates;
   ioh = python3Packages.callPackage ./pkgs/by-name/io/ioh/package.nix { };
-  liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix { };
+  liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix {
+    inherit godot_4-export-templates;
+  };
   inherit paraview;
   snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
