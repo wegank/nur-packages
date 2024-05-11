@@ -21,8 +21,8 @@ jobs:
         cachixName:
           - wegank
         nixPath:
-          - nixpkgs=channel:nixos-unstable
-          - nixpkgs=channel:nixpkgs-unstable
+          - nixpkgs=https://github.com/nixos/nixpkgs/archive/nixos-unstable.tar.gz
+          - nixpkgs=https://github.com/nixos/nixpkgs/archive/nixpkgs-unstable.tar.gz
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
