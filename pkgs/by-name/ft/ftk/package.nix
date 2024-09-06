@@ -34,6 +34,6 @@ stdenv.mkDerivation (finalAttrs: {
     licenses = licenses.mit;
     maintainers = with maintainers; [ wegank ];
     platforms = platforms.linux;
-    broken = stdenv.isDarwin;
+    broken = true;
   };
 })
