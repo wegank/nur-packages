@@ -39,10 +39,11 @@ in
   esterel = callPackage ./pkgs/by-name/es/esterel/package.nix { };
   velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
 
+  # Pinephone
+  eg25-manager = callPackage ./pkgs/by-name/eg/eg25-manager/package.nix { };
+  pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
 }
 // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
   # Pinephone
-  eg25-manager = pkgs.callPackage ./pkgs/applications/networking/eg25-manager { };
   linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
-  pinephone-firmware = pkgs.callPackage ./pkgs/os-specific/linux/firmware/pinephone-firmware { };
 }
