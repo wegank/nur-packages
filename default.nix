@@ -42,7 +42,7 @@ in
   # Pinephone
   pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
 }
-// pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
+// pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
   # Pinephone
-  linux_pinephone = pkgs.callPackage ./pkgs/os-specific/linux/kernel/linux-pinephone.nix { };
+  linux-pinephone = pkgs.callPackage ./pkgs/by-name/li/linux-pinephone/package.nix { };
 }
