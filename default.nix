@@ -40,9 +40,6 @@ in
   velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
 
   # Pinephone
-  pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
-}
-// pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-  # Pinephone
   linux-pinephone = pkgs.callPackage ./pkgs/by-name/li/linux-pinephone/package.nix { };
+  pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
 }
