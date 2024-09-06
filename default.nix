@@ -34,7 +34,6 @@ in
   liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix {
     inherit godot_4-export-templates;
   };
-  snapshot = callPackage ./pkgs/desktops/gnome/apps/snapshot { };
 
   # Synchronous systems
   esterel = callPackage ./pkgs/by-name/es/esterel/package.nix { };
