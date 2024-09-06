@@ -23,7 +23,7 @@ in
   overlays = import ./overlays; # nixpkgs overlays
 
   # Wayland
-  havoc = callPackage ./pkgs/applications/terminal-emulators/havoc { };
+  havoc = callPackage ./pkgs/by-name/ha/havoc/package.nix { };
 
   # Misc
   drgeo = callPackage ./pkgs/by-name/dr/drgeo/package.nix { };
