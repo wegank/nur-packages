@@ -40,7 +40,6 @@ in
   velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
 
   # Pinephone
-  eg25-manager = callPackage ./pkgs/by-name/eg/eg25-manager/package.nix { };
   pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
 }
 // pkgs.lib.optionalAttrs (pkgs.stdenv.isAarch64 && pkgs.stdenv.isLinux) {
