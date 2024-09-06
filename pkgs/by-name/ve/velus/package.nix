@@ -21,7 +21,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "velus";
-  version = "unstable-2023-06-13";
+  version = "3.0.0-unstable-2023-06-13";
 
   outputs = [
     "out"

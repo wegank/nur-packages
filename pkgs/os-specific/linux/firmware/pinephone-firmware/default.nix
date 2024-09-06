@@ -6,7 +6,7 @@
 
 stdenvNoCC.mkDerivation {
   pname = "pinephone-firmware";
-  version = "2021-10-27";
+  version = "0-unstable-2021-10-27";
 
   src = fetchgit {
     url = "https://megous.com/git/linux-firmware";
