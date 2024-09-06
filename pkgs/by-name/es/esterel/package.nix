@@ -1,6 +1,7 @@
-{ lib
-, stdenv
-, fetchurl
+{
+  lib,
+  stdenv,
+  fetchurl,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -8,7 +9,9 @@ stdenv.mkDerivation (finalAttrs: {
   version = "5.92";
 
   src = fetchurl {
-    url = "https://www-sop.inria.fr/esterel.org/files/Html/Downloads/Soft/esterelv${builtins.replaceStrings [ "." ] [ "_" ] finalAttrs.version}.linux.tgz";
+    url = "https://www-sop.inria.fr/esterel.org/files/Html/Downloads/Soft/esterelv${
+      builtins.replaceStrings [ "." ] [ "_" ] finalAttrs.version
+    }.linux.tgz";
     hash = "sha256-Wq5IbytQLWLdxKdnh72P0TiwhYIIEwFRt47Es2gi+TM=";
   };
 

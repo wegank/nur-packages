@@ -1,7 +1,8 @@
-{ lib
-, stdenv
-, havoc
-, epoll-shim
+{
+  lib,
+  stdenv,
+  havoc,
+  epoll-shim,
 }:
 
 havoc.overrideAttrs (old: {

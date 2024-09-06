@@ -1,7 +1,8 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, paraview
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  paraview,
 }:
 
 stdenv.mkDerivation (finalAttrs: {

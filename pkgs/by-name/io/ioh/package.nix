@@ -1,13 +1,14 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, pythonOlder
-, cmake
-, ninja
-, mypy
-, pybind11
-, xmltodict
-, python
+{
+  lib,
+  buildPythonPackage,
+  fetchPypi,
+  pythonOlder,
+  cmake,
+  ninja,
+  mypy,
+  pybind11,
+  xmltodict,
+  python,
 }:
 
 buildPythonPackage rec {

@@ -1,15 +1,16 @@
-{ lib
-, stdenv
-, buildNpmPackage
-, electron_19
-, nodejs_16
-, fetchFromGitHub
-, autoPatchelfHook
-, python3
-, icu
-, udev
-, bash
-, util-linux
+{
+  lib,
+  stdenv,
+  buildNpmPackage,
+  electron_19,
+  nodejs_16,
+  fetchFromGitHub,
+  autoPatchelfHook,
+  python3,
+  icu,
+  udev,
+  bash,
+  util-linux,
 }:
 
 let

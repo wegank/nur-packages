@@ -1,9 +1,10 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, coqPackages_8_15
-, ncurses
-, ocamlPackages
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  coqPackages_8_15,
+  ncurses,
+  ocamlPackages,
 }:
 
 let
@@ -14,14 +15,18 @@ let
     x86_64-darwin = "x86_64-macos";
     aarch64-darwin = "aarch64-macos";
   };
-  target = targets.${stdenv.hostPlatform.system}
-    or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
+  target =
+    targets.${stdenv.hostPlatform.system}
+      or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
 in
 stdenv.mkDerivation {
   pname = "velus";
   version = "unstable-2023-06-13";
 
-  outputs = [ "out" "examples" ];
+  outputs = [
+    "out"
+    "examples"
+  ];
 
   src = fetchFromGitHub {
     owner = "INRIA";

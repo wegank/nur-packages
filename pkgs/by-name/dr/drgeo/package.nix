@@ -1,23 +1,24 @@
-{ lib
-, stdenv
-, fetchurl
-, autoPatchelfHook
-, makeWrapper
-, unzip
-, alsa-lib
-, cairo
-, glib
-, libGL
-, libICE
-, libSM
-, libX11
-, libXext
-, libXrender
-, libpulseaudio
-, libuuid
-, nas
-, pango
-, sndio
+{
+  lib,
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+  makeWrapper,
+  unzip,
+  alsa-lib,
+  cairo,
+  glib,
+  libGL,
+  libICE,
+  libSM,
+  libX11,
+  libXext,
+  libXrender,
+  libpulseaudio,
+  libuuid,
+  nas,
+  pango,
+  sndio,
 }:
 
 stdenv.mkDerivation rec {

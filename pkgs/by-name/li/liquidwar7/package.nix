@@ -73,32 +73,35 @@ stdenv.mkDerivation (finalAttrs: {
     vulkan-loader
   ];
 
-  buildPhase = ''
-    runHook preBuild
+  buildPhase =
+    ''
+      runHook preBuild
 
-    export HOME=$(mktemp -d)
-    mkdir -p $HOME/.local/share/
-    cp -R ${godot_4-export-templates}/share/godot $HOME/.local/share/godot
-    chmod -R +w $HOME/.local/share/godot
+      export HOME=$(mktemp -d)
+      mkdir -p $HOME/.local/share/
+      cp -R ${godot_4-export-templates}/share/godot $HOME/.local/share/godot
+      chmod -R +w $HOME/.local/share/godot
 
-  '' + lib.optionalString (!stdenv.isx86_64) ''
-    pushd $HOME/.local/share/godot/export_templates/*/
-    cp linux_release.* linux_release.x86_64
-    popd
+    ''
+    + lib.optionalString (!stdenv.isx86_64) ''
+      pushd $HOME/.local/share/godot/export_templates/*/
+      cp linux_release.* linux_release.x86_64
+      popd
 
-  '' + ''
-    pushd rust
-    cargo build --release
-    install -Dm755 -t godot/gdnative/linux/${stdenv.hostPlatform.config} target/release/libliquidwar7game.so
-    popd
+    ''
+    + ''
+      pushd rust
+      cargo build --release
+      install -Dm755 -t godot/gdnative/linux/${stdenv.hostPlatform.config} target/release/libliquidwar7game.so
+      popd
 
-    mkdir -p $out/share/liquidwar7
-    for i in warmup real; do
-      godot4 --headless --path godot --export-release "Linux/X11" $out/share/liquidwar7/liquidwar7
-    done
+      mkdir -p $out/share/liquidwar7
+      for i in warmup real; do
+        godot4 --headless --path godot --export-release "Linux/X11" $out/share/liquidwar7/liquidwar7
+      done
 
-    runHook postBuild
-  '';
+      runHook postBuild
+    '';
 
   installPhase = ''
     runHook preInstall
