@@ -1,11 +1,11 @@
 {
   lib,
   stdenv,
-  havoc,
+  pkgs,
   epoll-shim,
 }:
 
-havoc.overrideAttrs (old: {
+pkgs.havoc.overrideAttrs (old: {
   patches = [
     ./darwin.patch
   ];
