@@ -1,22 +1,17 @@
 {
   lib,
-  buildPythonPackage,
+  python3,
   fetchPypi,
-  pythonOlder,
   cmake,
   ninja,
-  mypy,
-  pybind11,
-  xmltodict,
-  python,
 }:
 
-buildPythonPackage rec {
+python3.pkgs.buildPythonPackage rec {
   pname = "ioh";
   version = "0.3.14";
   format = "other";
 
-  disabled = pythonOlder "3.6";
+  disabled = python3.pythonOlder "3.6";
 
   src = fetchPypi {
     inherit pname version;
@@ -28,15 +23,15 @@ buildPythonPackage rec {
     ninja
   ];
 
-  propagatedBuildInputs = [
+  propagatedBuildInputs = with python3.pkgs; [
     mypy
     pybind11
     xmltodict
   ];
 
   preConfigure = ''
-    mkdir -p $out/${python.sitePackages}/ioh
-    mv ioh/{iohcpp,__init__.py*} -t $out/${python.sitePackages}/ioh
+    mkdir -p $out/${python3.sitePackages}/ioh
+    mv ioh/{iohcpp,__init__.py*} -t $out/${python3.sitePackages}/ioh
   '';
 
   cmakeFlags = [
@@ -46,7 +41,7 @@ buildPythonPackage rec {
   ];
 
   postInstall = ''
-    mv ioh/iohcpp.cpython-*.so $out/${python.sitePackages}/ioh
+    mv ioh/iohcpp.cpython-*.so $out/${python3.sitePackages}/ioh
   '';
 
   pythonImportsCheck = [ "ioh" ];
