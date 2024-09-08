@@ -10,36 +10,34 @@
   pkgs ? import <nixpkgs> { },
 }:
 
-with pkgs;
-
 let
-  # Misc
-  godot_4-export-templates = callPackage ./pkgs/by-name/go/godot_4-export-templates/package.nix { };
+  inherit (pkgs) lib;
+  noExtraAttrs =
+    set:
+    lib.removeAttrs set [
+      "newScope"
+      "callPackage"
+      "overrideScope"
+      "overrideScope'"
+      "packages"
+    ];
 in
 {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
-
-  # Wayland
-  havoc = callPackage ./pkgs/by-name/ha/havoc/package.nix { };
-
-  # Misc
-  drgeo = callPackage ./pkgs/by-name/dr/drgeo/package.nix { };
-  etcher = callPackage ./pkgs/by-name/et/etcher/package.nix { };
-  ftk = callPackage ./pkgs/by-name/ft/ftk/package.nix { };
-  inherit godot_4-export-templates;
-  ioh = python3Packages.callPackage ./pkgs/by-name/io/ioh/package.nix { };
-  liquidwar7 = callPackage ./pkgs/by-name/li/liquidwar7/package.nix {
-    inherit godot_4-export-templates;
-  };
-
-  # Synchronous systems
-  esterel = callPackage ./pkgs/by-name/es/esterel/package.nix { };
-  velus = callPackage ./pkgs/by-name/ve/velus/package.nix { };
-
-  # Pinephone
-  linux-pinephone = pkgs.callPackage ./pkgs/by-name/li/linux-pinephone/package.nix { };
-  pinephone-firmware = callPackage ./pkgs/by-name/pi/pinephone-firmware/package.nix { };
 }
+// noExtraAttrs (
+  lib.makeScope pkgs.newScope (
+    self:
+    lib.mergeAttrsList (
+      lib.attrValues (
+        lib.packagesFromDirectoryRecursive {
+          callPackage = self.callPackage;
+          directory = ./pkgs/by-name;
+        }
+      )
+    )
+  )
+)
