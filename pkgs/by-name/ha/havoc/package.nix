@@ -3,6 +3,7 @@
   stdenv,
   pkgs,
   epoll-shim,
+  darwin,
 }:
 
 pkgs.havoc.overrideAttrs (old: {
@@ -14,6 +15,12 @@ pkgs.havoc.overrideAttrs (old: {
     substituteInPlace Makefile \
       --replace "-lrt" ""
   '';
+
+  buildInputs =
+    old.buildInputs
+    ++ lib.optionals stdenv.isDarwin [
+      darwin.libutil
+    ];
 
   env = lib.optionalAttrs stdenv.isDarwin {
     NIX_CFLAGS_COMPILE = toString [
