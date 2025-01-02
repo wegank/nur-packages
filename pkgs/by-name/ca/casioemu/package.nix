@@ -46,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
   meta = {
     description = "An emulator for nX-U8 based Casio fx-es PLUS calculators";
     homepage = "https://github.com/user202729/CasioEmu";
-    licence = lib.licences.gpl3Only;
+    license = lib.licenses.gpl3Only;
     maintainers = with lib.maintainers; [ wegank ];
     platforms = lib.platforms.unix;
   };
