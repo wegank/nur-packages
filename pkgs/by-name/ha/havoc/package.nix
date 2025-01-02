@@ -11,18 +11,18 @@ pkgs.havoc.overrideAttrs (old: {
     ./darwin.patch
   ];
 
-  postPatch = lib.optionalString stdenv.isDarwin ''
+  postPatch = lib.optionalString stdenv.hostPlatform.isDarwin ''
     substituteInPlace Makefile \
       --replace "-lrt" ""
   '';
 
   buildInputs =
     old.buildInputs
-    ++ lib.optionals stdenv.isDarwin [
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
       darwin.libutil
     ];
 
-  env = lib.optionalAttrs stdenv.isDarwin {
+  env = lib.optionalAttrs stdenv.hostPlatform.isDarwin {
     NIX_CFLAGS_COMPILE = toString [
       "-Wno-error=implicit-function-declaration"
       "-I${epoll-shim}/include/libepoll-shim"

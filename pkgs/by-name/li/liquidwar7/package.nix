@@ -83,7 +83,7 @@ stdenv.mkDerivation (finalAttrs: {
       chmod -R +w $HOME/.local/share/godot
 
     ''
-    + lib.optionalString (!stdenv.isx86_64) ''
+    + lib.optionalString (!stdenv.hostPlatform.isx86_64) ''
       pushd $HOME/.local/share/godot/export_templates/*/
       cp linux_release.* linux_release.x86_64
       popd
@@ -120,6 +120,6 @@ stdenv.mkDerivation (finalAttrs: {
     license = lib.licenses.gpl3Plus;
     maintainers = with lib.maintainers; [ wegank ];
     platforms = lib.platforms.linux;
-    broken = stdenv.isDarwin;
+    broken = stdenv.hostPlatform.isDarwin;
   };
 })

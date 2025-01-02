@@ -32,5 +32,5 @@ in
   '';
 
   meta.description = previousAttrs.meta.description + " (export templates)";
-  meta.broken = stdenv.isDarwin;
+  meta.broken = stdenv.hostPlatform.isDarwin;
 })

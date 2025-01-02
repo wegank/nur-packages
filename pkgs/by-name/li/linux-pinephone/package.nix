@@ -18,7 +18,7 @@ let
   version = "5.19.8"; # 5.19
   modDirVersion = version; # 5.19.0
 in
-if !stdenv.isLinux then
+if !stdenv.hostPlatform.isLinux then
   hello.overrideAttrs {
     meta = {
       broken = true;
@@ -74,7 +74,7 @@ else
         FB_SUN5I_EINK = no;
       };
 
-      extraMeta.broken = !stdenv.isAarch64;
+      extraMeta.broken = !stdenv.hostPlatform.isAarch64;
     }
     // (args.argsOverride or { })
   )
