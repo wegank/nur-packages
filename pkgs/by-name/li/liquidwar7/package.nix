@@ -6,7 +6,6 @@
   cargo,
   makeWrapper,
   godot_4,
-  godot_4-export-templates,
   alsa-lib,
   libGL,
   libX11,
@@ -78,9 +77,8 @@ stdenv.mkDerivation (finalAttrs: {
       runHook preBuild
 
       export HOME=$(mktemp -d)
-      mkdir -p $HOME/.local/share/
-      cp -R ${godot_4-export-templates}/share/godot $HOME/.local/share/godot
-      chmod -R +w $HOME/.local/share/godot
+      cp -R ${godot_4.export-template} $HOME/.local
+      chmod -R +w $HOME/.local
 
     ''
     + lib.optionalString (!stdenv.hostPlatform.isx86_64) ''
