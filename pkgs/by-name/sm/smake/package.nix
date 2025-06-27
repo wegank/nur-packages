@@ -14,6 +14,11 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-dtsCLkUMF5GgDml4C1XRii4/w5tf+HCZZDP4cxIDICQ=";
   };
 
+  postPatch = ''
+    substituteInPlace RULES/rules.prg \
+      --replace-fail "/bin/" ""
+  '';
+
   nativeBuildInputs = [
     installShellFiles
   ];
