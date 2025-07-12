@@ -23,6 +23,8 @@ ocamlPackages.buildDunePackage rec {
   postPatch = ''
     substituteInPlace ./src/cli/main.ml \
       --replace-fail '%%VERSION%%' '${version}'
+    substituteInPlace vendor/github.com/panglesd/irmin-watcher/src/backend.inotify.ml \
+      --replace-fail 'uname () = Some "Linux"' "${lib.boolToString stdenv.hostPlatform.isLinux}"
   '';
 
   nativeBuildInputs = with ocamlPackages; [
@@ -57,7 +59,7 @@ ocamlPackages.buildDunePackage rec {
 
   nativeCheckInputs = [ versionCheckHook ];
   versionCheckProgramArg = "--version";
-  doInstallCheck = false; # /bin/sh: uname: not found
+  doInstallCheck = true;
 
   passthru.updateScript = nix-update-script { };
 
