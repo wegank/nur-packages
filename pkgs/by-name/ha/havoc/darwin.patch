@@ -2,19 +2,6 @@ diff --git a/main.c b/main.c
 index 8241374..464b23f 100644
 --- a/main.c
 +++ b/main.c
-@@ -13,7 +13,11 @@
- #include <sys/timerfd.h>
- #include <fcntl.h>
- #include <unistd.h>
-+#ifdef __APPLE__
-+#include <util.h>
-+#else
- #include <pty.h>
-+#endif
- 
- #include <xkbcommon/xkbcommon-compose.h>
- #include <wayland-client-core.h>
-@@ -25,6 +29,13 @@
  #include "gtk-primary-selection.h"
  #include "xdg-decoration-unstable-v1.h"
  
