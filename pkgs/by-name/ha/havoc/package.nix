@@ -6,29 +6,44 @@
   darwin,
 }:
 
-pkgs.havoc.overrideAttrs (old: {
-  patches = [
-    ./darwin.patch
-  ];
-
-  postPatch = lib.optionalString stdenv.hostPlatform.isDarwin ''
-    substituteInPlace Makefile \
-      --replace "-lrt" ""
-  '';
-
-  buildInputs =
-    old.buildInputs
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      darwin.libutil
+let
+  wayland = pkgs.wayland.overrideAttrs {
+    patches = [
+      ./wayland-darwin.patch
     ];
-
-  env = lib.optionalAttrs stdenv.hostPlatform.isDarwin {
-    NIX_CFLAGS_COMPILE = toString [
-      "-Wno-error=implicit-function-declaration"
-      "-I${epoll-shim}/include/libepoll-shim"
-    ];
-    NIX_CFLAGS_LINK = "-L${epoll-shim}/lib -lepoll-shim";
   };
+  wayland-protocols = pkgs.wayland-protocols.override {
+    inherit wayland;
+  };
+  wayland-scanner = pkgs.wayland-scanner.override {
+    inherit wayland;
+  };
+in
+(pkgs.havoc.override {
+  inherit
+    wayland
+    wayland-protocols
+    wayland-scanner
+    ;
+}).overrideAttrs
+  (old: {
+    patches = [
+      ./havoc-darwin.patch
+    ];
 
-  meta.platforms = lib.platforms.unix;
-})
+    buildInputs =
+      old.buildInputs
+      ++ lib.optionals stdenv.hostPlatform.isDarwin [
+        darwin.libutil
+      ];
+
+    env = lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+      NIX_CFLAGS_COMPILE = toString [
+        "-Wno-error=implicit-function-declaration"
+        "-I${epoll-shim}/include/libepoll-shim"
+      ];
+      NIX_CFLAGS_LINK = "-L${epoll-shim}/lib -lepoll-shim";
+    };
+
+    meta.platforms = lib.platforms.unix;
+  })
