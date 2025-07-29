@@ -20,7 +20,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildInputs = [
     paraview
-  ] ++ paraview.buildInputs;
+  ]
+  ++ paraview.buildInputs;
 
   cmakeFlags = [
     (lib.cmakeBool "FTK_BUILD_PARAVIEW" true)
