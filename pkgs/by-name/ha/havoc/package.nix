@@ -7,11 +7,16 @@
 }:
 
 let
-  wayland = pkgs.wayland.overrideAttrs {
-    patches = [
-      ./wayland-darwin.patch
-    ];
-  };
+  wayland = pkgs.wayland.overrideAttrs (
+    finalAttrs: oldAttrs: {
+      patches = [
+        ./wayland-darwin.patch
+      ];
+      meta = oldAttrs.meta // {
+        broken = false;
+      };
+    }
+  );
   wayland-protocols = pkgs.wayland-protocols.override {
     inherit wayland;
   };
