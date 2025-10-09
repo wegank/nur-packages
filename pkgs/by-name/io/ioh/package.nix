@@ -38,6 +38,7 @@ python3.pkgs.buildPythonPackage rec {
     (lib.cmakeBool "BUILD_EXAMPLE" false)
     (lib.cmakeBool "BUILD_PYTHON_PACKAGE" true)
     (lib.cmakeBool "BUILD_TESTS" false)
+    (lib.cmakeFeature "CMAKE_POLICY_VERSION_MINIMUM" "3.5")
   ];
 
   postInstall = ''
