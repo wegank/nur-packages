@@ -13,7 +13,7 @@ let
         ./wayland-darwin.patch
       ];
       meta = oldAttrs.meta // {
-        broken = false;
+        badPlatforms = [ ];
       };
     }
   );
