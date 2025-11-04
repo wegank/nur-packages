@@ -12,19 +12,14 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "firefly";
-  version = "2.0.3-unstable-2025-07-21";
+  version = "2.0.3-unstable-2025-11-04";
 
   src = fetchFromGitLab {
     owner = "firefly-library";
     repo = "firefly";
-    rev = "805b86358986cd162cb8a7463b7d185c7797bf3e";
-    hash = "sha256-PQ8qJ/x9nccNnyBcWfR8h+kgUwEnnH/xsITQmF9vpLs=";
+    rev = "72e9e3cd1b05e2ba56edd7dbe0725251df8cb256";
+    hash = "sha256-S63L7gKJkKDoSsDpiEcDJS3Tk+GGx3TCdM8y/xrdeNc=";
   };
-
-  postPatch = ''
-    substituteInPlace CMakeLists.txt \
-      --replace "cmake_minimum_required(VERSION 3.1)" "cmake_minimum_required(VERSION 3.10)"
-  '';
 
   nativeBuildInputs = [
     cmake
