@@ -48,7 +48,11 @@ stdenv.mkDerivation rec {
     libXrender
     libpulseaudio
     libuuid
-    nas
+    (nas.overrideAttrs (
+      finalAttrs: oldAttrs: {
+        env.NIX_CFLAGS_COMPILE = "-std=c17 " + oldAttrs.env.NIX_CFLAGS_COMPILE;
+      }
+    ))
     pango
   ];
 
