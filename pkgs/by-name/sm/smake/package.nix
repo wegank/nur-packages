@@ -25,6 +25,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   dontConfigure = true;
 
+  env.NIX_CFLAGS_COMPILE = "-std=gnu89";
+
   buildPhase = ''
     runHook preBuild
 
