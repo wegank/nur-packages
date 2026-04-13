@@ -4,11 +4,11 @@
 }:
 
 msolve.overrideAttrs {
-  version = "0.9.4-unstable-2026-03-08";
+  version = "0.9.5-unstable-2026-04-12";
   src = fetchFromGitHub {
     owner = "algebraic-solving";
     repo = "msolve";
-    rev = "ff6fb15ac785376a0d62f4820d5d87526a2e2e84";
-    hash = "sha256-gjiIHFGppriNgHfSPIB5WAOEO5nBLcL8NqS+K51McoM=";
+    rev = "573a6e83913cfe29e7a757a79715091efc4f76bc";
+    hash = "sha256-XuCMijmb25mdzylXTeToTRZxF03+RhMs5cICaLOGvPc=";
   };
 }
