@@ -4,13 +4,28 @@
   pkgs,
   epoll-shim,
   darwin,
+  fetchurl,
+  mdbook,
 }:
 
 let
-  wayland = pkgs.wayland.overrideAttrs (
+  version = "1.25.0";
+  src = fetchurl {
+    url = "https://gitlab.freedesktop.org/wayland/wayland/-/releases/${version}/downloads/wayland-${version}.tar.xz";
+    hash = "sha256-wGXwQK/f8xd2gGAPJJcn5Boa/CL8zyciLxX1MG+qHwM=";
+  };
+  wayland-scanner = pkgs.wayland-scanner.override {
+    inherit wayland;
+  };
+  wayland = (pkgs.wayland.override { inherit wayland-scanner; }).overrideAttrs (
     finalAttrs: oldAttrs: {
+      inherit version src;
       patches = [
+        # https://gitlab.freedesktop.org/wayland/wayland/-/merge_requests/508
         ./wayland-darwin.patch
+      ];
+      nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
+        mdbook
       ];
       meta = oldAttrs.meta // {
         badPlatforms = [ ];
@@ -18,9 +33,6 @@ let
     }
   );
   wayland-protocols = pkgs.wayland-protocols.override {
-    inherit wayland;
-  };
-  wayland-scanner = pkgs.wayland-scanner.override {
     inherit wayland;
   };
 in
